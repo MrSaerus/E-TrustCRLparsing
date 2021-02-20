@@ -1,4 +1,5 @@
-import base64, sys, socket, sqlite3
+# PyQt5, lxml, peewee
+import base64, sys, socket, sqlite3, os, configparser
 from urllib import request, error
 from functools import partial
 from PyQt5.QtWidgets import QMainWindow, \
@@ -11,9 +12,24 @@ from lxml import etree
 from peewee import *
 
 
+config = configparser.ConfigParser()
+config.read('settings.ini')
+
 socket.setdefaulttimeout(15)
-connect = sqlite3.connect('cert_crl.db')
-db = SqliteDatabase('cert_crl.db')
+connect = sqlite3.connect(config['Bd']['name'])
+db = SqliteDatabase(config['Bd']['name'])
+try:
+    os.makedirs(config['Folders']['certs'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['crls'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['tmp'])
+except OSError:
+    pass
 
 
 class UC(Model):
@@ -432,6 +448,27 @@ def parseXML(xmlFile):
     print('CRL:' + str(crl_count))
 
 
+def save_cert(seriall_number):
+    for certs in CERT.select().where(CERT.SerialNumber == seriall_number):
+        with open("certs/" + certs.SerialNumber + ".cer", "wb") as file:
+            file.write(base64.decodebytes(certs.Data.encode()))
+
+
+def download_file(file_url, file_name, folder):
+    file_name_url = file_url.split('/')[-1]
+    type_file = file_name_url.split('.')[-1]
+    path = folder + '/' + file_name + '.' + type_file
+    try:
+       request.urlretrieve(file_url, path, schedule)
+    except error.HTTPError as e:
+       print(e)
+       print('\r\n' + file_url + ' download failed!' + '\r\n')
+    except Exception:
+       print('\r\n' + file_url + ' download failed!' + '\r\n')
+    else:
+       print('\r\n' + file_url + ' download successfully!')
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -453,6 +490,7 @@ class MainWindow(QMainWindow):
 class TabWidget(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
+        self.window_uc = None
         self.layout = QVBoxLayout(self)
 
         # Init BD
@@ -510,11 +548,11 @@ class TabWidget(QWidget):
         self.topFrame.setLayout(self.inf)
         self.tab0.layout.addWidget(self.topFrame)
 
-        self.button1 = QPushButton()
-        self.button1.setText("Загрузить и обновить информацию")
-        self.button1.setFixedSize(250, 30)
-        self.button1.clicked.connect(self.button_event)
-        self.tab0.layout.addWidget(self.button1)
+        buttonInit = QPushButton()
+        buttonInit.setText("Загрузить и обновить информацию")
+        buttonInit.setFixedSize(250, 30)
+        buttonInit.clicked.connect(self.init_tsl)
+        self.tab0.layout.addWidget(buttonInit)
 
         self.tab0.setLayout(self.tab0.layout)
 
@@ -539,24 +577,9 @@ class TabWidget(QWidget):
                                                     "Название",
                                                     ""])
 
-        count = 0
-        for row in ucs:
-            self.tableWidget.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
-            self.tableWidget.setItem(count, 1, QTableWidgetItem(str(row.INN)))
-            self.tableWidget.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
-            self.tableWidget.setItem(count, 3, QTableWidgetItem(str(row.Name)))
-
-            buttonInfo = QPushButton()
-            buttonInfo.setFixedSize(100, 30)
-            buttonInfo.setText("Подробнее")
-            buttonInfo.clicked.connect(self.openSubWindowInfoUc(str(row.Registration_Number)))
-            self.tableWidget.setCellWidget(count, 4, buttonInfo)
-
-            count = count + 1
+        self.onChangedFindUC('')
         self.tableWidget.resizeColumnsToContents()
-
         self.tab1.layout.addWidget(self.tableWidget)
-
         self.tab1.setLayout(self.tab1.layout)
 
     def tab_cert(self):
@@ -580,26 +603,7 @@ class TabWidget(QWidget):
                                                     "Серийный номер",
                                                     "",
                                                     ""])
-        count = 0
-        for row in certs:
-            self.tableWidgetCert.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
-            self.tableWidgetCert.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
-            self.tableWidgetCert.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
-            self.tableWidgetCert.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
-
-            self.buttonSert = QPushButton()
-            self.buttonSert.setFixedSize(150, 30)
-            self.buttonSert.setText("Просмотр сертификата")
-            self.tableWidgetCert.setCellWidget(count, 4, self.buttonSert)
-
-            buttonSertSave = QPushButton()
-            buttonSertSave.setFixedSize(100, 30)
-            buttonSertSave.setText("Сохранить")
-            sn = row.SerialNumber
-            buttonSertSave.pressed.connect(lambda serrial = sn: self.save_cert(serrial))
-            self.tableWidgetCert.setCellWidget(count, 5, buttonSertSave)
-
-            count = count + 1
+        self.onChangedFindCert('')
         self.tableWidgetCert.resizeColumnsToContents()
         self.tab2.layout.addWidget(self.tableWidgetCert)
         self.tab2.setLayout(self.tab2.layout)
@@ -625,22 +629,8 @@ class TabWidget(QWidget):
                                                     "Серийный номер",
                                                     "Адрес в интернете",
                                                     ""])
-        count = 0
-        for row in crls:
-            self.tableWidgetCRL.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
-            self.tableWidgetCRL.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
-            self.tableWidgetCRL.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
-            self.tableWidgetCRL.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
-            self.tableWidgetCRL.setItem(count, 4, QTableWidgetItem(str(row.UrlCRL)))
-            self.buttonCRLSave = QPushButton()
-            self.buttonCRLSave.setFixedSize(100, 30)
-            self.buttonCRLSave.setText("Сохранить")
-            self.tableWidgetCRL.setCellWidget(count, 5, self.buttonCRLSave)
-            count = count + 1
-        self.tableWidgetCRL.resizeColumnToContents(0)
-        self.tableWidgetCRL.resizeColumnToContents(1)
-        self.tableWidgetCRL.resizeColumnToContents(2)
-        self.tableWidgetCRL.setColumnWidth(3, 150)
+        self.onChangedFindCRL('')
+
         self.tab3.layout.addWidget(self.tableWidgetCRL)
         self.tab3.setLayout(self.tab3.layout)
         # Add tabs to widget
@@ -648,22 +638,15 @@ class TabWidget(QWidget):
         self.setLayout(self.layout)
 
     def openSubWindowInfoUc(self, RegNumber):
-        WindowInfoUc = SubWindowUC(RegNumber)
+        if self.window_uc is None:
+            self.window_uc = SubWindowUC(RegNumber)
+            self.window_uc.show()
+        else:
+            self.window_uc.close()  # Close window.
+            self.window_uc = None  # Discard reference.
 
-        def callWindowInfoUc():
-            WindowInfoUc.show()
-        return callWindowInfoUc
-
-    def save_cert(self, seriall_number):
-        for certs in CERT.select().where(CERT.SerialNumber == seriall_number):
-            with open("certs/" + certs.SerialNumber + ".cer", "wb") as file:
-                file.write(base64.decodebytes(certs.Data.encode()))
-
-    def button_event(self):
-        try:
-           request.urlretrieve('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
-        except Exception:
-           print('download error')
+    def init_tsl(self):
+        download_file('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml', '')
 
         UC.drop_table()
         CRL.drop_table()
@@ -691,7 +674,8 @@ class TabWidget(QWidget):
             buttonInfo = QPushButton()
             buttonInfo.setFixedSize(100, 30)
             buttonInfo.setText("Подробнее")
-            buttonInfo.clicked.connect(self.openSubWindowInfoUc(str(row.Registration_Number)))
+            regnum = row.Registration_Number
+            buttonInfo.pressed.connect(lambda rg=regnum: self.openSubWindowInfoUc(rg))
             self.tableWidget.setCellWidget(count, 4, buttonInfo)
             count = count + 1
         self.tableWidget.resizeColumnsToContents()
@@ -709,14 +693,18 @@ class TabWidget(QWidget):
             self.tableWidgetCert.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
             self.tableWidgetCert.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
             self.tableWidgetCert.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
+
             self.buttonSert = QPushButton()
             self.buttonSert.setFixedSize(150, 30)
             self.buttonSert.setText("Просмотр сертификата")
             self.tableWidgetCert.setCellWidget(count, 4, self.buttonSert)
-            self.buttonSertSave = QPushButton()
-            self.buttonSertSave.setFixedSize(100, 30)
-            self.buttonSertSave.setText("Сохранить")
-            self.tableWidgetCert.setCellWidget(count, 5, self.buttonSertSave)
+
+            buttonSertSave = QPushButton()
+            buttonSertSave.setFixedSize(100, 30)
+            buttonSertSave.setText("Сохранить")
+            sn = row.SerialNumber
+            buttonSertSave.pressed.connect(lambda serrial = sn: save_cert(serrial))
+            self.tableWidgetCert.setCellWidget(count, 5, buttonSertSave)
             count = count + 1
         self.tableWidgetCert.resizeColumnsToContents()
 
@@ -734,12 +722,19 @@ class TabWidget(QWidget):
             self.tableWidgetCRL.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
             self.tableWidgetCRL.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetCRL.setItem(count, 4, QTableWidgetItem(str(row.UrlCRL)))
-            self.buttonCRLSave = QPushButton()
-            self.buttonCRLSave.setFixedSize(100, 30)
-            self.buttonCRLSave.setText("Сохранить")
-            self.tableWidgetCRL.setCellWidget(count, 5, self.buttonCRLSave)
+            buttonCRLSave = QPushButton()
+            buttonCRLSave.setFixedSize(100, 30)
+            buttonCRLSave.setText("Сохранить")
+            stamp = row.Stamp
+            url = row.UrlCRL
+            buttonCRLSave.pressed.connect(lambda u=url, s=stamp: download_file(u, s, config['Folders']['crls']))
+            self.tableWidgetCRL.setCellWidget(count, 5, buttonCRLSave)
             count = count + 1
-        self.tableWidgetCRL.resizeColumnsToContents()
+        self.tableWidgetCRL.resizeColumnToContents(0)
+        self.tableWidgetCRL.resizeColumnToContents(1)
+        self.tableWidgetCRL.resizeColumnToContents(2)
+        self.tableWidgetCRL.setColumnWidth(3, 150)
+        self.tableWidgetCRL.setColumnWidth(4, 200)
 
 
 class SubWindowUC(QWidget):
