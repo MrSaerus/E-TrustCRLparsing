@@ -1,16 +1,21 @@
 # PyQt5, lxml, peewee
-import base64, sys, socket, sqlite3, os, configparser
+import base64
+import configparser
+import os
+import socket
+import sqlite3
+import sys
+import time
+import math
+
 from urllib import request, error
-from functools import partial
-from PyQt5.QtWidgets import QMainWindow, \
-    QApplication, QPushButton, QWidget, QAction, \
-    QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QBoxLayout, \
-    QTableWidgetItem, QTableWidget, QFrame, QSplitter, QGridLayout, QLineEdit
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtCore import QCoreApplication, Qt, QThread, pyqtSignal, QSize, QRect
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QHeaderView, \
+    QApplication, QPushButton, QWidget, QProgressBar, QStyleFactory, \
+    QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWidgetItem, QTableWidget, QFrame, QSplitter, QLineEdit
 from lxml import etree
 from peewee import *
-
 
 config = configparser.ConfigParser()
 config.read('settings.ini')
@@ -55,6 +60,7 @@ class UC(Model):
 class CERT(Model):
     ID = IntegerField(primary_key=True)
     Registration_Number = IntegerField()
+    Name = CharField()
     KeyId = CharField()
     Stamp = CharField()
     SerialNumber = CharField()
@@ -67,6 +73,21 @@ class CERT(Model):
 class CRL(Model):
     ID = IntegerField(primary_key=True)
     Registration_Number = IntegerField()
+    Name = CharField()
+    KeyId = CharField()
+    Stamp = CharField()
+    SerialNumber = CharField()
+    UrlCRL = CharField()
+
+    class Meta:
+        database = db
+
+
+class WatchingCRL(Model):
+    ID = IntegerField(primary_key=True)
+    Name = CharField()
+    INN = IntegerField()
+    OGRN = IntegerField()
     KeyId = CharField()
     Stamp = CharField()
     SerialNumber = CharField()
@@ -93,6 +114,8 @@ if not CRL.table_exists():
     CRL.create_table()
 if not Settings.table_exists():
     Settings.create_table()
+if not WatchingCRL.table_exists():
+    WatchingCRL.create_table()
 
 
 def progressbar(cur, total=100):
@@ -104,11 +127,6 @@ def progressbar(cur, total=100):
 
 
 def schedule(blocknum, blocksize, totalsize):
-    """
-    blocknum: currently downloaded block
-         blocksize: block size for each transfer
-         totalsize: total size of web page files
-    """
     if totalsize == 0:
         percent = 0
     else:
@@ -429,19 +447,18 @@ def parseXML(xmlFile):
                         if type(data) == list:
                             for dats in data:
                                 UrlCRL = dats
-                                # print(dats)
-                cert = CERT(Registration_Number = Registration_Number,
-                            KeyId = KeyId,
-                            Stamp = Stamp,
-                            SerialNumber = SerialNumber,
-                            Data = Data)
+                                crl = CRL(Registration_Number=Registration_Number,
+                                          KeyId=KeyId,
+                                          Stamp=Stamp,
+                                          SerialNumber=SerialNumber,
+                                          UrlCRL=UrlCRL)
+                                crl.save()
+                cert = CERT(Registration_Number=Registration_Number,
+                            KeyId=KeyId,
+                            Stamp=Stamp,
+                            SerialNumber=SerialNumber,
+                            Data=Data)
                 cert.save()
-                crl = CRL(Registration_Number = Registration_Number,
-                          KeyId=KeyId,
-                          Stamp=Stamp,
-                          SerialNumber=SerialNumber,
-                          UrlCRL = UrlCRL)
-                crl.save()
 
     print('Центров:' + str(uc_count))
     print('Сертов:' + str(cert_count))
@@ -450,8 +467,47 @@ def parseXML(xmlFile):
 
 def save_cert(seriall_number):
     for certs in CERT.select().where(CERT.SerialNumber == seriall_number):
-        with open("certs/" + certs.SerialNumber + ".cer", "wb") as file:
+        with open(config['Folders']['certs']+"/" + certs.SerialNumber + ".cer", "wb") as file:
             file.write(base64.decodebytes(certs.Data.encode()))
+    os.startfile(os.path.realpath(config['Folders']['certs']+"/"))
+
+
+def open_file(file_name, file_type, url='None'):
+    # open_file(sn + ".cer", "cer")
+    # CryptExtAddCER «файл» Добавляет сертификат безопасности.
+    # CryptExtAddCRL «файл» Добавляет список отзыва сертификатов.
+    # CryptExtAddCTL «файл» Добавляет список доверия сертификатов.
+    # CryptExtAddP7R «файл» Добавляет файл ответа на запрос сертификата.
+    # CryptExtAddPFX «файл» Добавляет файл обмена личной информацией.
+    # CryptExtAddSPC «файл» Добавляет сертификат PCKS #7.
+    # CryptExtOpenCAT «файл» Открывает каталог безопасности.
+    # CryptExtOpenCER «файл» Открывает сертификат безопасности.
+    # CryptExtOpenCRL «файл» Открывает список отзыва сертификатов.
+    # CryptExtOpenCTL «файл» Открывает список доверия сертификатов.
+    # CryptExtOpenP10 «файл» Открывает запрос на сертификат.
+    # CryptExtOpenP7R «файл» Открывает файл ответа на запрос сертификата.
+    # CryptExtOpenPKCS7 «файл» Открывает сертификат PCKS #7.
+    # CryptExtOpenSTR «файл» Открывает хранилище сериализированных сертификатов.
+
+    type = ""
+    folder = ""
+    if file_type == 'cer':
+        type = 'CryptExtOpenCER'
+        folder = 'certs'
+    elif file_type == 'crl':
+        type = 'CryptExtOpenCRL'
+        folder = 'crls'
+    run_dll = "%SystemRoot%\\System32\\rundll32.exe cryptext.dll,"+type
+    path = os.path.realpath(config['Folders'][folder] + "/" + file_name + "." + file_type)
+    print(path)
+    if not os.path.exists(path):
+        if file_type == 'cer':
+            save_cert(file_name)
+        elif file_type == 'crl':
+            download_file(url, file_name, config['Folders']['crls'])
+    else:
+        open_crl = run_dll + "  " + path
+        os.system(open_crl)
 
 
 def download_file(file_url, file_name, folder):
@@ -467,6 +523,38 @@ def download_file(file_url, file_name, folder):
        print('\r\n' + file_url + ' download failed!' + '\r\n')
     else:
        print('\r\n' + file_url + ' download successfully!')
+       os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
+
+
+class Downloader(QThread):
+    preprogress = pyqtSignal(int)
+    progress = pyqtSignal(int)
+    done = pyqtSignal()
+
+    def __init__(self, fileUrl, fileName):
+        QThread.__init__(self)
+        # Флаг инициализации
+        self._init = False
+        self.fileUrl = fileUrl
+        self.fileName = fileName
+
+    def run(self):
+        # тест на локальных данных, но работать должно и с сетью
+        request.urlretrieve(self.fileUrl, self.fileName, self._progress)
+
+    def _progress(self, block_num, block_size, total_size):
+        if not self._init:
+            self.preprogress.emit(total_size)
+            self._init = True
+            # self.button_init.setEnabled(False)
+        # Расчет текущего количества данных
+        downloaded = block_num * block_size
+        if downloaded < total_size:
+            # Отправляем промежуток
+            self.progress.emit(downloaded)
+        else:
+            # Чтобы было 100%
+            self.progress.emit(total_size)
 
 
 class MainWindow(QMainWindow):
@@ -489,13 +577,9 @@ class MainWindow(QMainWindow):
 
 class TabWidget(QWidget):
     def __init__(self, parent):
-        super(QWidget, self).__init__(parent)
+        super(TabWidget, self).__init__(parent)
         self.window_uc = None
         self.layout = QVBoxLayout(self)
-
-        # Init BD
-
-        seting = Settings.select()
 
         # Initialize tab screen
         self.tabs = QTabWidget()
@@ -507,7 +591,7 @@ class TabWidget(QWidget):
         self.tab5 = QWidget()
 
         # Add tabs
-        self.tabs.addTab(self.tab0, "Инициальзация")
+        self.tabs.addTab(self.tab0, "Инициализация")
         self.tabs.addTab(self.tab1, "Список УЦ")
         self.tabs.addTab(self.tab2, "Список Сертификатов")
         self.tabs.addTab(self.tab3, "Список CRL")
@@ -518,18 +602,12 @@ class TabWidget(QWidget):
         self.tab_uc()
         self.tab_cert()
         self.tab_crl()
+        self.tab_watchingcrl()
 
     def tab_info(self):
         ucs = UC.select()
         certs = CERT.select()
         crls = CRL.select()
-
-        self.tab0.layout = QVBoxLayout(self)
-
-        self.topFrame = QFrame(self)
-        # self.topFrame.setStyleSheet("background-color: green")
-        self.topFrame.setFixedSize(400, 150)
-        self.inf = QVBoxLayout(self)
         settings_ver = '0'
         settings_update_date = '0'
         query = Settings.select()
@@ -538,23 +616,82 @@ class TabWidget(QWidget):
                 settings_ver = data.value
             if data.name == 'data_update':
                 settings_update_date = data.value
-        self.inf.addWidget(QLabel("Начальная инициализация сертификатов и списка отзыва: "))
-        self.inf.addWidget(QLabel("Версия базы: " + settings_ver))
-        self.inf.addWidget(QLabel("Дата выпуска базы: " + settings_update_date))
-        self.inf.addWidget(QLabel("Всего УЦ: " + str(ucs.count())))
-        self.inf.addWidget(QLabel("Всего CRL: " + str(crls.count())))
-        self.inf.addWidget(QLabel("УЦ для загрузки отмечено: " + str(ucs.count())))
-        self.inf.addWidget(QLabel("CRL будет загружено: " + str(crls.count())))
-        self.topFrame.setLayout(self.inf)
-        self.tab0.layout.addWidget(self.topFrame)
 
-        buttonInit = QPushButton()
-        buttonInit.setText("Загрузить и обновить информацию")
-        buttonInit.setFixedSize(250, 30)
-        buttonInit.clicked.connect(self.init_tsl)
-        self.tab0.layout.addWidget(buttonInit)
+        self.verticalLayout_3 = QVBoxLayout()
+        self.horizontalLayout = QHBoxLayout()
+        self.frame_2 = QFrame()
+        self.frame_2.setMinimumSize(QSize(0, 0))
+        self.frame_2.setFrameShape(QFrame.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.verticalLayoutWidget_5 = QWidget(self.frame_2)
+        self.verticalLayoutWidget_5.setGeometry(QRect(0, 0, 400, 150))
+        self.verticalLayout_16 = QVBoxLayout(self.verticalLayoutWidget_5)
+        self.verticalLayout_16.setContentsMargins(0, 0, 0, 0)
 
-        self.tab0.setLayout(self.tab0.layout)
+        self.verticalLayout_16.addWidget(QLabel("  Начальная инициализация сертификатов и списка отзыва"))
+        self.verticalLayout_16.addWidget(QLabel("     Версия базы: " + settings_ver))
+        self.verticalLayout_16.addWidget(QLabel("     Дата выпуска базы: " + settings_update_date))
+        self.verticalLayout_16.addWidget(QLabel("     Всего УЦ: " + str(ucs.count())))
+        self.verticalLayout_16.addWidget(QLabel("     Всего CRL: " + str(crls.count())))
+        self.verticalLayout_16.addWidget(QLabel("     УЦ для загрузки отмечено: " + str(ucs.count())))
+        self.verticalLayout_16.addWidget(QLabel("     CRL будет загружено: " + str(crls.count())))
+        self.currentTread = QLabel(self)
+        self.verticalLayout_16.addWidget(self.currentTread)
+        self.horizontalLayout.addWidget(self.frame_2)
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
+
+        self.verticalLayout_5 = QVBoxLayout()
+        self.frame = QFrame()
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        self.frame.setSizePolicy(sizePolicy)
+        self.frame.setMinimumSize(QSize(0, 0))
+        self.frame.setStyleSheet(u";\n""border-color: rgb(0, 0, 0);")
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.frame)
+        self.verticalLayout_4 = QVBoxLayout()
+        self.pushButton = QPushButton(self.frame)
+        self.pushButton.setMinimumSize(QSize(200, 30))
+        self.pushButton.setBaseSize(QSize(0, 0))
+        self.pushButton.setText("Загрузить TSL")
+        self.pushButton.clicked.connect(self.download_xml)
+        self.verticalLayout_4.addWidget(self.pushButton)
+
+        self.pushButton_2 = QPushButton(self.frame)
+        self.pushButton_2.setMinimumSize(QSize(200, 30))
+        self.pushButton_2.setText("Обработать")
+        self.pushButton_2.clicked.connect(self.init_xml)
+        self.verticalLayout_4.addWidget(self.pushButton_2)
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout_4)
+
+        self.verticalLayout_2 = QVBoxLayout()
+        self.progressBar = QProgressBar(self.frame)
+        self.progressBar.setMinimumSize(QSize(0, 30))
+        font = QFont()
+        font.setBold(False)
+        font.setWeight(50)
+        font.setKerning(True)
+        self.progressBar.setFont(font)
+        self.progressBar.setAlignment(Qt.AlignCenter)
+        self.progressBar.setTextVisible(True)
+        self.progressBar.hide()
+        self.verticalLayout_2.addWidget(self.progressBar, 0, Qt.AlignBottom)
+
+        self.progressBar_2 = QProgressBar(self.frame)
+        self.progressBar_2.setMinimumSize(QSize(0, 30))
+        self.progressBar_2.setAlignment(Qt.AlignCenter)
+        self.progressBar_2.hide()
+        self.verticalLayout_2.addWidget(self.progressBar_2, 0, Qt.AlignBottom)
+
+        self.horizontalLayout_2.addLayout(self.verticalLayout_2)
+        self.verticalLayout_5.addWidget(self.frame, 0, Qt.AlignBottom)
+        self.verticalLayout_3.addLayout(self.verticalLayout_5)
+        self.tab0.setLayout(self.verticalLayout_3)
 
     def tab_uc(self):
         ucs = UC.select()
@@ -571,14 +708,15 @@ class TabWidget(QWidget):
         self.tableWidget = QTableWidget(self)
         self.tableWidget.setRowCount(int(ucs.count()))
         self.tableWidget.setColumnCount(5)
+        self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.setHorizontalHeaderLabels(["Р/Н",
                                                     "ИНН",
                                                     "ОГРН",
                                                     "Название",
                                                     ""])
-
         self.onChangedFindUC('')
         self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
         self.tab1.layout.addWidget(self.tableWidget)
         self.tab1.setLayout(self.tab1.layout)
 
@@ -596,15 +734,22 @@ class TabWidget(QWidget):
 
         self.tableWidgetCert = QTableWidget(self)
         self.tableWidgetCert.setRowCount(int(certs.count()))
-        self.tableWidgetCert.setColumnCount(6)
+        self.tableWidgetCert.setColumnCount(7)
+        self.tableWidgetCert.verticalHeader().setVisible(False)
         self.tableWidgetCert.setHorizontalHeaderLabels(["Р/Н",
+                                                    "Название",
                                                     "Идентификатор ключа",
                                                     "Отпечаток",
                                                     "Серийный номер",
                                                     "",
                                                     ""])
         self.onChangedFindCert('')
-        self.tableWidgetCert.resizeColumnsToContents()
+        self.tableWidgetCert.resizeColumnToContents(0)
+        self.tableWidgetCert.setColumnWidth(1, 150)
+        self.tableWidgetCert.resizeColumnToContents(2)
+        self.tableWidgetCert.resizeColumnToContents(3)
+        self.tableWidgetCert.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
+        self.tableWidgetCert.resizeColumnToContents(5)
         self.tab2.layout.addWidget(self.tableWidgetCert)
         self.tab2.setLayout(self.tab2.layout)
 
@@ -622,17 +767,61 @@ class TabWidget(QWidget):
 
         self.tableWidgetCRL = QTableWidget(self)
         self.tableWidgetCRL.setRowCount(int(crls.count()))
-        self.tableWidgetCRL.setColumnCount(6)
+        self.tableWidgetCRL.setColumnCount(7)
+        self.tableWidgetCRL.verticalHeader().setVisible(False)
         self.tableWidgetCRL.setHorizontalHeaderLabels(["Р/Н",
+                                                    "Название",
                                                     "Идентификатор ключа",
                                                     "Отпечаток",
                                                     "Серийный номер",
                                                     "Адрес в интернете",
                                                     ""])
         self.onChangedFindCRL('')
-
+        self.tableWidgetCRL.resizeColumnToContents(0)
+        self.tableWidgetCRL.setColumnWidth(1, 150)
+        self.tableWidgetCRL.resizeColumnToContents(2)
+        self.tableWidgetCRL.resizeColumnToContents(3)
+        self.tableWidgetCRL.resizeColumnToContents(4)
+        self.tableWidgetCRL.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
         self.tab3.layout.addWidget(self.tableWidgetCRL)
         self.tab3.setLayout(self.tab3.layout)
+        # Add tabs to widget
+        self.layout.addWidget(self.tabs)
+        self.setLayout(self.layout)
+
+    def tab_watchingcrl(self):
+        crls = CRL.select()
+        self.tab4.layout = QVBoxLayout(self)
+
+        self.wline = QLineEdit(self)
+        self.wline.setMaximumWidth(300)
+        self.wline.textChanged[str].connect(self.onChangedFindWatchingCRL)
+        self.tab4.layout.addWidget(self.wline)
+
+        self.lableFindWatchingCRL = QLabel(self)
+        self.tab4.layout.addWidget(self.lableFindWatchingCRL)
+
+        self.tableWidgetWatchingCRL = QTableWidget(self)
+        self.tableWidgetWatchingCRL.setRowCount(int(crls.count()))
+        self.tableWidgetWatchingCRL.setColumnCount(7)
+        self.tableWidgetWatchingCRL.verticalHeader().setVisible(False)
+        self.tableWidgetWatchingCRL.setHorizontalHeaderLabels(["Name",
+                                                       "ИНН",
+                                                       "ОГРН",
+                                                       "Идентификатор ключа",
+                                                       "Отпечаток",
+                                                       "Серийный номер",
+                                                       "Адрес CRL"])
+        self.onChangedFindWatchingCRL('')
+        self.tableWidgetWatchingCRL.resizeColumnToContents(0)
+        self.tableWidgetWatchingCRL.resizeColumnToContents(1)
+        self.tableWidgetWatchingCRL.resizeColumnToContents(2)
+        self.tableWidgetWatchingCRL.resizeColumnToContents(3)
+        self.tableWidgetWatchingCRL.resizeColumnToContents(4)
+        self.tableWidgetWatchingCRL.resizeColumnToContents(5)
+        self.tableWidgetWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
+        self.tab4.layout.addWidget(self.tableWidgetWatchingCRL)
+        self.tab4.setLayout(self.tab4.layout)
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
@@ -645,32 +834,49 @@ class TabWidget(QWidget):
             self.window_uc.close()  # Close window.
             self.window_uc = None  # Discard reference.
 
+    """
     def init_tsl(self):
-        download_file('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml', '')
+        self.d_bar.show()
+        self.currentTread.setText('Скачиваем список.')
+        time.sleep(0.05)
+        self.currentTread.adjustSize()
 
+        download_file('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml', '')
+        self.currentTread.setText('Скачали.')
+        self.currentTread.setText('Очищаем базу.')
         UC.drop_table()
         CRL.drop_table()
         CERT.drop_table()
-
+        self.currentTread.setText('Создаем базу.')
         UC.create_table()
         CERT.create_table()
         CRL.create_table()
-
+        self.currentTread.setText('Обрабатываем данные.')
         parseXML("tsl.xml")
+        self.currentTread.setText('Готово.')
+        self.d_bar.hide()
+
+    """
 
     def onChangedFindUC(self, text):
-        self.lableFindUC.setText('Ищем по ОГРН: ' + text)
+        self.lableFindUC.setText('Ищем: ' + text)
         self.lableFindUC.adjustSize()
 
-        query = UC.select().where(UC.OGRN.contains(text))
-        count_all = UC.select().where(UC.OGRN.contains(text)).count()
+        query = UC.select().where(UC.Registration_Number.contains(text)
+                                  | UC.INN.contains(text)
+                                  | UC.OGRN.contains(text)
+                                  | UC.Full_Name.contains(text))
+        count_all = UC.select().where(UC.Registration_Number.contains(text)
+                                      | UC.INN.contains(text)
+                                      | UC.OGRN.contains(text)
+                                      | UC.Full_Name.contains(text)).count()
         self.tableWidget.setRowCount(count_all)
         count = 0
         for row in query:
             self.tableWidget.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
             self.tableWidget.setItem(count, 1, QTableWidgetItem(str(row.INN)))
             self.tableWidget.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
-            self.tableWidget.setItem(count, 3, QTableWidgetItem(str(row.Name)))
+            self.tableWidget.setItem(count, 3, QTableWidgetItem(str(row.Full_Name)))
             buttonInfo = QPushButton()
             buttonInfo.setFixedSize(100, 30)
             buttonInfo.setText("Подробнее")
@@ -678,63 +884,291 @@ class TabWidget(QWidget):
             buttonInfo.pressed.connect(lambda rg=regnum: self.openSubWindowInfoUc(rg))
             self.tableWidget.setCellWidget(count, 4, buttonInfo)
             count = count + 1
-        self.tableWidget.resizeColumnsToContents()
 
     def onChangedFindCert(self, text):
-        self.lableFindCert.setText('Ищем по Отпечатку: ' + text)
+        self.lableFindCert.setText('Ищем: ' + text)
         self.lableFindCert.adjustSize()
 
-        query = CERT.select().where(CERT.Stamp.contains(text))
-        count_all = CERT.select().where(CERT.Stamp.contains(text)).count()
+        query = CERT.select().where(CERT.Registration_Number.contains(text)
+                                    | CERT.Name.contains(text)
+                                    | CERT.KeyId.contains(text)
+                                    | CERT.Stamp.contains(text)
+                                    | CERT.SerialNumber.contains(text))
+        count_all = CERT.select().where(CERT.Registration_Number.contains(text)
+                                        | CERT.Name.contains(text)
+                                        | CERT.KeyId.contains(text)
+                                        | CERT.Stamp.contains(text)
+                                        | CERT.SerialNumber.contains(text)).count()
         self.tableWidgetCert.setRowCount(count_all)
         count = 0
         for row in query:
             self.tableWidgetCert.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
-            self.tableWidgetCert.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
-            self.tableWidgetCert.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
-            self.tableWidgetCert.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
+            self.tableWidgetCert.setItem(count, 1, QTableWidgetItem(str(row.Name)))
+            self.tableWidgetCert.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
+            self.tableWidgetCert.setItem(count, 3, QTableWidgetItem(str(row.Stamp)))
+            self.tableWidgetCert.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
 
             self.buttonSert = QPushButton()
             self.buttonSert.setFixedSize(150, 30)
             self.buttonSert.setText("Просмотр сертификата")
-            self.tableWidgetCert.setCellWidget(count, 4, self.buttonSert)
+            serrial = row.SerialNumber
+            self.buttonSert.pressed.connect(lambda sn = serrial: open_file(sn, "cer"))
+            self.tableWidgetCert.setCellWidget(count, 5, self.buttonSert)
 
             buttonSertSave = QPushButton()
             buttonSertSave.setFixedSize(100, 30)
             buttonSertSave.setText("Сохранить")
             sn = row.SerialNumber
             buttonSertSave.pressed.connect(lambda serrial = sn: save_cert(serrial))
-            self.tableWidgetCert.setCellWidget(count, 5, buttonSertSave)
+            self.tableWidgetCert.setCellWidget(count, 6, buttonSertSave)
             count = count + 1
-        self.tableWidgetCert.resizeColumnsToContents()
 
     def onChangedFindCRL(self, text):
-        self.lableFindCRL.setText('Ищем по Отпечатку: ' + text)
+        self.lableFindCRL.setText('Ищем: ' + text)
         self.lableFindCRL.adjustSize()
 
-        query = CRL.select().where(CRL.Stamp.contains(text))
-        count_all = CRL.select().where(CRL.Stamp.contains(text)).count()
+        query = CRL.select().where(CRL.Registration_Number.contains(text)
+                                   | CRL.Name.contains(text)
+                                   | CRL.KeyId.contains(text)
+                                   | CRL.Stamp.contains(text)
+                                   | CRL.SerialNumber.contains(text)
+                                   | CRL.UrlCRL.contains(text))
+        count_all = CRL.select().where(CRL.Registration_Number.contains(text)
+                                       | CRL.Name.contains(text)
+                                       | CRL.KeyId.contains(text)
+                                       | CRL.Stamp.contains(text)
+                                       | CRL.SerialNumber.contains(text)
+                                       | CRL.UrlCRL.contains(text)).count()
         self.tableWidgetCRL.setRowCount(count_all)
         count = 0
         for row in query:
             self.tableWidgetCRL.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
-            self.tableWidgetCRL.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
-            self.tableWidgetCRL.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
-            self.tableWidgetCRL.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
-            self.tableWidgetCRL.setItem(count, 4, QTableWidgetItem(str(row.UrlCRL)))
+            self.tableWidgetCRL.setItem(count, 1, QTableWidgetItem(str(row.Name)))
+            self.tableWidgetCRL.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
+            self.tableWidgetCRL.setItem(count, 3, QTableWidgetItem(str(row.Stamp)))
+            self.tableWidgetCRL.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
+            self.tableWidgetCRL.setItem(count, 5, QTableWidgetItem(str(row.UrlCRL)))
             buttonCRLSave = QPushButton()
             buttonCRLSave.setFixedSize(100, 30)
-            buttonCRLSave.setText("Сохранить")
+            buttonCRLSave.setText("Скачать")
             stamp = row.Stamp
             url = row.UrlCRL
             buttonCRLSave.pressed.connect(lambda u=url, s=stamp: download_file(u, s, config['Folders']['crls']))
-            self.tableWidgetCRL.setCellWidget(count, 5, buttonCRLSave)
+            self.tableWidgetCRL.setCellWidget(count, 6, buttonCRLSave)
             count = count + 1
-        self.tableWidgetCRL.resizeColumnToContents(0)
-        self.tableWidgetCRL.resizeColumnToContents(1)
-        self.tableWidgetCRL.resizeColumnToContents(2)
-        self.tableWidgetCRL.setColumnWidth(3, 150)
-        self.tableWidgetCRL.setColumnWidth(4, 200)
+
+    def onChangedFindWatchingCRL(self, text):
+        self.lableFindWatchingCRL.setText('Ищем: ' + text)
+        self.lableFindWatchingCRL.adjustSize()
+
+        query = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
+                                           | WatchingCRL.INN.contains(text)
+                                           | WatchingCRL.OGRN.contains(text)
+                                           | WatchingCRL.KeyId.contains(text)
+                                           | WatchingCRL.Stamp.contains(text)
+                                           | WatchingCRL.SerialNumber.contains(text)
+                                           | WatchingCRL.UrlCRL.contains(text))
+        count_all = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
+                                               | WatchingCRL.INN.contains(text)
+                                               | WatchingCRL.OGRN.contains(text)
+                                               | WatchingCRL.KeyId.contains(text)
+                                               | WatchingCRL.Stamp.contains(text)
+                                               | WatchingCRL.SerialNumber.contains(text)
+                                               | WatchingCRL.UrlCRL.contains(text)).count()
+        self.tableWidgetWatchingCRL.setRowCount(count_all)
+        count = 0
+        for row in query:
+            self.tableWidgetWatchingCRL.setItem(count, 0, QTableWidgetItem(str(row.Name)))
+            self.tableWidgetWatchingCRL.setItem(count, 1, QTableWidgetItem(str(row.INN)))
+            self.tableWidgetWatchingCRL.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
+            self.tableWidgetWatchingCRL.setItem(count, 3, QTableWidgetItem(str(row.KeyId)))
+            self.tableWidgetWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
+            self.tableWidgetWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
+            self.tableWidgetWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+            count = count + 1
+
+    def download_xml(self):
+        self.progressBar.show()
+        self.currentTread.setText('Скачиваем список.')
+        self.currentTread.adjustSize()
+        self.pushButton.setEnabled(False)
+        self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
+        # Устанавливаем максимальный размер данных
+        self._download.preprogress.connect(lambda x: self.progressBar.setMaximum(x))
+        # Промежуточный/скачанный размер
+        self._download.progress.connect(lambda d: self.progressBar.setValue(d))
+        self._download.start()
+
+    def init_xml(self):
+        self.progressBar_2.show()
+        self.pushButton_2.setEnabled(False)
+        UC.drop_table()
+        CRL.drop_table()
+        CERT.drop_table()
+        UC.create_table()
+        CERT.create_table()
+        CRL.create_table()
+        self.currentTread.setText('Обрабатываем данные.')
+        with open('tsl.xml', "rt", encoding="utf-8") as obj:
+            xml = obj.read().encode()
+
+        root = etree.fromstring(xml)
+        uc_count = 0
+        cert_count = 0
+        crl_count = 0
+
+        uc_count_all = 505
+        cert_count_all = 2338
+        crl_count_all = 3267
+        for appt in root.getchildren():
+            QCoreApplication.processEvents()
+            AddresCode = ''
+            AddresName = ''
+            AddresIndex = ''
+            AddresAddres = ''
+            AddresStreet = ''
+            AddresTown = ''
+            Registration_Number = ''
+            INN = ''
+            OGRN = ''
+            Full_Name = ''
+            Email = ''
+            Name = ''
+            URL = ''
+            keyIdent = ''
+            stamp = ''
+            cert_data = []
+            if appt.text:
+                if appt.tag == 'Версия':
+                    current_version = appt.text
+            if appt.text:
+                if appt.tag == 'Дата':
+                    last_update = appt.text
+            for elem in appt.getchildren():
+                if not elem.text:
+                    for sub_elem in elem.getchildren():
+                        if not sub_elem.text:
+                            for two_elem in sub_elem.getchildren():
+                                if not two_elem.text:
+                                    for tree_elem in two_elem.getchildren():
+                                        if not tree_elem.text:
+                                            if tree_elem.tag == 'Ключ':
+                                                data_cert = {}
+                                                adr_crl = []
+                                                keyIdent = {}
+                                                for four_elem in tree_elem.getchildren():
+                                                    if not four_elem.text:
+                                                        for five_elem in four_elem.getchildren():
+                                                            if not five_elem.text:
+                                                                for six_elem in five_elem.getchildren():
+                                                                    if six_elem.text:
+                                                                        if six_elem.tag == 'Отпечаток':
+                                                                            data_cert['stamp'] = six_elem.text
+                                                                        if six_elem.tag == 'СерийныйНомер':
+                                                                            cert_count = cert_count + 1
+                                                                            data_cert['serrial'] = six_elem.text
+                                                                        if six_elem.tag == 'Данные':
+                                                                            data_cert['data'] = six_elem.text
+                                                            else:
+                                                                if five_elem.tag == 'Адрес':
+                                                                    five_text = five_elem.text
+                                                                    adr_crl.append(five_text)
+                                                                    crl_count = crl_count + 1
+                                                    else:
+                                                        four_text = four_elem.text
+                                                        if four_elem.tag == 'ИдентификаторКлюча':
+                                                            keyIdent['keyid'] = four_text
+                                                cert_data.append([keyIdent, data_cert, adr_crl])
+                                else:
+                                    two_text = two_elem.text
+                                    if two_elem.tag == 'Код':
+                                        AddresCode = two_text
+                                    if two_elem.tag == 'Название':
+                                        AddresName = two_text
+                        else:
+                            sub_text = sub_elem.text
+                            if sub_elem.tag == 'Индекс':
+                                AddresIndex = sub_text
+                            if sub_elem.tag == 'УлицаДом':
+                                AddresStreet = sub_text
+                            if sub_elem.tag == 'Город':
+                                AddresTown = sub_text
+                            if sub_elem.tag == 'Страна':
+                                AddresAddres = sub_text
+                else:
+                    text = elem.text
+                    if elem.tag == 'Название':
+                        Full_Name = text
+                    if elem.tag == 'ЭлектроннаяПочта':
+                        Email = text
+                    if elem.tag == 'КраткоеНазвание':
+                        Name = text
+                    if elem.tag == 'АдресСИнформациейПоУЦ':
+                        URL = text
+                    if elem.tag == 'ИНН':
+                        INN = text
+                    if elem.tag == 'ОГРН':
+                        OGRN = text
+                    if elem.tag == 'РеестровыйНомер':
+                        Registration_Number = text
+                        uc_count = uc_count + 1
+            if Registration_Number != '':
+                uc = UC(Registration_Number=Registration_Number,
+                        INN=INN,
+                        OGRN=OGRN,
+                        Full_Name=Full_Name,
+                        Email=Email,
+                        Name=Name,
+                        URL=URL,
+                        AddresCode=AddresCode,
+                        AddresName=AddresName,
+                        AddresIndex=AddresIndex,
+                        AddresAddres=AddresAddres,
+                        AddresStreet=AddresStreet,
+                        AddresTown=AddresTown)
+                uc.save()
+                for cert in cert_data:
+                    if type(cert_data) == list:
+                        for data in cert:
+                            if type(data) == dict:
+                                for id, dats in data.items():
+                                    if id == 'keyid':
+                                        KeyId = dats
+                                    if id == 'stamp':
+                                        Stamp = dats
+                                    if id == 'serrial':
+                                        SerialNumber = dats
+                                    if id == 'data':
+                                        Data = dats
+
+                            if type(data) == list:
+                                for dats in data:
+                                    UrlCRL = dats
+                                    crl = CRL(Registration_Number=Registration_Number,
+                                              Name=Name,
+                                              KeyId=KeyId,
+                                              Stamp=Stamp,
+                                              SerialNumber=SerialNumber,
+                                              UrlCRL=UrlCRL)
+                                    crl.save()
+                    cert = CERT(Registration_Number=Registration_Number,
+                                Name=Name,
+                                KeyId=KeyId,
+                                Stamp=Stamp,
+                                SerialNumber=SerialNumber,
+                                Data=Data)
+                    cert.save()
+
+                    uc_percent_step = int(math.floor(100 / (uc_count_all / uc_count)))
+                    cert_percent_step = int(math.floor(100 / (cert_count_all / cert_count)))
+                    crl_percent_step = int(math.floor(100 / (crl_count_all / crl_count)))
+                    self.progressBar_2.setValue(crl_percent_step)
+
+        print('Центров:' + str(uc_count))
+        print('Сертов:' + str(cert_count))
+        print('CRL:' + str(crl_count))
+        self.currentTread.setText('Готово.')
+        self.progressBar_2.hide()
 
 
 class SubWindowUC(QWidget):
@@ -855,5 +1289,6 @@ class SubWindowUC(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle(config['Style']['Window'])
     ex = MainWindow()
     sys.exit(app.exec_())
