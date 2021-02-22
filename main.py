@@ -5,22 +5,19 @@ import os
 import socket
 import sqlite3
 import sys
-import time
 import math
 
 from urllib import request, error
-from PyQt5.QtCore import QCoreApplication, Qt, QThread, pyqtSignal, QSize, QRect
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QHeaderView, \
-    QApplication, QPushButton, QWidget, QProgressBar, QStyleFactory, \
-    QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QTableWidgetItem, QTableWidget, QFrame, QSplitter, QLineEdit
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from lxml import etree
 from peewee import *
 
 config = configparser.ConfigParser()
 config.read('settings.ini')
 
-socket.setdefaulttimeout(15)
+socket.setdefaulttimeout(int(config['Socket']['timeout']))
 connect = sqlite3.connect(config['Bd']['name'])
 db = SqliteDatabase(config['Bd']['name'])
 try:
@@ -41,7 +38,7 @@ class UC(Model):
     ID = IntegerField(primary_key=True)
     Registration_Number = IntegerField()
     INN = IntegerField()
-    OGRN  = IntegerField()
+    OGRN = IntegerField()
     Full_Name = CharField()
     Email = CharField()
     Name = CharField()
@@ -560,7 +557,7 @@ class Downloader(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.title = 'E-Trust CRL Parsing'
+        self.title = 'E-Trust CRL Parsing v1.0.0-3'
         self.left = 0
         self.top = 0
         self.width = 1200
@@ -602,12 +599,13 @@ class TabWidget(QWidget):
         self.tab_uc()
         self.tab_cert()
         self.tab_crl()
-        self.tab_watchingcrl()
+        self.tab_watching_crl()
 
     def tab_info(self):
         ucs = UC.select()
         certs = CERT.select()
         crls = CRL.select()
+        watching_crl = WatchingCRL.select()
         settings_ver = '0'
         settings_update_date = '0'
         query = Settings.select()
@@ -633,8 +631,8 @@ class TabWidget(QWidget):
         self.verticalLayout_16.addWidget(QLabel("     Дата выпуска базы: " + settings_update_date))
         self.verticalLayout_16.addWidget(QLabel("     Всего УЦ: " + str(ucs.count())))
         self.verticalLayout_16.addWidget(QLabel("     Всего CRL: " + str(crls.count())))
-        self.verticalLayout_16.addWidget(QLabel("     УЦ для загрузки отмечено: " + str(ucs.count())))
-        self.verticalLayout_16.addWidget(QLabel("     CRL будет загружено: " + str(crls.count())))
+        self.verticalLayout_16.addWidget(QLabel("     УЦ для загрузки отмечено: " + str(watching_crl.count())))
+        self.verticalLayout_16.addWidget(QLabel("     CRL будет загружено: " + str(watching_crl.count())))
         self.currentTread = QLabel(self)
         self.verticalLayout_16.addWidget(self.currentTread)
         self.horizontalLayout.addWidget(self.frame_2)
@@ -699,7 +697,7 @@ class TabWidget(QWidget):
 
         self.qline = QLineEdit(self)
         self.qline.setMaximumWidth(300)
-        self.qline.textChanged[str].connect(self.onChangedFindUC)
+        self.qline.textChanged[str].connect(self.on_changed_find_uc)
         self.tab1.layout.addWidget(self.qline)
 
         self.lableFindUC = QLabel(self)
@@ -714,7 +712,7 @@ class TabWidget(QWidget):
                                                     "ОГРН",
                                                     "Название",
                                                     ""])
-        self.onChangedFindUC('')
+        self.on_changed_find_uc('')
         self.tableWidget.resizeColumnsToContents()
         self.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
         self.tab1.layout.addWidget(self.tableWidget)
@@ -726,7 +724,7 @@ class TabWidget(QWidget):
 
         self.zline = QLineEdit(self)
         self.zline.setMaximumWidth(300)
-        self.zline.textChanged[str].connect(self.onChangedFindCert)
+        self.zline.textChanged[str].connect(self.on_changed_find_cert)
         self.tab2.layout.addWidget(self.zline)
 
         self.lableFindCert = QLabel(self)
@@ -743,7 +741,7 @@ class TabWidget(QWidget):
                                                     "Серийный номер",
                                                     "",
                                                     ""])
-        self.onChangedFindCert('')
+        self.on_changed_find_cert('')
         self.tableWidgetCert.resizeColumnToContents(0)
         self.tableWidgetCert.setColumnWidth(1, 150)
         self.tableWidgetCert.resizeColumnToContents(2)
@@ -759,7 +757,7 @@ class TabWidget(QWidget):
 
         self.xline = QLineEdit(self)
         self.xline.setMaximumWidth(300)
-        self.xline.textChanged[str].connect(self.onChangedFindCRL)
+        self.xline.textChanged[str].connect(self.on_changed_find_crl)
         self.tab3.layout.addWidget(self.xline)
 
         self.lableFindCRL = QLabel(self)
@@ -767,7 +765,7 @@ class TabWidget(QWidget):
 
         self.tableWidgetCRL = QTableWidget(self)
         self.tableWidgetCRL.setRowCount(int(crls.count()))
-        self.tableWidgetCRL.setColumnCount(7)
+        self.tableWidgetCRL.setColumnCount(8)
         self.tableWidgetCRL.verticalHeader().setVisible(False)
         self.tableWidgetCRL.setHorizontalHeaderLabels(["Р/Н",
                                                     "Название",
@@ -776,12 +774,12 @@ class TabWidget(QWidget):
                                                     "Серийный номер",
                                                     "Адрес в интернете",
                                                     ""])
-        self.onChangedFindCRL('')
+        self.on_changed_find_crl('')
         self.tableWidgetCRL.resizeColumnToContents(0)
         self.tableWidgetCRL.setColumnWidth(1, 150)
         self.tableWidgetCRL.resizeColumnToContents(2)
         self.tableWidgetCRL.resizeColumnToContents(3)
-        self.tableWidgetCRL.resizeColumnToContents(4)
+        self.tableWidgetCRL.setColumnWidth(4, 150)
         self.tableWidgetCRL.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
         self.tab3.layout.addWidget(self.tableWidgetCRL)
         self.tab3.setLayout(self.tab3.layout)
@@ -789,13 +787,13 @@ class TabWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-    def tab_watchingcrl(self):
+    def tab_watching_crl(self):
         crls = CRL.select()
         self.tab4.layout = QVBoxLayout(self)
 
         self.wline = QLineEdit(self)
         self.wline.setMaximumWidth(300)
-        self.wline.textChanged[str].connect(self.onChangedFindWatchingCRL)
+        self.wline.textChanged[str].connect(self.on_changed_find_watching_crl)
         self.tab4.layout.addWidget(self.wline)
 
         self.lableFindWatchingCRL = QLabel(self)
@@ -812,7 +810,7 @@ class TabWidget(QWidget):
                                                        "Отпечаток",
                                                        "Серийный номер",
                                                        "Адрес CRL"])
-        self.onChangedFindWatchingCRL('')
+        self.on_changed_find_watching_crl('')
         self.tableWidgetWatchingCRL.resizeColumnToContents(0)
         self.tableWidgetWatchingCRL.resizeColumnToContents(1)
         self.tableWidgetWatchingCRL.resizeColumnToContents(2)
@@ -826,9 +824,9 @@ class TabWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-    def openSubWindowInfoUc(self, RegNumber):
+    def open_sub_window_info_uc(self, reg_number):
         if self.window_uc is None:
-            self.window_uc = SubWindowUC(RegNumber)
+            self.window_uc = SubWindowUC(reg_number)
             self.window_uc.show()
         else:
             self.window_uc.close()  # Close window.
@@ -858,7 +856,7 @@ class TabWidget(QWidget):
 
     """
 
-    def onChangedFindUC(self, text):
+    def on_changed_find_uc(self, text):
         self.lableFindUC.setText('Ищем: ' + text)
         self.lableFindUC.adjustSize()
 
@@ -881,11 +879,11 @@ class TabWidget(QWidget):
             buttonInfo.setFixedSize(100, 30)
             buttonInfo.setText("Подробнее")
             regnum = row.Registration_Number
-            buttonInfo.pressed.connect(lambda rg=regnum: self.openSubWindowInfoUc(rg))
+            buttonInfo.pressed.connect(lambda rg=regnum: self.open_sub_window_info_uc(rg))
             self.tableWidget.setCellWidget(count, 4, buttonInfo)
             count = count + 1
 
-    def onChangedFindCert(self, text):
+    def on_changed_find_cert(self, text):
         self.lableFindCert.setText('Ищем: ' + text)
         self.lableFindCert.adjustSize()
 
@@ -923,7 +921,7 @@ class TabWidget(QWidget):
             self.tableWidgetCert.setCellWidget(count, 6, buttonSertSave)
             count = count + 1
 
-    def onChangedFindCRL(self, text):
+    def on_changed_find_crl(self, text):
         self.lableFindCRL.setText('Ищем: ' + text)
         self.lableFindCRL.adjustSize()
 
@@ -955,9 +953,29 @@ class TabWidget(QWidget):
             url = row.UrlCRL
             buttonCRLSave.pressed.connect(lambda u=url, s=stamp: download_file(u, s, config['Folders']['crls']))
             self.tableWidgetCRL.setCellWidget(count, 6, buttonCRLSave)
+
+            button_add_to_watch = QPushButton()
+            button_add_to_watch.setFixedSize(100, 30)
+            button_add_to_watch.setText("Отслеживать")
+            rb = row.Registration_Number
+            ki = row.KeyId
+            st = row.Stamp
+            sn = row.SerialNumber
+            uc = row.UrlCRL
+            button_add_to_watch.pressed.connect(lambda registration_number = rb,
+                                                       keyid = ki,
+                                                       stamp = st,
+                                                       serial_number = sn,
+                                                       url_crl = uc: self.add_watch_cert_crl(registration_number,
+                                                                                             keyid,
+                                                                                             stamp,
+                                                                                             serial_number,
+                                                                                             url_crl))
+            self.tableWidgetCRL.setCellWidget(count, 7, button_add_to_watch)
+
             count = count + 1
 
-    def onChangedFindWatchingCRL(self, text):
+    def on_changed_find_watching_crl(self, text):
         self.lableFindWatchingCRL.setText('Ищем: ' + text)
         self.lableFindWatchingCRL.adjustSize()
 
@@ -989,7 +1007,7 @@ class TabWidget(QWidget):
 
     def download_xml(self):
         self.progressBar.show()
-        self.currentTread.setText('Скачиваем список.')
+        self.currentTread.setText('     Скачиваем список.')
         self.currentTread.adjustSize()
         self.pushButton.setEnabled(False)
         self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
@@ -1008,7 +1026,7 @@ class TabWidget(QWidget):
         UC.create_table()
         CERT.create_table()
         CRL.create_table()
-        self.currentTread.setText('Обрабатываем данные.')
+        self.currentTread.setText('     Обрабатываем данные.')
         with open('tsl.xml', "rt", encoding="utf-8") as obj:
             xml = obj.read().encode()
 
@@ -1020,6 +1038,8 @@ class TabWidget(QWidget):
         uc_count_all = 505
         cert_count_all = 2338
         crl_count_all = 3267
+        current_version = 'Unknown'
+        last_update = 'Unknown'
         for appt in root.getchildren():
             QCoreApplication.processEvents()
             AddresCode = ''
@@ -1163,12 +1183,32 @@ class TabWidget(QWidget):
                     cert_percent_step = int(math.floor(100 / (cert_count_all / cert_count)))
                     crl_percent_step = int(math.floor(100 / (crl_count_all / crl_count)))
                     self.progressBar_2.setValue(crl_percent_step)
-
-        print('Центров:' + str(uc_count))
-        print('Сертов:' + str(cert_count))
-        print('CRL:' + str(crl_count))
+        # print('Центров:' + str(uc_count))
+        # print('Сертов:' + str(cert_count))
+        # print('CRL:' + str(crl_count))
+        # current_version
+        # last_update
+        query_ver = Settings.update(value=current_version).where(Settings.name == 'ver')
+        query_ver.execute()
+        query_data_update = Settings.update(value=last_update).where(Settings.name == 'data_update')
+        query_data_update.execute()
         self.currentTread.setText('Готово.')
         self.progressBar_2.hide()
+
+    def add_watch_cert_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
+        count = WatchingCRL.select().where(WatchingCRL.Stamp.contains(stamp)
+                                           | WatchingCRL.SerialNumber.contains(serial_number)).count()
+        if count < 1:
+            select_uc = UC.select().where(UC.Registration_Number == registration_number)
+            for row in select_uc:
+                add_to_watching_crl = WatchingCRL(Name=row.Name,
+                                                  INN=row.INN,
+                                                  OGRN=row.OGRN,
+                                                  KeyId=keyid,
+                                                  Stamp=stamp,
+                                                  SerialNumber=serial_number,
+                                                  UrlCRL=url_crl)
+                add_to_watching_crl.save()
 
 
 class SubWindowUC(QWidget):
