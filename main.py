@@ -1,6 +1,7 @@
 # PyQt5, lxml, peewee
 import base64, sys, socket, sqlite3, os, configparser, math
 from urllib import request, error
+from os.path import expanduser
 from PyQt5.QtWidgets import \
     QMainWindow, \
     QProgressBar, \
@@ -17,7 +18,9 @@ from PyQt5.QtWidgets import \
     QSplitter, \
     QLineEdit, \
     QHeaderView, \
-    QSizePolicy
+    QSizePolicy, \
+    QFileDialog
+
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
 from lxml import etree
@@ -882,6 +885,48 @@ class TabWidget(QWidget):
         self.frame_5 = QFrame()
         self.frame_5.setFrameShape(QFrame.StyledPanel)
         self.frame_5.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_8 = QHBoxLayout(self.frame_5)
+        self.horizontalLayout_8.setSpacing(0)
+        self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_31 = QVBoxLayout()
+        self.label_12 = QLabel('  Настройка директорий')
+
+        self.verticalLayout_31.addWidget(self.label_12, 0, Qt.AlignTop)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.pushButton_4 = QPushButton(self.frame_5)
+        self.pushButton_4.setText("Папка с CRL")
+        self.pushButton_4.clicked.connect(lambda: self.choose_directory('crl'))
+        self.horizontalLayout_9.addWidget(self.pushButton_4, 0, Qt.AlignVCenter)
+
+        self.pushButton_5 = QPushButton(self.frame_5)
+        self.pushButton_5.setText("Папка с сертами")
+        self.pushButton_5.clicked.connect(lambda: self.choose_directory('cert'))
+        self.horizontalLayout_9.addWidget(self.pushButton_5, 0, Qt.AlignVCenter)
+
+        self.pushButton_3 = QPushButton(self.frame_5)
+        self.pushButton_3.setText("Папка для УЦ")
+        self.pushButton_3.clicked.connect(lambda: self.choose_directory('uc'))
+        self.horizontalLayout_9.addWidget(self.pushButton_3, 0, Qt.AlignVCenter)
+
+        self.verticalLayout_31.addLayout(self.horizontalLayout_9)
+
+        self.verticalLayout_33 = QVBoxLayout()
+        self.label_9 = QLabel('  Папка с CRL: ')
+
+        self.verticalLayout_33.addWidget(self.label_9)
+
+        self.label_10 = QLabel('  Папка с сертификатами: ')
+
+        self.verticalLayout_33.addWidget(self.label_10)
+
+        self.label_11 = QLabel('  Папка для УЦ: ')
+
+        self.verticalLayout_33.addWidget(self.label_11)
+
+        self.verticalLayout_31.addLayout(self.verticalLayout_33)
+
+        self.horizontalLayout_8.addLayout(self.verticalLayout_31)
 
         self.verticalLayout_20.addWidget(self.frame_5)
 
@@ -950,6 +995,15 @@ class TabWidget(QWidget):
         else:
             self.window_uc.close()  # Close window.
             self.window_uc = None  # Discard reference.
+
+    def choose_directory(self, type):
+        input_dir = QFileDialog.getExistingDirectory(None, 'Выбор директории:', expanduser("~"))
+        if type == 'crl':
+            self.label_9.setText('  Папка с CRL: '+input_dir)
+        if type == 'cert':
+            self.label_10.setText('  Папка с сертификатами: '+input_dir)
+        if type == 'uc':
+            self.label_11.setText('  Папка для УЦ: '+input_dir)
 
     """
     def init_tsl(self):
