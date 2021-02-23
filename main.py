@@ -1,16 +1,25 @@
 # PyQt5, lxml, peewee
-import base64
-import configparser
-import os
-import socket
-import sqlite3
-import sys
-import math
-
+import base64, sys, socket, sqlite3, os, configparser, math
 from urllib import request, error
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import \
+    QMainWindow, \
+    QProgressBar, \
+    QApplication, \
+    QPushButton, \
+    QWidget, \
+    QTabWidget, \
+    QVBoxLayout, \
+    QHBoxLayout, \
+    QLabel, \
+    QTableWidgetItem, \
+    QTableWidget, \
+    QFrame, \
+    QSplitter, \
+    QLineEdit, \
+    QHeaderView, \
+    QSizePolicy
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
 from lxml import etree
 from peewee import *
 
@@ -20,6 +29,7 @@ config.read('settings.ini')
 socket.setdefaulttimeout(int(config['Socket']['timeout']))
 connect = sqlite3.connect(config['Bd']['name'])
 db = SqliteDatabase(config['Bd']['name'])
+
 try:
     os.makedirs(config['Folders']['certs'])
 except OSError:
@@ -216,7 +226,6 @@ def xml_parsing(xml_file, type_data):
 
 
 def parseXML(xmlFile):
-
     with open(xmlFile, "rt", encoding="utf-8") as obj:
         xml = obj.read().encode()
 
@@ -561,7 +570,7 @@ class MainWindow(QMainWindow):
         self.left = 0
         self.top = 0
         self.width = 1200
-        self.height = 400
+        self.height = 600
         self.setWindowTitle(self.title)
         self.setWindowIcon(QIcon('assests/favicon.ico'))
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -600,6 +609,7 @@ class TabWidget(QWidget):
         self.tab_cert()
         self.tab_crl()
         self.tab_watching_crl()
+        self.tab_settings()
 
     def tab_info(self):
         ucs = UC.select()
@@ -619,28 +629,37 @@ class TabWidget(QWidget):
         self.horizontalLayout = QHBoxLayout()
         self.frame_2 = QFrame()
         self.frame_2.setMinimumSize(QSize(0, 0))
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
+        self.frame_2.setFrameShape(QFrame.NoFrame)
         self.frame_2.setFrameShadow(QFrame.Raised)
+        self.frame_2.setLineWidth(0)
         self.verticalLayoutWidget_5 = QWidget(self.frame_2)
-        self.verticalLayoutWidget_5.setGeometry(QRect(0, 0, 400, 150))
+        self.verticalLayoutWidget_5.setGeometry(QRect(0, 0, 381, 151))
         self.verticalLayout_16 = QVBoxLayout(self.verticalLayoutWidget_5)
-        self.verticalLayout_16.setContentsMargins(0, 0, 0, 0)
-
-        self.verticalLayout_16.addWidget(QLabel("  Начальная инициализация сертификатов и списка отзыва"))
-        self.verticalLayout_16.addWidget(QLabel("     Версия базы: " + settings_ver))
-        self.verticalLayout_16.addWidget(QLabel("     Дата выпуска базы: " + settings_update_date))
-        self.verticalLayout_16.addWidget(QLabel("     Всего УЦ: " + str(ucs.count())))
-        self.verticalLayout_16.addWidget(QLabel("     Всего CRL: " + str(crls.count())))
-        self.verticalLayout_16.addWidget(QLabel("     УЦ для загрузки отмечено: " + str(watching_crl.count())))
-        self.verticalLayout_16.addWidget(QLabel("     CRL будет загружено: " + str(watching_crl.count())))
-        self.currentTread = QLabel(self)
-        self.verticalLayout_16.addWidget(self.currentTread)
+        self.verticalLayout_16.setSpacing(5)
+        self.verticalLayout_16.setContentsMargins(10, 10, 10, 10)
+        self.verticalLayout_16.addWidget(QLabel("Начальная инициализация сертификатов и списка отзыва"))
+        self.verticalLayout_16.addWidget(QLabel(" Версия базы: " + settings_ver))
+        self.verticalLayout_16.addWidget(QLabel(" Дата выпуска базы: " + settings_update_date))
+        self.verticalLayout_16.addWidget(QLabel(" Всего УЦ: " + str(ucs.count())))
+        self.verticalLayout_16.addWidget(QLabel(" Всего CRL: " + str(crls.count())))
+        self.verticalLayout_16.addWidget(QLabel(" УЦ для загрузки отмечено: " + str(watching_crl.count())))
+        self.verticalLayout_16.addWidget(QLabel(" CRL будет загружено: " + str(watching_crl.count())))
         self.horizontalLayout.addWidget(self.frame_2)
-
         self.verticalLayout_3.addLayout(self.horizontalLayout)
-
         self.verticalLayout_5 = QVBoxLayout()
+        self.verticalLayout_29 = QVBoxLayout()
+        self.frame_3 = QFrame()
+        self.frame_3.setFrameShape(QFrame.StyledPanel)
+        self.frame_3.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_7 = QHBoxLayout(self.frame_3)
+        self.verticalLayout_30 = QVBoxLayout()
+        self.currentTread = QLabel(self)
+        self.verticalLayout_30.addWidget(self.currentTread)
+        self.horizontalLayout_7.addLayout(self.verticalLayout_30)
+        self.verticalLayout_29.addWidget(self.frame_3)
+        self.verticalLayout_5.addLayout(self.verticalLayout_29)
         self.frame = QFrame()
+        self.frame.setEnabled(True)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -658,15 +677,12 @@ class TabWidget(QWidget):
         self.pushButton.setText("Загрузить TSL")
         self.pushButton.clicked.connect(self.download_xml)
         self.verticalLayout_4.addWidget(self.pushButton)
-
         self.pushButton_2 = QPushButton(self.frame)
         self.pushButton_2.setMinimumSize(QSize(200, 30))
         self.pushButton_2.setText("Обработать")
         self.pushButton_2.clicked.connect(self.init_xml)
         self.verticalLayout_4.addWidget(self.pushButton_2)
-
         self.horizontalLayout_2.addLayout(self.verticalLayout_4)
-
         self.verticalLayout_2 = QVBoxLayout()
         self.progressBar = QProgressBar(self.frame)
         self.progressBar.setMinimumSize(QSize(0, 30))
@@ -675,17 +691,26 @@ class TabWidget(QWidget):
         font.setWeight(50)
         font.setKerning(True)
         self.progressBar.setFont(font)
+        self.progressBar.setStyleSheet(u"background-color: rgb(218, 218, 218);")
         self.progressBar.setAlignment(Qt.AlignCenter)
         self.progressBar.setTextVisible(True)
-        self.progressBar.hide()
+        self.progressBar.setOrientation(Qt.Horizontal)
+        self.progressBar.setInvertedAppearance(False)
+        self.progressBar.setTextDirection(QProgressBar.TopToBottom)
         self.verticalLayout_2.addWidget(self.progressBar, 0, Qt.AlignBottom)
-
         self.progressBar_2 = QProgressBar(self.frame)
         self.progressBar_2.setMinimumSize(QSize(0, 30))
+        font1 = QFont()
+        font1.setKerning(False)
+        self.progressBar_2.setFont(font1)
+        self.progressBar_2.setMouseTracking(False)
+        self.progressBar_2.setStyleSheet(u"background-color: rgb(218, 218, 218);")
         self.progressBar_2.setAlignment(Qt.AlignCenter)
-        self.progressBar_2.hide()
+        self.progressBar_2.setTextVisible(True)
+        self.progressBar_2.setOrientation(Qt.Horizontal)
+        self.progressBar_2.setInvertedAppearance(False)
+        self.progressBar_2.setTextDirection(QProgressBar.TopToBottom)
         self.verticalLayout_2.addWidget(self.progressBar_2, 0, Qt.AlignBottom)
-
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
         self.verticalLayout_5.addWidget(self.frame, 0, Qt.AlignBottom)
         self.verticalLayout_3.addLayout(self.verticalLayout_5)
@@ -744,8 +769,8 @@ class TabWidget(QWidget):
         self.on_changed_find_cert('')
         self.tableWidgetCert.resizeColumnToContents(0)
         self.tableWidgetCert.setColumnWidth(1, 150)
-        self.tableWidgetCert.resizeColumnToContents(2)
-        self.tableWidgetCert.resizeColumnToContents(3)
+        self.tableWidgetCert.setColumnWidth(2, 150)
+        self.tableWidgetCert.setColumnWidth(3, 150)
         self.tableWidgetCert.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
         self.tableWidgetCert.resizeColumnToContents(5)
         self.tab2.layout.addWidget(self.tableWidgetCert)
@@ -777,8 +802,8 @@ class TabWidget(QWidget):
         self.on_changed_find_crl('')
         self.tableWidgetCRL.resizeColumnToContents(0)
         self.tableWidgetCRL.setColumnWidth(1, 150)
-        self.tableWidgetCRL.resizeColumnToContents(2)
-        self.tableWidgetCRL.resizeColumnToContents(3)
+        self.tableWidgetCRL.setColumnWidth(2, 150)
+        self.tableWidgetCRL.setColumnWidth(3, 150)
         self.tableWidgetCRL.setColumnWidth(4, 150)
         self.tableWidgetCRL.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
         self.tab3.layout.addWidget(self.tableWidgetCRL)
@@ -823,6 +848,100 @@ class TabWidget(QWidget):
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
+
+    def tab_settings(self):
+        self.verticalLayout_15 = QVBoxLayout()
+        self.verticalLayout_14 = QVBoxLayout()
+        self.verticalLayout_23 = QVBoxLayout()
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.verticalLayout_25 = QVBoxLayout()
+        self.frame_7 = QFrame()
+        self.frame_7.setFrameShape(QFrame.StyledPanel)
+        self.frame_7.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_25.addWidget(self.frame_7)
+
+        self.horizontalLayout_6.addLayout(self.verticalLayout_25)
+
+        self.verticalLayout_24 = QVBoxLayout()
+        self.frame_8 = QFrame()
+        self.frame_8.setFrameShape(QFrame.StyledPanel)
+        self.frame_8.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_24.addWidget(self.frame_8)
+
+        self.horizontalLayout_6.addLayout(self.verticalLayout_24)
+
+        self.verticalLayout_23.addLayout(self.horizontalLayout_6)
+
+        self.verticalLayout_14.addLayout(self.verticalLayout_23)
+
+        self.verticalLayout_17 = QVBoxLayout()
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.verticalLayout_20 = QVBoxLayout()
+        self.frame_5 = QFrame()
+        self.frame_5.setFrameShape(QFrame.StyledPanel)
+        self.frame_5.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_20.addWidget(self.frame_5)
+
+        self.horizontalLayout_3.addLayout(self.verticalLayout_20)
+
+        self.verticalLayout_19 = QVBoxLayout()
+        self.frame_6 = QFrame()
+        self.frame_6.setFrameShape(QFrame.StyledPanel)
+        self.frame_6.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_19.addWidget(self.frame_6)
+
+        self.horizontalLayout_3.addLayout(self.verticalLayout_19)
+
+        self.verticalLayout_26 = QVBoxLayout()
+        self.frame_9 = QFrame()
+        self.frame_9.setFrameShape(QFrame.StyledPanel)
+        self.frame_9.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_26.addWidget(self.frame_9)
+
+        self.horizontalLayout_3.addLayout(self.verticalLayout_26)
+
+        self.verticalLayout_17.addLayout(self.horizontalLayout_3)
+
+        self.verticalLayout_14.addLayout(self.verticalLayout_17)
+
+        self.verticalLayout_18 = QVBoxLayout()
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.verticalLayout_22 = QVBoxLayout()
+        self.frame_4 = QFrame()
+        self.frame_4.setFrameShape(QFrame.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_22.addWidget(self.frame_4)
+
+        self.horizontalLayout_5.addLayout(self.verticalLayout_22)
+
+        self.verticalLayout_28 = QVBoxLayout()
+
+        self.horizontalLayout_5.addLayout(self.verticalLayout_28)
+
+        self.verticalLayout_21 = QVBoxLayout()
+        self.frame_10 = QFrame()
+        self.frame_10.setFrameShape(QFrame.StyledPanel)
+        self.frame_10.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_21.addWidget(self.frame_10)
+
+        self.horizontalLayout_5.addLayout(self.verticalLayout_21)
+
+        self.horizontalLayout_4.addLayout(self.horizontalLayout_5)
+
+        self.verticalLayout_18.addLayout(self.horizontalLayout_4)
+
+        self.verticalLayout_14.addLayout(self.verticalLayout_18)
+
+        self.verticalLayout_15.addLayout(self.verticalLayout_14)
+        self.tab5.setLayout(self.verticalLayout_15)
 
     def open_sub_window_info_uc(self, reg_number):
         if self.window_uc is None:
@@ -1006,8 +1125,7 @@ class TabWidget(QWidget):
             count = count + 1
 
     def download_xml(self):
-        self.progressBar.show()
-        self.currentTread.setText('     Скачиваем список.')
+        self.currentTread.setText('Скачиваем список.')
         self.currentTread.adjustSize()
         self.pushButton.setEnabled(False)
         self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
@@ -1018,7 +1136,6 @@ class TabWidget(QWidget):
         self._download.start()
 
     def init_xml(self):
-        self.progressBar_2.show()
         self.pushButton_2.setEnabled(False)
         UC.drop_table()
         CRL.drop_table()
@@ -1026,7 +1143,7 @@ class TabWidget(QWidget):
         UC.create_table()
         CERT.create_table()
         CRL.create_table()
-        self.currentTread.setText('     Обрабатываем данные.')
+        self.currentTread.setText('Обрабатываем данные.')
         with open('tsl.xml', "rt", encoding="utf-8") as obj:
             xml = obj.read().encode()
 
@@ -1193,7 +1310,6 @@ class TabWidget(QWidget):
         query_data_update = Settings.update(value=last_update).where(Settings.name == 'data_update')
         query_data_update.execute()
         self.currentTread.setText('Готово.')
-        self.progressBar_2.hide()
 
     def add_watch_cert_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
         count = WatchingCRL.select().where(WatchingCRL.Stamp.contains(stamp)
