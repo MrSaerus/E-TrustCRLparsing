@@ -159,6 +159,7 @@ if not WatchingCRL.table_exists():
 if not WatchingCustomCRL.table_exists():
     WatchingCustomCRL.create_table()
 
+
 def progressbar(cur, total=100):
     percent = '{:.2%}'.format(cur / total)
     sys.stdout.write('\r')
@@ -586,7 +587,7 @@ class Downloader(QThread):
         request.urlretrieve(self.fileUrl, self.fileName, self._progress)
 
     def _progress(self, block_num, block_size, total_size):
-        total_size = int('11550720')
+        total_size = int('11533919')
         # print(block_num, block_size, total_size)
         if not self._init:
             self.preprogress.emit(total_size)
@@ -606,7 +607,7 @@ class Downloader(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.title = 'E-Trust CRL Parsing v1.0.0-3'
+        self.title = 'E-Trust CRL Parsing v1.0.0-5'
         self.left = 0
         self.top = 0
         self.width = int(config['MainWindow']['width'])
@@ -861,21 +862,56 @@ class TabWidget(QWidget):
         self.setLayout(self.layout)
 
     def tab_watching_crl(self):
-        crls = CRL.select()
-        self.tab4.layout = QVBoxLayout(self)
+        self.layout_watching = QVBoxLayout()
+        self.verticalLayout_12 = QVBoxLayout()
+        self.tabs2 = QTabWidget()
+        self.tab7 = QWidget()
+        self.tab8 = QWidget()
+        self.tab9 = QWidget()
+        self.tabs2.addTab(self.tab7, "Скачиваемые УЦ")
+        self.tabs2.addTab(self.tab8, "Свои скачиваемыее УЦ")
+        self.tabs2.addTab(self.tab9, "Удаленные")
 
+        self.sub_tab_watching_crl()
+        self.sub_tab_custom_watching_crl()
+
+        self.verticalLayout_12.addWidget(self.tabs2)
+        self.layout_watching.addLayout(self.verticalLayout_12)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        buttonAddCRLList = QPushButton()
+        buttonAddCRLList.setText("Импортировать список CRL")
+        buttonAddCRLList.pressed.connect(self.import_crl_list)
+        self.horizontalLayout_10.addWidget(buttonAddCRLList)
+
+        buttonSelectFileCRL = QPushButton()
+        buttonSelectFileCRL.setText("Выбрать файл")
+        self.horizontalLayout_10.addWidget(buttonSelectFileCRL)
+
+        self.progressBar_3 = QProgressBar()
+        # self.progressBar_3.setValue(1)
+        self.progressBar_3.setAlignment(Qt.AlignCenter)
+        self.horizontalLayout_10.addWidget(self.progressBar_3)
+        self.layout_watching.addLayout(self.horizontalLayout_10)
+        self.tab4.setLayout(self.layout_watching)
+        # Add tabs to widget
+        # self.layout_watching.addWidget(self.tabs2)
+        # self.setLayout(self.layout_watching)
+
+    def sub_tab_watching_crl(self):
+        wcrls = WatchingCRL.select()
+        self.tab7.layout_watching = QVBoxLayout(self)
         self.wline = QLineEdit(self)
         self.wline.setMaximumWidth(300)
         self.wline.textChanged[str].connect(self.on_changed_find_watching_crl)
-        self.tab4.layout.addWidget(self.wline)
+        self.tab7.layout_watching.addWidget(self.wline)
 
         self.lableFindWatchingCRL = QLabel(self)
-        self.tab4.layout.addWidget(self.lableFindWatchingCRL)
+        self.tab7.layout_watching.addWidget(self.lableFindWatchingCRL)
 
         self.tableWidgetWatchingCRL = QTableWidget(self)
-        self.tableWidgetWatchingCRL.setRowCount(int(crls.count()))
+        self.tableWidgetWatchingCRL.setRowCount(int(wcrls.count()))
         self.tableWidgetWatchingCRL.setColumnCount(8)
-        self.tableWidgetWatchingCRL.verticalHeader().setVisible(False)
         self.tableWidgetWatchingCRL.setHorizontalHeaderLabels(["Name",
                                                        "ИНН",
                                                        "ОГРН",
@@ -892,18 +928,41 @@ class TabWidget(QWidget):
         self.tableWidgetWatchingCRL.setColumnWidth(4, 150)
         self.tableWidgetWatchingCRL.setColumnWidth(5, 150)
         self.tableWidgetWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
-        self.tab4.layout.addWidget(self.tableWidgetWatchingCRL)
+        self.tab7.layout_watching.addWidget(self.tableWidgetWatchingCRL)
+        self.tab7.setLayout(self.tab7.layout_watching)
 
-        buttonAddCRLList = QPushButton()
-        buttonAddCRLList.setFixedSize(200, 30)
-        buttonAddCRLList.setText("Импортировать список CRL")
-        buttonAddCRLList.pressed.connect(self.import_crl_list)
-        self.tab4.layout.addWidget(buttonAddCRLList)
-        self.tab4.setLayout(self.tab4.layout)
+    def sub_tab_custom_watching_crl(self):
+        wccrls = CRL.select()
+        self.tab8.layout_watching = QVBoxLayout(self)
+        self.cwline = QLineEdit(self)
+        self.cwline.setMaximumWidth(300)
+        self.cwline.textChanged[str].connect(self.on_changed_find_custom_watching_crl)
+        self.tab8.layout_watching.addWidget(self.cwline)
 
-        # Add tabs to widget
-        self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
+        self.lableFindWatchingCustomCRL = QLabel(self)
+        self.tab8.layout_watching.addWidget(self.lableFindWatchingCustomCRL)
+
+        self.tableWidgetCustomWatchingCRL = QTableWidget(self)
+        self.tableWidgetCustomWatchingCRL.setRowCount(int(wccrls.count()))
+        self.tableWidgetCustomWatchingCRL.setColumnCount(8)
+        self.tableWidgetCustomWatchingCRL.setHorizontalHeaderLabels(["Name",
+                                                       "ИНН",
+                                                       "ОГРН",
+                                                       "Идентификатор ключа",
+                                                       "Отпечаток",
+                                                       "Серийный номер",
+                                                       "Адрес CRL",
+                                                       ""])
+        self.on_changed_find_custom_watching_crl('')
+        self.tableWidgetCustomWatchingCRL.setColumnWidth(1, 150)
+        self.tableWidgetCustomWatchingCRL.setColumnWidth(1, 100)
+        self.tableWidgetCustomWatchingCRL.setColumnWidth(2, 100)
+        self.tableWidgetCustomWatchingCRL.setColumnWidth(3, 150)
+        self.tableWidgetCustomWatchingCRL.setColumnWidth(4, 150)
+        self.tableWidgetCustomWatchingCRL.setColumnWidth(5, 150)
+        self.tableWidgetCustomWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
+        self.tab8.layout_watching.addWidget(self.tableWidgetCustomWatchingCRL)
+        self.tab8.setLayout(self.tab8.layout_watching)
 
     def tab_settings(self):
         self.verticalLayout_15 = QVBoxLayout()
@@ -1239,6 +1298,44 @@ class TabWidget(QWidget):
 
             count = count + 1
 
+    def on_changed_find_custom_watching_crl(self, text):
+        self.lableFindWatchingCustomCRL.setText('Ищем: ' + text)
+        self.lableFindWatchingCustomCRL.adjustSize()
+
+        query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
+                                           | WatchingCustomCRL.INN.contains(text)
+                                           | WatchingCustomCRL.OGRN.contains(text)
+                                           | WatchingCustomCRL.KeyId.contains(text)
+                                           | WatchingCustomCRL.Stamp.contains(text)
+                                           | WatchingCustomCRL.SerialNumber.contains(text)
+                                           | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
+        count_all = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
+                                               | WatchingCustomCRL.INN.contains(text)
+                                               | WatchingCustomCRL.OGRN.contains(text)
+                                               | WatchingCustomCRL.KeyId.contains(text)
+                                               | WatchingCustomCRL.Stamp.contains(text)
+                                               | WatchingCustomCRL.SerialNumber.contains(text)
+                                               | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
+        self.tableWidgetCustomWatchingCRL.setRowCount(count_all)
+        count = 0
+        for row in query:
+            self.tableWidgetCustomWatchingCRL.setItem(count, 0, QTableWidgetItem(str(row.Name)))
+            self.tableWidgetCustomWatchingCRL.setItem(count, 1, QTableWidgetItem(str(row.INN)))
+            self.tableWidgetCustomWatchingCRL.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
+            self.tableWidgetCustomWatchingCRL.setItem(count, 3, QTableWidgetItem(str(row.KeyId)))
+            self.tableWidgetCustomWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
+            self.tableWidgetCustomWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
+            self.tableWidgetCustomWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+
+            buttonDeleteWatch = QPushButton()
+            buttonDeleteWatch.setFixedSize(100, 30)
+            buttonDeleteWatch.setText("Удалить")
+            id = row.ID
+            buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
+            self.tableWidgetCustomWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+
+            count = count + 1
+
     def download_xml(self):
         self.currentTread.setText('Скачиваем список.')
         self.currentTread.adjustSize()
@@ -1251,11 +1348,11 @@ class TabWidget(QWidget):
         self._download.progress.connect(lambda y: self.progressBar.setValue(y))
         # говорим что всё скачано
         self._download.done.connect(lambda z: self.currentTread.setText(z))
-        self._download.done.connect(lambda hint: self.pushButton.setEnabled(True))
-        self._download.done.connect(lambda hint: self.pushButton_2.setEnabled(True))
-        self._download.done.connect(lambda hint: self.on_changed_find_uc(''))
-        self._download.done.connect(lambda hint: self.on_changed_find_cert(''))
-        self._download.done.connect(lambda hint: self.on_changed_find_crl(''))
+        self._download.done.connect(lambda hint1: self.pushButton.setEnabled(True))
+        self._download.done.connect(lambda hint2: self.pushButton_2.setEnabled(True))
+        self._download.done.connect(lambda hint3: self.on_changed_find_uc(''))
+        self._download.done.connect(lambda hint4: self.on_changed_find_cert(''))
+        self._download.done.connect(lambda hint5: self.on_changed_find_crl(''))
         self._download.start()
 
     def init_xml(self):
