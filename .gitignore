@@ -2,3 +2,4 @@
 /certs/*
 /crls/*
 /temp/*
+crl_list.txt

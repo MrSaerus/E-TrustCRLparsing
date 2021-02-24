@@ -26,8 +26,24 @@ from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
 from lxml import etree
 from peewee import *
 
+
 config = configparser.ConfigParser()
-config.read('settings.ini')
+if os.path.isfile('settings.ini'):
+    config.read('settings.ini')
+else:
+    open('settings.ini', 'w').close()
+    config['Folders'] = {'certs': 'certs/',
+                         'crls': 'crls/',
+                         'tmp': 'temp/',
+                         'assests': 'assests/'}
+    config['MainWindow'] = {'width': '1200',
+                            'height': '400'}
+    config['Bd'] = {'type': 'sqlite3',
+                    'name': 'cert_crl.db'}
+    config['Socket'] = {'timeout': '15'}
+    config['Style'] = {'Window': 'Fusion'}
+    with open('settings.ini', 'w') as configfile:
+        config.write(configfile)
 
 socket.setdefaulttimeout(int(config['Socket']['timeout']))
 connect = sqlite3.connect(config['Bd']['name'])
@@ -107,6 +123,20 @@ class WatchingCRL(Model):
         database = db
 
 
+class WatchingCustomCRL(Model):
+    ID = IntegerField(primary_key=True)
+    Name = CharField()
+    INN = IntegerField()
+    OGRN = IntegerField()
+    KeyId = CharField()
+    Stamp = CharField()
+    SerialNumber = CharField()
+    UrlCRL = CharField()
+
+    class Meta:
+        database = db
+
+
 class Settings(Model):
     ID = IntegerField(primary_key=True)
     name = IntegerField()
@@ -126,7 +156,8 @@ if not Settings.table_exists():
     Settings.create_table()
 if not WatchingCRL.table_exists():
     WatchingCRL.create_table()
-
+if not WatchingCustomCRL.table_exists():
+    WatchingCustomCRL.create_table()
 
 def progressbar(cur, total=100):
     percent = '{:.2%}'.format(cur / total)
@@ -538,7 +569,7 @@ def download_file(file_url, file_name, folder):
 class Downloader(QThread):
     preprogress = pyqtSignal(int)
     progress = pyqtSignal(int)
-    done = pyqtSignal()
+    done = pyqtSignal(str)
 
     def __init__(self, fileUrl, fileName):
         QThread.__init__(self)
@@ -546,12 +577,17 @@ class Downloader(QThread):
         self._init = False
         self.fileUrl = fileUrl
         self.fileName = fileName
+        # site = request.urlopen(fileUrl)
+        # meta = site.info()
+        # print(meta)
 
     def run(self):
         # тест на локальных данных, но работать должно и с сетью
         request.urlretrieve(self.fileUrl, self.fileName, self._progress)
 
     def _progress(self, block_num, block_size, total_size):
+        total_size = int('11550720')
+        # print(block_num, block_size, total_size)
         if not self._init:
             self.preprogress.emit(total_size)
             self._init = True
@@ -564,6 +600,7 @@ class Downloader(QThread):
         else:
             # Чтобы было 100%
             self.progress.emit(total_size)
+            self.done.emit('Загрузка завершена')
 
 
 class MainWindow(QMainWindow):
@@ -572,8 +609,8 @@ class MainWindow(QMainWindow):
         self.title = 'E-Trust CRL Parsing v1.0.0-3'
         self.left = 0
         self.top = 0
-        self.width = 1200
-        self.height = 600
+        self.width = int(config['MainWindow']['width'])
+        self.height = int(config['MainWindow']['height'])
         self.setWindowTitle(self.title)
         self.setWindowIcon(QIcon('assests/favicon.ico'))
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -640,13 +677,21 @@ class TabWidget(QWidget):
         self.verticalLayout_16 = QVBoxLayout(self.verticalLayoutWidget_5)
         self.verticalLayout_16.setSpacing(5)
         self.verticalLayout_16.setContentsMargins(10, 10, 10, 10)
-        self.verticalLayout_16.addWidget(QLabel("Начальная инициализация сертификатов и списка отзыва"))
-        self.verticalLayout_16.addWidget(QLabel(" Версия базы: " + settings_ver))
-        self.verticalLayout_16.addWidget(QLabel(" Дата выпуска базы: " + settings_update_date))
-        self.verticalLayout_16.addWidget(QLabel(" Всего УЦ: " + str(ucs.count())))
-        self.verticalLayout_16.addWidget(QLabel(" Всего CRL: " + str(crls.count())))
-        self.verticalLayout_16.addWidget(QLabel(" УЦ для загрузки отмечено: " + str(watching_crl.count())))
-        self.verticalLayout_16.addWidget(QLabel(" CRL будет загружено: " + str(watching_crl.count())))
+        self.lable_1 = QLabel("Начальная инициализация сертификатов и списка отзыва")
+        self.verticalLayout_16.addWidget(self.lable_1)
+        self.lable_2 = QLabel(" Версия базы: " + settings_ver)
+        self.verticalLayout_16.addWidget(self.lable_2)
+        self.lable_3 = QLabel(" Дата выпуска базы: " + settings_update_date)
+        self.verticalLayout_16.addWidget(self.lable_3)
+        self.lable_5 = QLabel(" Всего УЦ: " + str(ucs.count()))
+        self.verticalLayout_16.addWidget(self.lable_5)
+        self.lable_6 = QLabel(" Всего Сертификатов: " + str(certs.count()))
+        self.verticalLayout_16.addWidget(self.lable_6)
+        self.lable_7 = QLabel(" Всего CRL: " + str(crls.count()))
+        self.verticalLayout_16.addWidget(self.lable_7)
+        self.lable_8 = QLabel(" CRL будет загружено: " + str(watching_crl.count()))
+        self.verticalLayout_16.addWidget(self.lable_8)
+
         self.horizontalLayout.addWidget(self.frame_2)
         self.verticalLayout_3.addLayout(self.horizontalLayout)
         self.verticalLayout_5 = QVBoxLayout()
@@ -656,7 +701,7 @@ class TabWidget(QWidget):
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_7 = QHBoxLayout(self.frame_3)
         self.verticalLayout_30 = QVBoxLayout()
-        self.currentTread = QLabel(self)
+        self.currentTread = QLabel()
         self.verticalLayout_30.addWidget(self.currentTread)
         self.horizontalLayout_7.addLayout(self.verticalLayout_30)
         self.verticalLayout_29.addWidget(self.frame_3)
@@ -682,7 +727,7 @@ class TabWidget(QWidget):
         self.verticalLayout_4.addWidget(self.pushButton)
         self.pushButton_2 = QPushButton(self.frame)
         self.pushButton_2.setMinimumSize(QSize(200, 30))
-        self.pushButton_2.setText("Обработать")
+        self.pushButton_2.setText("Обработать TSL")
         self.pushButton_2.clicked.connect(self.init_xml)
         self.verticalLayout_4.addWidget(self.pushButton_2)
         self.horizontalLayout_2.addLayout(self.verticalLayout_4)
@@ -829,7 +874,7 @@ class TabWidget(QWidget):
 
         self.tableWidgetWatchingCRL = QTableWidget(self)
         self.tableWidgetWatchingCRL.setRowCount(int(crls.count()))
-        self.tableWidgetWatchingCRL.setColumnCount(7)
+        self.tableWidgetWatchingCRL.setColumnCount(8)
         self.tableWidgetWatchingCRL.verticalHeader().setVisible(False)
         self.tableWidgetWatchingCRL.setHorizontalHeaderLabels(["Name",
                                                        "ИНН",
@@ -837,17 +882,25 @@ class TabWidget(QWidget):
                                                        "Идентификатор ключа",
                                                        "Отпечаток",
                                                        "Серийный номер",
-                                                       "Адрес CRL"])
+                                                       "Адрес CRL",
+                                                       ""])
         self.on_changed_find_watching_crl('')
-        self.tableWidgetWatchingCRL.resizeColumnToContents(0)
-        self.tableWidgetWatchingCRL.resizeColumnToContents(1)
-        self.tableWidgetWatchingCRL.resizeColumnToContents(2)
-        self.tableWidgetWatchingCRL.resizeColumnToContents(3)
-        self.tableWidgetWatchingCRL.resizeColumnToContents(4)
-        self.tableWidgetWatchingCRL.resizeColumnToContents(5)
+        self.tableWidgetWatchingCRL.setColumnWidth(1, 150)
+        self.tableWidgetWatchingCRL.setColumnWidth(1, 100)
+        self.tableWidgetWatchingCRL.setColumnWidth(2, 100)
+        self.tableWidgetWatchingCRL.setColumnWidth(3, 150)
+        self.tableWidgetWatchingCRL.setColumnWidth(4, 150)
+        self.tableWidgetWatchingCRL.setColumnWidth(5, 150)
         self.tableWidgetWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
         self.tab4.layout.addWidget(self.tableWidgetWatchingCRL)
+
+        buttonAddCRLList = QPushButton()
+        buttonAddCRLList.setFixedSize(200, 30)
+        buttonAddCRLList.setText("Импортировать список CRL")
+        buttonAddCRLList.pressed.connect(self.import_crl_list)
+        self.tab4.layout.addWidget(buttonAddCRLList)
         self.tab4.setLayout(self.tab4.layout)
+
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
@@ -1036,11 +1089,11 @@ class TabWidget(QWidget):
         query = UC.select().where(UC.Registration_Number.contains(text)
                                   | UC.INN.contains(text)
                                   | UC.OGRN.contains(text)
-                                  | UC.Full_Name.contains(text))
+                                  | UC.Full_Name.contains(text)).limit(config['Listing']['uc'])
         count_all = UC.select().where(UC.Registration_Number.contains(text)
                                       | UC.INN.contains(text)
                                       | UC.OGRN.contains(text)
-                                      | UC.Full_Name.contains(text)).count()
+                                      | UC.Full_Name.contains(text)).limit(config['Listing']['uc']).count()
         self.tableWidget.setRowCount(count_all)
         count = 0
         for row in query:
@@ -1064,12 +1117,12 @@ class TabWidget(QWidget):
                                     | CERT.Name.contains(text)
                                     | CERT.KeyId.contains(text)
                                     | CERT.Stamp.contains(text)
-                                    | CERT.SerialNumber.contains(text))
+                                    | CERT.SerialNumber.contains(text)).limit(config['Listing']['cert'])
         count_all = CERT.select().where(CERT.Registration_Number.contains(text)
                                         | CERT.Name.contains(text)
                                         | CERT.KeyId.contains(text)
                                         | CERT.Stamp.contains(text)
-                                        | CERT.SerialNumber.contains(text)).count()
+                                        | CERT.SerialNumber.contains(text)).limit(config['Listing']['cert']).count()
         self.tableWidgetCert.setRowCount(count_all)
         count = 0
         for row in query:
@@ -1103,13 +1156,13 @@ class TabWidget(QWidget):
                                    | CRL.KeyId.contains(text)
                                    | CRL.Stamp.contains(text)
                                    | CRL.SerialNumber.contains(text)
-                                   | CRL.UrlCRL.contains(text))
+                                   | CRL.UrlCRL.contains(text)).limit(config['Listing']['crl'])
         count_all = CRL.select().where(CRL.Registration_Number.contains(text)
                                        | CRL.Name.contains(text)
                                        | CRL.KeyId.contains(text)
                                        | CRL.Stamp.contains(text)
                                        | CRL.SerialNumber.contains(text)
-                                       | CRL.UrlCRL.contains(text)).count()
+                                       | CRL.UrlCRL.contains(text)).limit(config['Listing']['crl']).count()
         self.tableWidgetCRL.setRowCount(count_all)
         count = 0
         for row in query:
@@ -1158,14 +1211,14 @@ class TabWidget(QWidget):
                                            | WatchingCRL.KeyId.contains(text)
                                            | WatchingCRL.Stamp.contains(text)
                                            | WatchingCRL.SerialNumber.contains(text)
-                                           | WatchingCRL.UrlCRL.contains(text))
+                                           | WatchingCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
         count_all = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
                                                | WatchingCRL.INN.contains(text)
                                                | WatchingCRL.OGRN.contains(text)
                                                | WatchingCRL.KeyId.contains(text)
                                                | WatchingCRL.Stamp.contains(text)
                                                | WatchingCRL.SerialNumber.contains(text)
-                                               | WatchingCRL.UrlCRL.contains(text)).count()
+                                               | WatchingCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
         self.tableWidgetWatchingCRL.setRowCount(count_all)
         count = 0
         for row in query:
@@ -1176,21 +1229,38 @@ class TabWidget(QWidget):
             self.tableWidgetWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
             self.tableWidgetWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+
+            buttonDeleteWatch = QPushButton()
+            buttonDeleteWatch.setFixedSize(100, 30)
+            buttonDeleteWatch.setText("Удалить")
+            id = row.ID
+            buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
+            self.tableWidgetWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+
             count = count + 1
 
     def download_xml(self):
         self.currentTread.setText('Скачиваем список.')
         self.currentTread.adjustSize()
         self.pushButton.setEnabled(False)
+        self.pushButton_2.setEnabled(False)
         self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
         # Устанавливаем максимальный размер данных
         self._download.preprogress.connect(lambda x: self.progressBar.setMaximum(x))
         # Промежуточный/скачанный размер
-        self._download.progress.connect(lambda d: self.progressBar.setValue(d))
+        self._download.progress.connect(lambda y: self.progressBar.setValue(y))
+        # говорим что всё скачано
+        self._download.done.connect(lambda z: self.currentTread.setText(z))
+        self._download.done.connect(lambda hint: self.pushButton.setEnabled(True))
+        self._download.done.connect(lambda hint: self.pushButton_2.setEnabled(True))
+        self._download.done.connect(lambda hint: self.on_changed_find_uc(''))
+        self._download.done.connect(lambda hint: self.on_changed_find_cert(''))
+        self._download.done.connect(lambda hint: self.on_changed_find_crl(''))
         self._download.start()
 
     def init_xml(self):
         self.pushButton_2.setEnabled(False)
+        self.pushButton.setEnabled(False)
         UC.drop_table()
         CRL.drop_table()
         CERT.drop_table()
@@ -1304,6 +1374,7 @@ class TabWidget(QWidget):
                         Registration_Number = text
                         uc_count = uc_count + 1
             if Registration_Number != '':
+                self.currentTread.setText('Обрабатываем данные:\n УЦ: ' + Name)
                 uc = UC(Registration_Number=Registration_Number,
                         INN=INN,
                         OGRN=OGRN,
@@ -1359,10 +1430,17 @@ class TabWidget(QWidget):
         # print('CRL:' + str(crl_count))
         # current_version
         # last_update
+        self.lable_2.setText(" Версия базы: " + current_version)
+        self.lable_3.setText(" Дата выпуска базы: " + last_update)
+        self.lable_5.setText(" Всего УЦ: " + str(uc_count))
+        self.lable_6.setText(" Всего Сертификатов: " + str(cert_count))
+        self.lable_7.setText(" Всего CRL: " + str(crl_count))
         query_ver = Settings.update(value=current_version).where(Settings.name == 'ver')
         query_ver.execute()
         query_data_update = Settings.update(value=last_update).where(Settings.name == 'data_update')
         query_data_update.execute()
+        self.pushButton.setEnabled(True)
+        self.pushButton_2.setEnabled(True)
         self.currentTread.setText('Готово.')
 
     def add_watch_cert_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
@@ -1379,6 +1457,57 @@ class TabWidget(QWidget):
                                                   SerialNumber=serial_number,
                                                   UrlCRL=url_crl)
                 add_to_watching_crl.save()
+                self.counter_added = self.counter_added + 1
+        else:
+            print('crl exist')
+            self.counter_added_exist = self.counter_added_exist + 1
+        self.on_changed_find_watching_crl('')
+
+    def add_watch_custom_cert_crl(self, url_crl):
+        count = WatchingCustomCRL.select().where(WatchingCustomCRL.UrlCRL.contains(url_crl)).count()
+        if count < 1:
+            add_to_watching_crl = WatchingCustomCRL(Name='Unknown',
+                                              INN='0',
+                                              OGRN='0',
+                                              KeyId='Unknown',
+                                              Stamp='Unknown',
+                                              SerialNumber='Unknown',
+                                              UrlCRL=url_crl)
+            add_to_watching_crl.save()
+            self.counter_added_custom = self.counter_added_custom + 1
+        else:
+            print('crl exist')
+            self.counter_added_exist = self.counter_added_exist + 1
+        self.on_changed_find_watching_crl('')
+
+    def delete_watching(self, id):
+        WatchingCRL.delete_by_id(id)
+        self.on_changed_find_watching_crl('')
+        print(id + ' id is deleted')
+
+    def import_crl_list(self, file_name='crl_list.txt'):
+        print('point')
+        crl_list = open(file_name, 'r')
+        crl_lists = crl_list.readlines()
+        self.counter_added = 0
+        self.counter_added_exist = 0
+        self.counter_added_custom = 0
+        for crl_url in crl_lists:
+            QCoreApplication.processEvents()
+            crl_url = crl_url.replace("\n", "")
+            QCoreApplication.processEvents()
+            print(crl_url)
+            count = CRL.select().where(CRL.UrlCRL.contains(crl_url)).count()
+            data = CRL.select().where(CRL.UrlCRL.contains(crl_url))
+            if count > 0:
+                for row in data:
+                    print(row.Registration_Number)
+                    self.add_watch_cert_crl(row.Registration_Number, row.KeyId, row.Stamp, row.SerialNumber, row.UrlCRL)
+            else:
+                print('add to custom')
+                self.add_watch_custom_cert_crl(crl_url)
+            # self.on_changed_find_watching_crl('')
+        print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
 
 
 class SubWindowUC(QWidget):
