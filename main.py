@@ -874,6 +874,7 @@ class TabWidget(QWidget):
 
         self.sub_tab_watching_crl()
         self.sub_tab_custom_watching_crl()
+        self.sub_tab_deleted_watching_crl()
 
         self.verticalLayout_12.addWidget(self.tabs2)
         self.layout_watching.addLayout(self.verticalLayout_12)
@@ -963,6 +964,39 @@ class TabWidget(QWidget):
         self.tableWidgetCustomWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
         self.tab8.layout_watching.addWidget(self.tableWidgetCustomWatchingCRL)
         self.tab8.setLayout(self.tab8.layout_watching)
+
+    def sub_tab_deleted_watching_crl(self):
+        wccrls = CRL.select()
+        self.tab9.layout_deleted = QVBoxLayout(self)
+        self.cwline = QLineEdit(self)
+        self.cwline.setMaximumWidth(300)
+        self.cwline.textChanged[str].connect(self.on_changed_find_deleted_watching_crl)
+        self.tab9.layout_deleted.addWidget(self.cwline)
+
+        self.lableFindWatchingCustomCRL = QLabel(self)
+        self.tab9.layout_deleted.addWidget(self.lableFindWatchingCustomCRL)
+
+        self.tableWidgetDeletedWatchingCRL = QTableWidget(self)
+        self.tableWidgetDeletedWatchingCRL.setRowCount(int(wccrls.count()))
+        self.tableWidgetDeletedWatchingCRL.setColumnCount(8)
+        self.tableWidgetDeletedWatchingCRL.setHorizontalHeaderLabels(["Name",
+                                                       "ИНН",
+                                                       "ОГРН",
+                                                       "Идентификатор ключа",
+                                                       "Отпечаток",
+                                                       "Серийный номер",
+                                                       "Адрес CRL",
+                                                       ""])
+        self.on_changed_find_deleted_watching_crl('')
+        self.tableWidgetDeletedWatchingCRL.setColumnWidth(1, 150)
+        self.tableWidgetDeletedWatchingCRL.setColumnWidth(1, 100)
+        self.tableWidgetDeletedWatchingCRL.setColumnWidth(2, 100)
+        self.tableWidgetDeletedWatchingCRL.setColumnWidth(3, 150)
+        self.tableWidgetDeletedWatchingCRL.setColumnWidth(4, 150)
+        self.tableWidgetDeletedWatchingCRL.setColumnWidth(5, 150)
+        self.tableWidgetDeletedWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
+        self.tab9.layout_deleted.addWidget(self.tableWidgetDeletedWatchingCRL)
+        self.tab9.setLayout(self.tab9.layout_deleted)
 
     def tab_settings(self):
         self.verticalLayout_15 = QVBoxLayout()
@@ -1335,6 +1369,43 @@ class TabWidget(QWidget):
             self.tableWidgetCustomWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
 
             count = count + 1
+
+    def on_changed_find_deleted_watching_crl(self, text):
+        self.lableFindWatchingCustomCRL.setText('Ищем: ' + text)
+        self.lableFindWatchingCustomCRL.adjustSize()
+
+        query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
+                                           | WatchingCustomCRL.INN.contains(text)
+                                           | WatchingCustomCRL.OGRN.contains(text)
+                                           | WatchingCustomCRL.KeyId.contains(text)
+                                           | WatchingCustomCRL.Stamp.contains(text)
+                                           | WatchingCustomCRL.SerialNumber.contains(text)
+                                           | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
+        count_all = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
+                                               | WatchingCustomCRL.INN.contains(text)
+                                               | WatchingCustomCRL.OGRN.contains(text)
+                                               | WatchingCustomCRL.KeyId.contains(text)
+                                               | WatchingCustomCRL.Stamp.contains(text)
+                                               | WatchingCustomCRL.SerialNumber.contains(text)
+                                               | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
+        self.tableWidgetDeletedWatchingCRL.setRowCount(count_all)
+        count = 0
+        for row in query:
+            self.tableWidgetDeletedWatchingCRL.setItem(count, 0, QTableWidgetItem(str(row.Name)))
+            self.tableWidgetDeletedWatchingCRL.setItem(count, 1, QTableWidgetItem(str(row.INN)))
+            self.tableWidgetDeletedWatchingCRL.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
+            self.tableWidgetDeletedWatchingCRL.setItem(count, 3, QTableWidgetItem(str(row.KeyId)))
+            self.tableWidgetDeletedWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
+            self.tableWidgetDeletedWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
+            self.tableWidgetDeletedWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+
+            buttonDeleteWatch = QPushButton()
+            buttonDeleteWatch.setFixedSize(100, 30)
+            buttonDeleteWatch.setText("Удалить")
+            self.tableWidgetDeletedWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+
+            count = count + 1
+
 
     def download_xml(self):
         self.currentTread.setText('Скачиваем список.')
