@@ -1,4 +1,4 @@
-# PyQt5, lxml, peewee
+# PyQt5, lxml, peewee, ebcdic, OpenSSL
 import base64, sys, socket, sqlite3, os, configparser, math
 from urllib import request, error
 from os.path import expanduser
@@ -45,7 +45,7 @@ else:
     with open('settings.ini', 'w') as configfile:
         config.write(configfile)
 
-socket.setdefaulttimeout(int(config['Socket']['timeout']))
+# socket.setdefaulttimeout(int(config['Socket']['timeout']))
 connect = sqlite3.connect(config['Bd']['name'])
 db = SqliteDatabase(config['Bd']['name'])
 
@@ -137,6 +137,20 @@ class WatchingCustomCRL(Model):
         database = db
 
 
+class WatchingDeletedCRL(Model):
+    ID = IntegerField(primary_key=True)
+    Name = CharField()
+    INN = IntegerField()
+    OGRN = IntegerField()
+    KeyId = CharField()
+    Stamp = CharField()
+    SerialNumber = CharField()
+    UrlCRL = CharField()
+
+    class Meta:
+        database = db
+
+
 class Settings(Model):
     ID = IntegerField(primary_key=True)
     name = IntegerField()
@@ -158,6 +172,8 @@ if not WatchingCRL.table_exists():
     WatchingCRL.create_table()
 if not WatchingCustomCRL.table_exists():
     WatchingCustomCRL.create_table()
+if not WatchingDeletedCRL.table_exists():
+    WatchingDeletedCRL.create_table()
 
 
 def progressbar(cur, total=100):
@@ -571,6 +587,7 @@ class Downloader(QThread):
     preprogress = pyqtSignal(int)
     progress = pyqtSignal(int)
     done = pyqtSignal(str)
+    downloading = pyqtSignal(str)
 
     def __init__(self, fileUrl, fileName):
         QThread.__init__(self)
@@ -584,11 +601,25 @@ class Downloader(QThread):
 
     def run(self):
         # тест на локальных данных, но работать должно и с сетью
-        request.urlretrieve(self.fileUrl, self.fileName, self._progress)
+        # request.urlretrieve(self.fileUrl, self.fileName, self._progress)
+        try:
+            request.urlretrieve(self.fileUrl, self.fileName, self._progress)
+        except error.HTTPError as e:
+            print(e)
+            self.done.emit('Ошибка загрузки')
+        except Exception:
+            self.done.emit('Ошибка загрузки')
+        else:
+            print('Загрузка завершена')
+            self.done.emit('Загрузка завершена')
+            size_tls = os.path.getsize("tsl.xml")
+            self.preprogress.emit(size_tls)
+            self.progress.emit(size_tls)
 
-    def _progress(self, block_num, block_size, total_size):
-        total_size = int('11533919')
-        # print(block_num, block_size, total_size)
+    def _progress(self, block_num, block_size, total_size, ccc=0):
+        total_size = int('15000000')
+        print(block_num, block_size, total_size)
+        self.downloading.emit('Загрузка.')
         if not self._init:
             self.preprogress.emit(total_size)
             self._init = True
@@ -601,7 +632,6 @@ class Downloader(QThread):
         else:
             # Чтобы было 100%
             self.progress.emit(total_size)
-            self.done.emit('Загрузка завершена')
 
 
 class MainWindow(QMainWindow):
@@ -933,7 +963,7 @@ class TabWidget(QWidget):
         self.tab7.setLayout(self.tab7.layout_watching)
 
     def sub_tab_custom_watching_crl(self):
-        wccrls = CRL.select()
+        wccrls = WatchingCustomCRL.select()
         self.tab8.layout_watching = QVBoxLayout(self)
         self.cwline = QLineEdit(self)
         self.cwline.setMaximumWidth(300)
@@ -966,18 +996,18 @@ class TabWidget(QWidget):
         self.tab8.setLayout(self.tab8.layout_watching)
 
     def sub_tab_deleted_watching_crl(self):
-        wccrls = CRL.select()
+        wcdcrls = WatchingDeletedCRL.select()
         self.tab9.layout_deleted = QVBoxLayout(self)
         self.cwline = QLineEdit(self)
         self.cwline.setMaximumWidth(300)
         self.cwline.textChanged[str].connect(self.on_changed_find_deleted_watching_crl)
         self.tab9.layout_deleted.addWidget(self.cwline)
 
-        self.lableFindWatchingCustomCRL = QLabel(self)
-        self.tab9.layout_deleted.addWidget(self.lableFindWatchingCustomCRL)
+        self.lableFindWatchingDeleteCRL = QLabel(self)
+        self.tab9.layout_deleted.addWidget(self.lableFindWatchingDeleteCRL)
 
         self.tableWidgetDeletedWatchingCRL = QTableWidget(self)
-        self.tableWidgetDeletedWatchingCRL.setRowCount(int(wccrls.count()))
+        self.tableWidgetDeletedWatchingCRL.setRowCount(int(wcdcrls.count()))
         self.tableWidgetDeletedWatchingCRL.setColumnCount(8)
         self.tableWidgetDeletedWatchingCRL.setHorizontalHeaderLabels(["Name",
                                                        "ИНН",
@@ -1323,12 +1353,12 @@ class TabWidget(QWidget):
             self.tableWidgetWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
 
-            buttonDeleteWatch = QPushButton()
-            buttonDeleteWatch.setFixedSize(100, 30)
-            buttonDeleteWatch.setText("Удалить")
-            id = row.ID
-            buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
-            self.tableWidgetWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+            # buttonDeleteWatch = QPushButton()
+            # buttonDeleteWatch.setFixedSize(100, 30)
+            # buttonDeleteWatch.setText("Удалить")
+            # id = row.ID
+            # buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
+            # self.tableWidgetWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
 
             count = count + 1
 
@@ -1361,33 +1391,33 @@ class TabWidget(QWidget):
             self.tableWidgetCustomWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetCustomWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
 
-            buttonDeleteWatch = QPushButton()
-            buttonDeleteWatch.setFixedSize(100, 30)
-            buttonDeleteWatch.setText("Удалить")
-            id = row.ID
-            buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
-            self.tableWidgetCustomWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+            # buttonDeleteWatch = QPushButton()
+            # buttonDeleteWatch.setFixedSize(100, 30)
+            # buttonDeleteWatch.setText("Удалить")
+            # id = row.ID
+            # buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
+            # self.tableWidgetCustomWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
 
             count = count + 1
 
     def on_changed_find_deleted_watching_crl(self, text):
-        self.lableFindWatchingCustomCRL.setText('Ищем: ' + text)
-        self.lableFindWatchingCustomCRL.adjustSize()
+        self.lableFindWatchingDeleteCRL.setText('Ищем: ' + text)
+        self.lableFindWatchingDeleteCRL.adjustSize()
 
-        query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
-                                           | WatchingCustomCRL.INN.contains(text)
-                                           | WatchingCustomCRL.OGRN.contains(text)
-                                           | WatchingCustomCRL.KeyId.contains(text)
-                                           | WatchingCustomCRL.Stamp.contains(text)
-                                           | WatchingCustomCRL.SerialNumber.contains(text)
-                                           | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
-        count_all = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
-                                               | WatchingCustomCRL.INN.contains(text)
-                                               | WatchingCustomCRL.OGRN.contains(text)
-                                               | WatchingCustomCRL.KeyId.contains(text)
-                                               | WatchingCustomCRL.Stamp.contains(text)
-                                               | WatchingCustomCRL.SerialNumber.contains(text)
-                                               | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
+        query = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
+                                           | WatchingDeletedCRL.INN.contains(text)
+                                           | WatchingDeletedCRL.OGRN.contains(text)
+                                           | WatchingDeletedCRL.KeyId.contains(text)
+                                           | WatchingDeletedCRL.Stamp.contains(text)
+                                           | WatchingDeletedCRL.SerialNumber.contains(text)
+                                           | WatchingDeletedCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
+        count_all = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
+                                               | WatchingDeletedCRL.INN.contains(text)
+                                               | WatchingDeletedCRL.OGRN.contains(text)
+                                               | WatchingDeletedCRL.KeyId.contains(text)
+                                               | WatchingDeletedCRL.Stamp.contains(text)
+                                               | WatchingDeletedCRL.SerialNumber.contains(text)
+                                               | WatchingDeletedCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
         self.tableWidgetDeletedWatchingCRL.setRowCount(count_all)
         count = 0
         for row in query:
@@ -1399,13 +1429,12 @@ class TabWidget(QWidget):
             self.tableWidgetDeletedWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetDeletedWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
 
-            buttonDeleteWatch = QPushButton()
-            buttonDeleteWatch.setFixedSize(100, 30)
-            buttonDeleteWatch.setText("Удалить")
-            self.tableWidgetDeletedWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
-
+            # buttonDeleteWatch = QPushButton()
+            # buttonDeleteWatch.setFixedSize(100, 30)
+            # buttonDeleteWatch.setText("Удалить")
+            # self.tableWidgetDeletedWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+#
             count = count + 1
-
 
     def download_xml(self):
         self.currentTread.setText('Скачиваем список.')
@@ -1418,6 +1447,7 @@ class TabWidget(QWidget):
         # Промежуточный/скачанный размер
         self._download.progress.connect(lambda y: self.progressBar.setValue(y))
         # говорим что всё скачано
+        self._download.downloading.connect(lambda z: self.currentTread.setText(z))
         self._download.done.connect(lambda z: self.currentTread.setText(z))
         self._download.done.connect(lambda hint1: self.pushButton.setEnabled(True))
         self._download.done.connect(lambda hint2: self.pushButton_2.setEnabled(True))
