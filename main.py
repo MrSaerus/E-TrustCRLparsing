@@ -640,6 +640,9 @@ class MainWindow(QMainWindow):
         self.title = 'E-Trust CRL Parsing v1.0.0-5'
         self.left = 0
         self.top = 0
+        self.counter_added = 0
+        self.counter_added_exist = 0
+        self.counter_added_custom = 0
         self.width = int(config['MainWindow']['width'])
         self.height = int(config['MainWindow']['height'])
         self.setWindowTitle(self.title)
@@ -877,6 +880,7 @@ class TabWidget(QWidget):
                                                     "Отпечаток",
                                                     "Серийный номер",
                                                     "Адрес в интернете",
+                                                    "",
                                                     ""])
         self.on_changed_find_crl('')
         self.tableWidgetCRL.resizeColumnToContents(0)
@@ -893,6 +897,23 @@ class TabWidget(QWidget):
 
     def tab_watching_crl(self):
         self.layout_watching = QVBoxLayout()
+        self.horizontalLayout_14 = QHBoxLayout()
+
+        self.label_12 = QLabel()
+        self.horizontalLayout_14.addWidget(self.label_12)
+
+        self.pushButton_7 = QPushButton()
+        self.pushButton_7.setText("Скачать CRL'ы")
+        self.pushButton_7.setMaximumSize(QSize(200, 16777215))
+        self.horizontalLayout_14.addWidget(self.pushButton_7)
+
+        self.pushButton_8 = QPushButton()
+        self.pushButton_8.setText("Провермть спискси CRL")
+        self.pushButton_8.setMaximumSize(QSize(200, 16777215))
+        self.horizontalLayout_14.addWidget(self.pushButton_8)
+
+        self.layout_watching.addLayout(self.horizontalLayout_14)
+
         self.verticalLayout_12 = QVBoxLayout()
         self.tabs2 = QTabWidget()
         self.tab7 = QWidget()
@@ -914,10 +935,6 @@ class TabWidget(QWidget):
         buttonAddCRLList.setText("Импортировать список CRL")
         buttonAddCRLList.pressed.connect(self.import_crl_list)
         self.horizontalLayout_10.addWidget(buttonAddCRLList)
-
-        buttonSelectFileCRL = QPushButton()
-        buttonSelectFileCRL.setText("Выбрать файл")
-        self.horizontalLayout_10.addWidget(buttonSelectFileCRL)
 
         self.progressBar_3 = QProgressBar()
         # self.progressBar_3.setValue(1)
@@ -1016,6 +1033,7 @@ class TabWidget(QWidget):
                                                        "Отпечаток",
                                                        "Серийный номер",
                                                        "Адрес CRL",
+                                                       "",
                                                        ""])
         self.on_changed_find_deleted_watching_crl('')
         self.tableWidgetDeletedWatchingCRL.setColumnWidth(1, 150)
@@ -1205,7 +1223,7 @@ class TabWidget(QWidget):
 
     """
 
-    def on_changed_find_uc(self, text):
+    def on_changed_find_uc(self, text=''):
         self.lableFindUC.setText('Ищем: ' + text)
         self.lableFindUC.adjustSize()
 
@@ -1232,7 +1250,7 @@ class TabWidget(QWidget):
             self.tableWidget.setCellWidget(count, 4, buttonInfo)
             count = count + 1
 
-    def on_changed_find_cert(self, text):
+    def on_changed_find_cert(self, text=''):
         self.lableFindCert.setText('Ищем: ' + text)
         self.lableFindCert.adjustSize()
 
@@ -1270,7 +1288,7 @@ class TabWidget(QWidget):
             self.tableWidgetCert.setCellWidget(count, 6, buttonSertSave)
             count = count + 1
 
-    def on_changed_find_crl(self, text):
+    def on_changed_find_crl(self, text=''):
         self.lableFindCRL.setText('Ищем: ' + text)
         self.lableFindCRL.adjustSize()
 
@@ -1324,7 +1342,7 @@ class TabWidget(QWidget):
 
             count = count + 1
 
-    def on_changed_find_watching_crl(self, text):
+    def on_changed_find_watching_crl(self, text=''):
         self.lableFindWatchingCRL.setText('Ищем: ' + text)
         self.lableFindWatchingCRL.adjustSize()
 
@@ -1353,16 +1371,15 @@ class TabWidget(QWidget):
             self.tableWidgetWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
 
-            # buttonDeleteWatch = QPushButton()
-            # buttonDeleteWatch.setFixedSize(100, 30)
-            # buttonDeleteWatch.setText("Удалить")
-            # id = row.ID
-            # buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
-            # self.tableWidgetWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
-
+            buttonDeleteWatch = QPushButton()
+            buttonDeleteWatch.setFixedSize(100, 30)
+            buttonDeleteWatch.setText("Удалить")
+            id = row.ID
+            buttonDeleteWatch.pressed.connect(lambda o=id: self.move_watching_to_delete(o, 'current'))
+            self.tableWidgetWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
             count = count + 1
 
-    def on_changed_find_custom_watching_crl(self, text):
+    def on_changed_find_custom_watching_crl(self, text=''):
         self.lableFindWatchingCustomCRL.setText('Ищем: ' + text)
         self.lableFindWatchingCustomCRL.adjustSize()
 
@@ -1400,7 +1417,7 @@ class TabWidget(QWidget):
 
             count = count + 1
 
-    def on_changed_find_deleted_watching_crl(self, text):
+    def on_changed_find_deleted_watching_crl(self, text=''):
         self.lableFindWatchingDeleteCRL.setText('Ищем: ' + text)
         self.lableFindWatchingDeleteCRL.adjustSize()
 
@@ -1644,6 +1661,7 @@ class TabWidget(QWidget):
     def add_watch_cert_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
         count = WatchingCRL.select().where(WatchingCRL.Stamp.contains(stamp)
                                            | WatchingCRL.SerialNumber.contains(serial_number)).count()
+        print(count)
         if count < 1:
             select_uc = UC.select().where(UC.Registration_Number == registration_number)
             for row in select_uc:
@@ -1655,10 +1673,10 @@ class TabWidget(QWidget):
                                                   SerialNumber=serial_number,
                                                   UrlCRL=url_crl)
                 add_to_watching_crl.save()
-                self.counter_added = self.counter_added + 1
+                # self.counter_added = self.counter_added + 1
         else:
             print('crl exist')
-            self.counter_added_exist = self.counter_added_exist + 1
+            # self.counter_added_exist = self.counter_added_exist + 1
         self.on_changed_find_watching_crl('')
 
     def add_watch_custom_cert_crl(self, url_crl):
@@ -1678,34 +1696,55 @@ class TabWidget(QWidget):
             self.counter_added_exist = self.counter_added_exist + 1
         self.on_changed_find_watching_crl('')
 
-    def delete_watching(self, id):
-        WatchingCRL.delete_by_id(id)
-        self.on_changed_find_watching_crl('')
-        print(id + ' id is deleted')
+    def move_watching_to_delete(self, id, froms):
+        if froms == 'current':
+            from_bd = WatchingCRL.select().where(WatchingCRL.ID == id)
+            for row in from_bd:
+                to_bd = WatchingDeletedCRL(Name=row.Name,
+                                           INN=row.INN,
+                                           OGRN=row.OGRN,
+                                           KeyId=row.KeyId,
+                                           Stamp=row.Stamp,
+                                           SerialNumber=row.SerialNumber,
+                                           UrlCRL=row.UrlCRL)
+                to_bd.save()
+            WatchingCRL.delete_by_id(id)
+            self.on_changed_find_watching_crl()
+            self.on_changed_find_deleted_watching_crl()
+        elif froms == 'custom':
+            WatchingCustomCRL.delete_by_id(id)
+            self.on_changed_find_deleted_watching_crl('')
+        else:
+            print('Error: Ошибка перемещения')
+
+    # def delete_watching(self, id):
+    #     WatchingCRL.delete_by_id(id)
+    #     self.on_changed_find_watching_crl('')
+    #     print(id + ' id is deleted')
 
     def import_crl_list(self, file_name='crl_list.txt'):
-        print('point')
-        crl_list = open(file_name, 'r')
-        crl_lists = crl_list.readlines()
-        self.counter_added = 0
-        self.counter_added_exist = 0
-        self.counter_added_custom = 0
-        for crl_url in crl_lists:
-            QCoreApplication.processEvents()
-            crl_url = crl_url.replace("\n", "")
-            QCoreApplication.processEvents()
-            print(crl_url)
-            count = CRL.select().where(CRL.UrlCRL.contains(crl_url)).count()
-            data = CRL.select().where(CRL.UrlCRL.contains(crl_url))
-            if count > 0:
-                for row in data:
-                    print(row.Registration_Number)
-                    self.add_watch_cert_crl(row.Registration_Number, row.KeyId, row.Stamp, row.SerialNumber, row.UrlCRL)
-            else:
-                print('add to custom')
-                self.add_watch_custom_cert_crl(crl_url)
-            # self.on_changed_find_watching_crl('')
-        print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
+        path = os.path.realpath(file_name)
+        if os.path.exists(path):
+            crl_list = open(file_name, 'r')
+            crl_lists = crl_list.readlines()
+            for crl_url in crl_lists:
+                QCoreApplication.processEvents()
+                crl_url = crl_url.replace("\n", "")
+                QCoreApplication.processEvents()
+                print(crl_url)
+                count = CRL.select().where(CRL.UrlCRL.contains(crl_url)).count()
+                data = CRL.select().where(CRL.UrlCRL.contains(crl_url))
+                if count > 0:
+                    for row in data:
+                        print(row.Registration_Number)
+                        self.add_watch_cert_crl(row.Registration_Number, row.KeyId, row.Stamp, row.SerialNumber, row.UrlCRL)
+                else:
+                    print('add to custom')
+                    self.add_watch_custom_cert_crl(crl_url)
+                # self.on_changed_find_watching_crl('')
+            print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
+        else:
+            print('Not found crl_list.txt')
 
 
 class SubWindowUC(QWidget):
