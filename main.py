@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import \
     QSizePolicy, \
     QFileDialog
 
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon, QFont, QBrush, QColor
 from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
 from lxml import etree
 from peewee import *
@@ -119,6 +119,8 @@ class WatchingCRL(Model):
     Stamp = CharField()
     SerialNumber = CharField()
     UrlCRL = CharField()
+    status = CharField()
+    next_update = CharField()
 
     class Meta:
         database = db
@@ -133,6 +135,8 @@ class WatchingCustomCRL(Model):
     Stamp = CharField()
     SerialNumber = CharField()
     UrlCRL = CharField()
+    status = CharField()
+    next_update = CharField()
 
     class Meta:
         database = db
@@ -147,6 +151,8 @@ class WatchingDeletedCRL(Model):
     Stamp = CharField()
     SerialNumber = CharField()
     UrlCRL = CharField()
+    status = CharField()
+    next_update = CharField()
 
     class Meta:
         database = db
@@ -570,55 +576,46 @@ def open_file(file_name, file_type, url='None'):
 
 
 def check_data_crl():
-    query = WatchingCustomCRL.select()
-    for wcc in query:
-        QCoreApplication.processEvents()
-        issuer = {}
-        #print('----------------------------------------------------')
-        #try:
-        #    # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, open(filename, 'rb').read())
-        #    # cryptography = crl.to_cryptography()
-        #    crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
-        #    crl_crypto = crl.get_issuer()
-        #    usupported_file = False
-        #except Exception:
-        #    usupported_file = True
-        #    print('uE')
-        #try:
-        #    if usupported_file == True:
-        #        query_data_update = WatchingCustomCRL.update(INN='Unknown',
-        #                                                     OGRN='Unknown',
-        #                                                     Name='Unknown').where(WatchingCustomCRL.ID == wcc.ID)
-        #        query_data_update.execute()
-        #    else:
-        #        for type, data in crl_crypto.get_components():
-        #            issuer[type.decode("utf-8")] = data.decode("utf-8")
-        #
-        #        print(wcc.ID, issuer['INN'], issuer['OGRN'])
-        #        query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
-        #        for uc_data in query_uc:
-        #            INN = uc_data.INN
-        #            OGRN = uc_data.OGRN
-        #            Name = uc_data.Name
-        #        query_data_update = WatchingCustomCRL.update(INN=INN,
-        #                                                     OGRN=OGRN,
-        #                                                     Name=Name).where(WatchingCustomCRL.ID == wcc.ID)
-        #        query_data_update.execute()
-        #
-        #except Exception:
-        #    print('Na')
-        #
-        try:
-            crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
-            cryptography = crl.to_cryptography()
-            print(cryptography.last_update)
-            print(cryptography.next_update)
-        except Exception:
-            print('err')
+    try:
+        query = WatchingCustomCRL.select().where(WatchingCustomCRL.status.contains('Info:'))
+        for wcc in query:
+            QCoreApplication.processEvents()
+            issuer = {}
+            print('----------------------------------------------------')
+            try:
+                crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
+                                              open('crls/'+str(wcc.UrlCRL).split('/')[-1], 'rb').read())
+                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
+                crl_crypto = crl.get_issuer()
+                cryptography = crl.to_cryptography()
+                try:
+                    for type, data in crl_crypto.get_components():
+                        issuer[type.decode("utf-8")] = data.decode("utf-8")
+                except Exception:
+                    print('Error: get_components()')
+                query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
+                for uc_data in query_uc:
+                    Name = uc_data.Name
+                query_update = WatchingCustomCRL.update(INN=issuer['INN'],
+                                                        OGRN=issuer['OGRN'],
+                                                        status='Error: NaN',
+                                                        next_update=cryptography.next_update).\
+                    where(WatchingCustomCRL.ID == wcc.ID)
+                query_update.execute()
+                print(wcc.ID, Name, issuer['OGRN'], issuer['INN'], cryptography.next_update)
+                Name = 'Unknown'
+                issuer['INN'] = 'Unknown'
+                issuer['OGRN'] = 'Unknown'
+            except Exception:
+                query_update = WatchingCustomCRL.update(status='Warning: FILETYPE ERROR',
+                                                        next_update='NaN').where(WatchingCustomCRL.ID == wcc.ID)
+                query_update.execute()
+                print('Error: FILETYPE')
+    except Exception:
+        print('Error: check_data_crl()')
 
 
-
-def download_file(file_url, file_name, folder, type=''):
+def download_file(file_url, file_name, folder, type='', w_id=''):
     file_name_url = file_url.split('/')[-1]
     type_file = file_name_url.split('.')[-1]
     path = folder + '/' + file_name # + '.' + type_file
@@ -626,21 +623,43 @@ def download_file(file_url, file_name, folder, type=''):
     counter_failed_watching_custom_crl = 0
     try:
         request.urlretrieve(file_url, path, schedule)
-    except error.HTTPError as e:
-        print(e)
-        print('\r\n' + file_url + ' download failed!' + '\r\n')
-        if type == 'current':
-            counter_failed_watching_crl = counter_failed_watching_crl + 1
-        elif type == 'custome':
-            counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+    # except error.HTTPError as e:
+    #     print(e)
+    #     print('\r\n' + file_url + ' download failed!' + '\r\n')
+    #     if type == 'current':
+    #         counter_failed_watching_crl = counter_failed_watching_crl + 1
+    #         query_update = WatchingCRL.update(status='Error: Download failed'
+    #                                                 ).where(WatchingCRL.ID == w_id)
+    #         query_update.execute()
+    #     elif type == 'custome':
+    #         counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+    #         query_update = WatchingCustomCRL.update(status='Error: Download failed'
+    #                                                 ).where(WatchingCustomCRL.ID == w_id)
+    #         query_update.execute()
     except Exception:
         print('\r\n' + file_url + ' download failed!' + '\r\n')
         if type == 'current':
             counter_failed_watching_crl = counter_failed_watching_crl + 1
+            query_update = WatchingCRL.update(status='Error: Download failed'
+                                                    ).where(WatchingCRL.ID == w_id)
+            query_update.execute()
         elif type == 'custome':
             counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+            query_update = WatchingCustomCRL.update(status='Error: Download failed'
+                                                    ).where(WatchingCustomCRL.ID == w_id)
+            query_update.execute()
     else:
         print('\r\n' + file_url + ' download successfully!')
+        if type == 'current':
+            counter_failed_watching_crl = counter_failed_watching_crl + 1
+            query_update = WatchingCRL.update(status='Info: Download successfully'
+                                                    ).where(WatchingCRL.ID == w_id)
+            query_update.execute()
+        elif type == 'custome':
+            counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+            query_update = WatchingCustomCRL.update(status='Info: Download successfully'
+                                                    ).where(WatchingCustomCRL.ID == w_id)
+            query_update.execute()
         # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
     print('cc' + str(counter_failed_watching_crl) + ' ccw' + str(counter_failed_watching_custom_crl))
 
@@ -1025,7 +1044,7 @@ class TabWidget(QWidget):
 
         self.tableWidgetWatchingCRL = QTableWidget(self)
         self.tableWidgetWatchingCRL.setRowCount(int(wcrls.count()))
-        self.tableWidgetWatchingCRL.setColumnCount(8)
+        self.tableWidgetWatchingCRL.setColumnCount(9)
         self.tableWidgetWatchingCRL.setHorizontalHeaderLabels(["Name",
                                                        "ИНН",
                                                        "ОГРН",
@@ -1033,6 +1052,7 @@ class TabWidget(QWidget):
                                                        "Отпечаток",
                                                        "Серийный номер",
                                                        "Адрес CRL",
+                                                       "",
                                                        ""])
         self.on_changed_find_watching_crl('')
         self.tableWidgetWatchingCRL.setColumnWidth(1, 150)
@@ -1042,6 +1062,7 @@ class TabWidget(QWidget):
         self.tableWidgetWatchingCRL.setColumnWidth(4, 150)
         self.tableWidgetWatchingCRL.setColumnWidth(5, 150)
         self.tableWidgetWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
+        self.tableWidgetWatchingCRL.setColumnWidth(7, 20)
         self.tab7.layout_watching.addWidget(self.tableWidgetWatchingCRL)
         self.tab7.setLayout(self.tab7.layout_watching)
 
@@ -1058,23 +1079,24 @@ class TabWidget(QWidget):
 
         self.tableWidgetCustomWatchingCRL = QTableWidget(self)
         self.tableWidgetCustomWatchingCRL.setRowCount(int(wccrls.count()))
-        self.tableWidgetCustomWatchingCRL.setColumnCount(8)
+        self.tableWidgetCustomWatchingCRL.setColumnCount(9)
         self.tableWidgetCustomWatchingCRL.setHorizontalHeaderLabels(["Name",
-                                                       "ИНН",
-                                                       "ОГРН",
-                                                       "Идентификатор ключа",
-                                                       "Отпечаток",
-                                                       "Серийный номер",
-                                                       "Адрес CRL",
-                                                       ""])
+                                                                     "ИНН",
+                                                                     "ОГРН",
+                                                                     "Идентификатор ключа",
+                                                                     "Отпечаток",
+                                                                     "Серийный номер",
+                                                                     "Адрес CRL",
+                                                                     "",
+                                                                     ""])
         self.on_changed_find_custom_watching_crl('')
         self.tableWidgetCustomWatchingCRL.setColumnWidth(1, 150)
         self.tableWidgetCustomWatchingCRL.setColumnWidth(1, 100)
         self.tableWidgetCustomWatchingCRL.setColumnWidth(2, 100)
         self.tableWidgetCustomWatchingCRL.setColumnWidth(3, 150)
         self.tableWidgetCustomWatchingCRL.setColumnWidth(4, 150)
-        self.tableWidgetCustomWatchingCRL.setColumnWidth(5, 150)
         self.tableWidgetCustomWatchingCRL.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
+        self.tableWidgetCustomWatchingCRL.setColumnWidth(7, 20)
         self.tab8.layout_watching.addWidget(self.tableWidgetCustomWatchingCRL)
         self.tab8.setLayout(self.tab8.layout_watching)
 
@@ -1395,15 +1417,15 @@ class TabWidget(QWidget):
             st = row.Stamp
             sn = row.SerialNumber
             uc = row.UrlCRL
-            button_add_to_watch.pressed.connect(lambda registration_number = rb,
-                                                       keyid = ki,
-                                                       stamp = st,
-                                                       serial_number = sn,
-                                                       url_crl = uc: self.add_watch_cert_crl(registration_number,
-                                                                                             keyid,
-                                                                                             stamp,
-                                                                                             serial_number,
-                                                                                             url_crl))
+            button_add_to_watch.pressed.connect(lambda registration_number=rb,
+                                                       keyid=ki,
+                                                       stamp=st,
+                                                       serial_number=sn,
+                                                       url_crl=uc: self.add_watch_cert_crl(registration_number,
+                                                                                           keyid,
+                                                                                           stamp,
+                                                                                           serial_number,
+                                                                                           url_crl))
             self.tableWidgetCRL.setCellWidget(count, 7, button_add_to_watch)
 
             count = count + 1
@@ -1428,6 +1450,8 @@ class TabWidget(QWidget):
                                                | WatchingCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
         self.tableWidgetWatchingCRL.setRowCount(count_all)
         count = 0
+        brush = QBrush(QColor(0, 255, 0, 255))
+        brush.setStyle(Qt.SolidPattern)
         for row in query:
             self.tableWidgetWatchingCRL.setItem(count, 0, QTableWidgetItem(str(row.Name)))
             self.tableWidgetWatchingCRL.setItem(count, 1, QTableWidgetItem(str(row.INN)))
@@ -1436,13 +1460,18 @@ class TabWidget(QWidget):
             self.tableWidgetWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
             self.tableWidgetWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+            if row.status == 'Info: Download successfully':
+                self.tableWidgetWatchingCRL.setItem(count, 7, QTableWidgetItem('Dwn'))
+            else:
+                self.tableWidgetWatchingCRL.setItem(count, 7, QTableWidgetItem('Err'))
+
 
             buttonDeleteWatch = QPushButton()
             buttonDeleteWatch.setFixedSize(100, 30)
-            buttonDeleteWatch.setText("Удалить")
+            buttonDeleteWatch.setText("Убрать")
             id = row.ID
             buttonDeleteWatch.pressed.connect(lambda o=id: self.move_watching_to_delete(o, 'current'))
-            self.tableWidgetWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+            self.tableWidgetWatchingCRL.setCellWidget(count, 8, buttonDeleteWatch)
             count = count + 1
 
     def on_changed_find_custom_watching_crl(self, text=''):
@@ -1473,13 +1502,17 @@ class TabWidget(QWidget):
             self.tableWidgetCustomWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
             self.tableWidgetCustomWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetCustomWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+            if row.status == 'Info: Download successfully':
+                self.tableWidgetCustomWatchingCRL.setItem(count, 7, QTableWidgetItem('Dwn'))
+            else:
+                self.tableWidgetCustomWatchingCRL.setItem(count, 7, QTableWidgetItem('Err'))
 
-            # buttonDeleteWatch = QPushButton()
-            # buttonDeleteWatch.setFixedSize(100, 30)
-            # buttonDeleteWatch.setText("Удалить")
+            buttonDeleteWatch = QPushButton()
+            buttonDeleteWatch.setFixedSize(100, 30)
+            buttonDeleteWatch.setText("Убрать")
             # id = row.ID
             # buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
-            # self.tableWidgetCustomWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
+            self.tableWidgetCustomWatchingCRL.setCellWidget(count, 8, buttonDeleteWatch)
 
             count = count + 1
 
@@ -1821,16 +1854,17 @@ class TabWidget(QWidget):
         counter_watching_crl = 0
         counter_watching_custom_crl = 0
         self.label_13.setText('Загрузка началась')
-        # for wc in query_1:
-        #     QCoreApplication.processEvents()
-        #     counter_watching_crl = counter_watching_crl + 1
-        #     file_url = wc.UrlCRL
-        #     file_name = wc.KeyId
-        #     folder = config['Folders']['crls']
-        #     self.label_13.setText(str(counter_watching_crl) + ' из '+ str(counter_watching_crl_all) + ' Загружаем: ' + str(wc.Name) + ' ' + str(wc.SerialNumber))
-        #     download_file(file_url, file_name, folder)
-        #     # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
-        # print('WatchingCRL downloaded ' + str(counter_watching_crl))
+        for wc in query_1:
+            QCoreApplication.processEvents()
+            counter_watching_crl = counter_watching_crl + 1
+            file_url = wc.UrlCRL
+            file_name = wc.UrlCRL.split('/')[-1]
+            # file_name = wcc.KeyId
+            folder = config['Folders']['crls']
+            self.label_13.setText(str(counter_watching_crl) + ' из '+ str(counter_watching_crl_all) + ' Загружаем: ' + str(wc.Name) + ' ' + str(wc.KeyId))
+            download_file(file_url, file_name, folder, 'current', wc.ID)
+            # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
+        print('WatchingCRL downloaded ' + str(counter_watching_crl))
         for wcc in query_2:
             QCoreApplication.processEvents()
             counter_watching_custom_crl = counter_watching_custom_crl + 1
@@ -1838,8 +1872,8 @@ class TabWidget(QWidget):
             file_name = wcc.UrlCRL.split('/')[-1]
             # file_name = wcc.KeyId
             folder = config['Folders']['crls']
-            self.label_13.setText(str(counter_watching_custom_crl) + ' из '+ str(watching_custom_crl_all) + ' Загружаем: ' + str(wcc.Name) + ' ' + str(wcc.SerialNumber))
-            download_file(file_url, file_name, folder)
+            self.label_13.setText(str(counter_watching_custom_crl) + ' из '+ str(watching_custom_crl_all) + ' Загружаем: ' + str(wcc.Name) + ' ' + str(wcc.KeyId))
+            download_file(file_url, file_name, folder, 'custome', wcc.ID)
             # Downloader(str(wcc.UrlCRL), str(wcc.SerialNumber)+'.crl'
         self.label_13.setText('Загрузка закончена')
         print('WatchingCustomCRL downloaded '+ str(counter_watching_custom_crl))
