@@ -1,5 +1,5 @@
-# PyQt5, lxml, peewee, ebcdic, OpenSSL
-import base64, sys, socket, sqlite3, os, configparser, math
+# PyQt5, lxml, peewee, ebcdic, OpenSSL, requests
+import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests
 from urllib import request, error
 from os.path import expanduser
 from PyQt5.QtWidgets import \
@@ -46,6 +46,7 @@ else:
         config.write(configfile)
 
 # socket.setdefaulttimeout(int(config['Socket']['timeout']))
+# TODO: Сделать проверку на корректность базы данных
 connect = sqlite3.connect(config['Bd']['name'])
 db = SqliteDatabase(config['Bd']['name'])
 
@@ -185,6 +186,7 @@ def progressbar(cur, total=100):
 
 
 def schedule(blocknum, blocksize, totalsize):
+    QCoreApplication.processEvents()
     if totalsize == 0:
         percent = 0
     else:
@@ -528,7 +530,7 @@ def save_cert(seriall_number):
             file.write(base64.decodebytes(certs.Data.encode()))
     os.startfile(os.path.realpath(config['Folders']['certs']+"/"))
 
-
+# TODO: Доделать вариативность открытия файлов
 def open_file(file_name, file_type, url='None'):
     # open_file(sn + ".cer", "cer")
     # CryptExtAddCER «файл» Добавляет сертификат безопасности.
@@ -567,20 +569,80 @@ def open_file(file_name, file_type, url='None'):
         os.system(open_crl)
 
 
-def download_file(file_url, file_name, folder):
+def check_data_crl():
+    query = WatchingCustomCRL.select()
+    for wcc in query:
+        QCoreApplication.processEvents()
+        issuer = {}
+        #print('----------------------------------------------------')
+        #try:
+        #    # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, open(filename, 'rb').read())
+        #    # cryptography = crl.to_cryptography()
+        #    crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
+        #    crl_crypto = crl.get_issuer()
+        #    usupported_file = False
+        #except Exception:
+        #    usupported_file = True
+        #    print('uE')
+        #try:
+        #    if usupported_file == True:
+        #        query_data_update = WatchingCustomCRL.update(INN='Unknown',
+        #                                                     OGRN='Unknown',
+        #                                                     Name='Unknown').where(WatchingCustomCRL.ID == wcc.ID)
+        #        query_data_update.execute()
+        #    else:
+        #        for type, data in crl_crypto.get_components():
+        #            issuer[type.decode("utf-8")] = data.decode("utf-8")
+        #
+        #        print(wcc.ID, issuer['INN'], issuer['OGRN'])
+        #        query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
+        #        for uc_data in query_uc:
+        #            INN = uc_data.INN
+        #            OGRN = uc_data.OGRN
+        #            Name = uc_data.Name
+        #        query_data_update = WatchingCustomCRL.update(INN=INN,
+        #                                                     OGRN=OGRN,
+        #                                                     Name=Name).where(WatchingCustomCRL.ID == wcc.ID)
+        #        query_data_update.execute()
+        #
+        #except Exception:
+        #    print('Na')
+        #
+        try:
+            crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
+            cryptography = crl.to_cryptography()
+            print(cryptography.last_update)
+            print(cryptography.next_update)
+        except Exception:
+            print('err')
+
+
+
+def download_file(file_url, file_name, folder, type=''):
     file_name_url = file_url.split('/')[-1]
     type_file = file_name_url.split('.')[-1]
-    path = folder + '/' + file_name + '.' + type_file
+    path = folder + '/' + file_name # + '.' + type_file
+    counter_failed_watching_crl = 0
+    counter_failed_watching_custom_crl = 0
     try:
-       request.urlretrieve(file_url, path, schedule)
+        request.urlretrieve(file_url, path, schedule)
     except error.HTTPError as e:
-       print(e)
-       print('\r\n' + file_url + ' download failed!' + '\r\n')
+        print(e)
+        print('\r\n' + file_url + ' download failed!' + '\r\n')
+        if type == 'current':
+            counter_failed_watching_crl = counter_failed_watching_crl + 1
+        elif type == 'custome':
+            counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
     except Exception:
-       print('\r\n' + file_url + ' download failed!' + '\r\n')
+        print('\r\n' + file_url + ' download failed!' + '\r\n')
+        if type == 'current':
+            counter_failed_watching_crl = counter_failed_watching_crl + 1
+        elif type == 'custome':
+            counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
     else:
-       print('\r\n' + file_url + ' download successfully!')
-       os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
+        print('\r\n' + file_url + ' download successfully!')
+        # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
+    print('cc' + str(counter_failed_watching_crl) + ' ccw' + str(counter_failed_watching_custom_crl))
 
 
 class Downloader(QThread):
@@ -595,6 +657,8 @@ class Downloader(QThread):
         self._init = False
         self.fileUrl = fileUrl
         self.fileName = fileName
+        print(fileUrl)
+        print(fileName)
         # site = request.urlopen(fileUrl)
         # meta = site.info()
         # print(meta)
@@ -899,16 +963,18 @@ class TabWidget(QWidget):
         self.layout_watching = QVBoxLayout()
         self.horizontalLayout_14 = QHBoxLayout()
 
-        self.label_12 = QLabel()
-        self.horizontalLayout_14.addWidget(self.label_12)
+        self.label_13 = QLabel()
+        self.horizontalLayout_14.addWidget(self.label_13)
 
         self.pushButton_7 = QPushButton()
         self.pushButton_7.setText("Скачать CRL'ы")
+        self.pushButton_7.pressed.connect(self.download_all_crls)
         self.pushButton_7.setMaximumSize(QSize(200, 16777215))
         self.horizontalLayout_14.addWidget(self.pushButton_7)
 
         self.pushButton_8 = QPushButton()
-        self.pushButton_8.setText("Провермть спискси CRL")
+        self.pushButton_8.setText("Проверить списки CRL")
+        self.pushButton_8.clicked.connect(check_data_crl)
         self.pushButton_8.setMaximumSize(QSize(200, 16777215))
         self.horizontalLayout_14.addWidget(self.pushButton_8)
 
@@ -1745,6 +1811,39 @@ class TabWidget(QWidget):
             print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
         else:
             print('Not found crl_list.txt')
+    # TODO: Откорректировать код для работы со всеми типами
+    def download_all_crls(self):
+        QCoreApplication.processEvents()
+        query_1 = WatchingCRL.select()
+        query_2 = WatchingCustomCRL.select()
+        counter_watching_crl_all = WatchingCRL.select().count()
+        watching_custom_crl_all = WatchingCustomCRL.select().count()
+        counter_watching_crl = 0
+        counter_watching_custom_crl = 0
+        self.label_13.setText('Загрузка началась')
+        # for wc in query_1:
+        #     QCoreApplication.processEvents()
+        #     counter_watching_crl = counter_watching_crl + 1
+        #     file_url = wc.UrlCRL
+        #     file_name = wc.KeyId
+        #     folder = config['Folders']['crls']
+        #     self.label_13.setText(str(counter_watching_crl) + ' из '+ str(counter_watching_crl_all) + ' Загружаем: ' + str(wc.Name) + ' ' + str(wc.SerialNumber))
+        #     download_file(file_url, file_name, folder)
+        #     # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
+        # print('WatchingCRL downloaded ' + str(counter_watching_crl))
+        for wcc in query_2:
+            QCoreApplication.processEvents()
+            counter_watching_custom_crl = counter_watching_custom_crl + 1
+            file_url = wcc.UrlCRL
+            file_name = wcc.UrlCRL.split('/')[-1]
+            # file_name = wcc.KeyId
+            folder = config['Folders']['crls']
+            self.label_13.setText(str(counter_watching_custom_crl) + ' из '+ str(watching_custom_crl_all) + ' Загружаем: ' + str(wcc.Name) + ' ' + str(wcc.SerialNumber))
+            download_file(file_url, file_name, folder)
+            # Downloader(str(wcc.UrlCRL), str(wcc.SerialNumber)+'.crl'
+        self.label_13.setText('Загрузка закончена')
+        print('WatchingCustomCRL downloaded '+ str(counter_watching_custom_crl))
+        print('All download done, w='+str(counter_watching_crl)+', c='+str(counter_watching_custom_crl))
 
 
 class SubWindowUC(QWidget):

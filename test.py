@@ -6,6 +6,7 @@ crl_crypto = crl.get_issuer()
 cryptography = crl.to_cryptography()
 for type, data in crl_crypto.get_components():
     print(type.decode("utf-8"), data.decode("utf-8"))
+print(crl_crypto())
 print(cryptography.last_update)
 print(cryptography.next_update)
 
