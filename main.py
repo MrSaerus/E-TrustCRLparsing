@@ -1,7 +1,7 @@
 # PyQt5, lxml, peewee, ebcdic, OpenSSL, requests
 # TODO: Сделать самотестирование
 # TODO: Сделать обработчик ошибок
-import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests
+import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests, datetime
 from urllib import request, error
 from os.path import expanduser
 from PyQt5.QtWidgets import \
@@ -21,7 +21,10 @@ from PyQt5.QtWidgets import \
     QLineEdit, \
     QHeaderView, \
     QSizePolicy, \
-    QFileDialog
+    QFileDialog, \
+    QGroupBox, \
+    QCheckBox, \
+    QTextBrowser
 
 from PyQt5.QtGui import QIcon, QFont, QBrush, QColor
 from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
@@ -673,68 +676,89 @@ def check_crl():
 
 
 def check_for_import_in_uc():
-    # TODO: Сделать проверку по времени
-    # TODO: Сделать проверку скачивания
-    current_datetime = '2021-02-27 17:42:00'
-    point_datetime = '2021-02-26 00:00:00'
-    last_date_copy = '2021-02-27 09:42:00'
-    query_1 = WatchingCRL.select().where(WatchingCRL.next_update.between(point_datetime, current_datetime))
-    query_2 = WatchingCustomCRL.select().where(WatchingCustomCRL.next_update.between(point_datetime, current_datetime))
-    for wc in query_1:
-        print(wc.Name, wc.next_update)
-    for wcc in query_2:
-        print(wcc.Name, wcc.next_update)
-    # TODO: Сделать проверку файлов и копирование
+    try:
+        folder = config['Folders']['crls']
+        current_datetime = datetime.datetime.now()
+        before_current_datetime = datetime.datetime.now()-datetime.timedelta(days=5)
+        last_date_copy = '2021-02-27 00:00:00'
+        last_update = '2021-02-27 06:20:00'
+        next_update = '2021-02-27 19:52:00'
+        query_1 = WatchingCRL.select().where(
+            WatchingCRL.last_update.between(before_current_datetime, current_datetime)
+        )
+        query_2 = WatchingCustomCRL.select().where(
+            WatchingCustomCRL.last_update.between(before_current_datetime, current_datetime)
+        )
+        for wc in query_1:
+            if datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S') < wc.last_update:
+                print('1 Copying', wc.Name, wc.last_update, wc.next_update)
+            if datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S') > wc.next_update:
+                print('1 Need downloaded', wc.Name, wc.last_update, wc.next_update)
+                download_file(wc.UrlCRL, wc.KeyId+'.crl', folder, 'current', wc.ID)
+        for wcc in query_2:
+            if datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S') < wcc.last_update:
+                print('2 Copying', wcc.Name, wcc.last_update, wcc.next_update)
+            if datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S') > wcc.next_update:
+                print('2 Need downloaded', wcc.Name, wcc.last_update, wcc.next_update)
+                download_file(wcc.UrlCRL, wcc.KeyId+'.crl', folder, 'custome', wcc.ID)
+        # TODO: Сделать проверку файлов и копирование
+    except Exception:
+        print('Error: check_for_import_in_uc()')
+
+
 # TODO: Сделать функцию копирования файлов для УЦ
 
 
 def download_file(file_url, file_name, folder, type='', w_id=''):
-    file_name_url = file_url.split('/')[-1]
-    type_file = file_name_url.split('.')[-1]
-    path = folder + '/' + file_name # + '.' + type_file
-    counter_failed_watching_crl = 0
-    counter_failed_watching_custom_crl = 0
     try:
-        request.urlretrieve(file_url, path, schedule)
-    # except error.HTTPError as e:
-    #     print(e)
-    #     print('\r\n' + file_url + ' download failed!' + '\r\n')
-    #     if type == 'current':
-    #         counter_failed_watching_crl = counter_failed_watching_crl + 1
-    #         query_update = WatchingCRL.update(status='Error: Download failed'
-    #                                                 ).where(WatchingCRL.ID == w_id)
-    #         query_update.execute()
-    #     elif type == 'custome':
-    #         counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-    #         query_update = WatchingCustomCRL.update(status='Error: Download failed'
-    #                                                 ).where(WatchingCustomCRL.ID == w_id)
-    #         query_update.execute()
+        file_name_url = file_url.split('/')[-1]
+        type_file = file_name_url.split('.')[-1]
+        path = folder + '/' + file_name # + '.' + type_file
+        counter_failed_watching_crl = 0
+        counter_failed_watching_custom_crl = 0
+        try:
+            request.urlretrieve(file_url, path, schedule)
+        # except error.HTTPError as e:
+        #     print(e)
+        #     print('\r\n' + file_url + ' download failed!' + '\r\n')
+        #     if type == 'current':
+        #         counter_failed_watching_crl = counter_failed_watching_crl + 1
+        #         query_update = WatchingCRL.update(status='Error: Download failed'
+        #                                                 ).where(WatchingCRL.ID == w_id)
+        #         query_update.execute()
+        #     elif type == 'custome':
+        #         counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+        #         query_update = WatchingCustomCRL.update(status='Error: Download failed'
+        #                                                 ).where(WatchingCustomCRL.ID == w_id)
+        #         query_update.execute()
+        except Exception:
+            print('\r\n' + file_url + ' download failed!' + '\r\n')
+            if type == 'current':
+                counter_failed_watching_crl = counter_failed_watching_crl + 1
+                query_update = WatchingCRL.update(download_status='Error: Download failed'
+                                                        ).where(WatchingCRL.ID == w_id)
+                query_update.execute()
+            elif type == 'custome':
+                counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+                query_update = WatchingCustomCRL.update(download_status='Error: Download failed'
+                                                        ).where(WatchingCustomCRL.ID == w_id)
+                query_update.execute()
+        else:
+            print('\r\n' + file_url + ' download successfully!')
+            if type == 'current':
+                counter_failed_watching_crl = counter_failed_watching_crl + 1
+                query_update = WatchingCRL.update(download_status='Info: Download successfully'
+                                                        ).where(WatchingCRL.ID == w_id)
+                query_update.execute()
+            elif type == 'custome':
+                counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+                query_update = WatchingCustomCRL.update(download_status='Info: Download successfully'
+                                                        ).where(WatchingCustomCRL.ID == w_id)
+                query_update.execute()
+            # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
+        print('cc' + str(counter_failed_watching_crl) + ' ccw' + str(counter_failed_watching_custom_crl))
     except Exception:
-        print('\r\n' + file_url + ' download failed!' + '\r\n')
-        if type == 'current':
-            counter_failed_watching_crl = counter_failed_watching_crl + 1
-            query_update = WatchingCRL.update(download_status='Error: Download failed'
-                                                    ).where(WatchingCRL.ID == w_id)
-            query_update.execute()
-        elif type == 'custome':
-            counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-            query_update = WatchingCustomCRL.update(download_status='Error: Download failed'
-                                                    ).where(WatchingCustomCRL.ID == w_id)
-            query_update.execute()
-    else:
-        print('\r\n' + file_url + ' download successfully!')
-        if type == 'current':
-            counter_failed_watching_crl = counter_failed_watching_crl + 1
-            query_update = WatchingCRL.update(download_status='Info: Download successfully'
-                                                    ).where(WatchingCRL.ID == w_id)
-            query_update.execute()
-        elif type == 'custome':
-            counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-            query_update = WatchingCustomCRL.update(download_status='Info: Download successfully'
-                                                    ).where(WatchingCustomCRL.ID == w_id)
-            query_update.execute()
-        # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
-    print('cc' + str(counter_failed_watching_crl) + ' ccw' + str(counter_failed_watching_custom_crl))
+        print('Error: download_file()')
 
 
 class Downloader(QThread):
@@ -793,7 +817,7 @@ class Downloader(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.title = 'E-Trust CRL Parsing v1.0.0-5'
+        self.title = 'E-Trust CRL Parsing v1.0.0-8'
         self.left = 0
         self.top = 0
         self.counter_added = 0
@@ -871,7 +895,7 @@ class TabWidget(QWidget):
         self.verticalLayout_16.addWidget(self.lable_1)
         self.lable_2 = QLabel(" Версия базы: " + settings_ver)
         self.verticalLayout_16.addWidget(self.lable_2)
-        self.lable_3 = QLabel(" Дата выпуска базы: " + settings_update_date)
+        self.lable_3 = QLabel(" Дата выпуска базы: " + settings_update_date.replace('T', ' ').split('.')[0])
         self.verticalLayout_16.addWidget(self.lable_3)
         self.lable_5 = QLabel(" Всего УЦ: " + str(ucs.count()))
         self.verticalLayout_16.addWidget(self.lable_5)
@@ -1059,9 +1083,9 @@ class TabWidget(QWidget):
         self.horizontalLayout_14.addWidget(self.label_13)
 
         self.pushButton_7 = QPushButton()
-        self.pushButton_7.setText("Скачать CRL'ы")
+        self.pushButton_7.setText("Скачать все CRL'ы")
         self.pushButton_7.pressed.connect(self.download_all_crls)
-        self.pushButton_7.setMaximumSize(QSize(110, 16777215))
+        self.pushButton_7.setMaximumSize(QSize(120, 16777215))
         self.horizontalLayout_14.addWidget(self.pushButton_7)
 
         self.pushButton_8 = QPushButton()
@@ -1219,133 +1243,171 @@ class TabWidget(QWidget):
         self.verticalLayout_23 = QVBoxLayout()
         self.horizontalLayout_6 = QHBoxLayout()
         self.verticalLayout_25 = QVBoxLayout()
-        self.frame_7 = QFrame()
-        self.frame_7.setFrameShape(QFrame.StyledPanel)
-        self.frame_7.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout_25.addWidget(self.frame_7)
-
+        self.groupBox = QGroupBox()
+        self.groupBox.setTitle('Логи')
+        self.horizontalLayout_11 = QHBoxLayout(self.groupBox)
+        self.textBrowser = QTextBrowser(self.groupBox)
+        self.textBrowser.setText(open('main.log', 'rb').read().decode())
+        self.horizontalLayout_11.addWidget(self.textBrowser)
+        self.verticalLayout_25.addWidget(self.groupBox)
         self.horizontalLayout_6.addLayout(self.verticalLayout_25)
-
         self.verticalLayout_24 = QVBoxLayout()
-        self.frame_8 = QFrame()
-        self.frame_8.setFrameShape(QFrame.StyledPanel)
-        self.frame_8.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout_24.addWidget(self.frame_8)
-
+        self.groupBox_2 = QGroupBox()
+        self.groupBox_2.setTitle('Ошибки')
+        self.horizontalLayout_12 = QHBoxLayout(self.groupBox_2)
+        self.textBrowser_2 = QTextBrowser(self.groupBox_2)
+        self.horizontalLayout_12.addWidget(self.textBrowser_2)
+        self.verticalLayout_24.addWidget(self.groupBox_2)
         self.horizontalLayout_6.addLayout(self.verticalLayout_24)
-
         self.verticalLayout_23.addLayout(self.horizontalLayout_6)
-
         self.verticalLayout_14.addLayout(self.verticalLayout_23)
-
         self.verticalLayout_17 = QVBoxLayout()
         self.horizontalLayout_3 = QHBoxLayout()
         self.verticalLayout_20 = QVBoxLayout()
-        self.frame_5 = QFrame()
-        self.frame_5.setFrameShape(QFrame.StyledPanel)
-        self.frame_5.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_8 = QHBoxLayout(self.frame_5)
-        self.horizontalLayout_8.setSpacing(0)
-        self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.groupBox_8 = QGroupBox()
+        self.groupBox_8.setTitle('Папки скачивания')
+        self.horizontalLayout_8 = QHBoxLayout(self.groupBox_8)
         self.verticalLayout_31 = QVBoxLayout()
-        self.label_12 = QLabel('  Настройка директорий')
-
-        self.verticalLayout_31.addWidget(self.label_12, 0, Qt.AlignTop)
-
         self.horizontalLayout_9 = QHBoxLayout()
-        self.pushButton_4 = QPushButton(self.frame_5)
+        self.horizontalLayout_9.setContentsMargins(5, 5, 5, 5)
+
+        self.pushButton_4 = QPushButton(self.groupBox_8)
         self.pushButton_4.setText("Папка с CRL")
         self.pushButton_4.clicked.connect(lambda: self.choose_directory('crl'))
+        self.pushButton_4.setMaximumSize(QSize(100, 16777215))
         self.horizontalLayout_9.addWidget(self.pushButton_4, 0, Qt.AlignVCenter)
 
-        self.pushButton_5 = QPushButton(self.frame_5)
+        self.pushButton_5 = QPushButton(self.groupBox_8)
         self.pushButton_5.setText("Папка с сертами")
         self.pushButton_5.clicked.connect(lambda: self.choose_directory('cert'))
+        self.pushButton_5.setMaximumSize(QSize(100, 16777215))
         self.horizontalLayout_9.addWidget(self.pushButton_5, 0, Qt.AlignVCenter)
 
-        self.pushButton_3 = QPushButton(self.frame_5)
+        self.pushButton_3 = QPushButton(self.groupBox_8)
         self.pushButton_3.setText("Папка для УЦ")
         self.pushButton_3.clicked.connect(lambda: self.choose_directory('uc'))
+        self.pushButton_3.setMaximumSize(QSize(100, 16777215))
         self.horizontalLayout_9.addWidget(self.pushButton_3, 0, Qt.AlignVCenter)
 
         self.verticalLayout_31.addLayout(self.horizontalLayout_9)
-
         self.verticalLayout_33 = QVBoxLayout()
-        self.label_9 = QLabel('  Папка с CRL: ')
-
-        self.verticalLayout_33.addWidget(self.label_9)
-
-        self.label_10 = QLabel('  Папка с сертификатами: ')
-
+        self.label_10 = QLabel(self.groupBox_8)
+        self.label_10 = QLabel('Папка с сертификатами: ')
         self.verticalLayout_33.addWidget(self.label_10)
-
-        self.label_11 = QLabel('  Папка для УЦ: ')
-
+        self.label_9 = QLabel(self.groupBox_8)
+        self.label_9 = QLabel('Папка с CRL: ')
+        self.verticalLayout_33.addWidget(self.label_9)
+        self.label_11 = QLabel(self.groupBox_8)
+        self.label_11 = QLabel('Папка для УЦ: ')
         self.verticalLayout_33.addWidget(self.label_11)
-
         self.verticalLayout_31.addLayout(self.verticalLayout_33)
-
         self.horizontalLayout_8.addLayout(self.verticalLayout_31)
-
-        self.verticalLayout_20.addWidget(self.frame_5)
-
+        self.verticalLayout_20.addWidget(self.groupBox_8)
         self.horizontalLayout_3.addLayout(self.verticalLayout_20)
-
         self.verticalLayout_19 = QVBoxLayout()
-        self.frame_6 = QFrame()
-        self.frame_6.setFrameShape(QFrame.StyledPanel)
-        self.frame_6.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout_19.addWidget(self.frame_6)
-
+        self.groupBox_3 = QGroupBox()
+        self.groupBox_3.setTitle('Скачивания CRL')
+        self.horizontalLayout_13 = QHBoxLayout(self.groupBox_3)
+        self.verticalLayout_32 = QVBoxLayout()
+        self.checkBox = QCheckBox(self.groupBox_3)
+        self.verticalLayout_32.addWidget(self.checkBox)
+        self.checkBox_4 = QCheckBox(self.groupBox_3)
+        self.verticalLayout_32.addWidget(self.checkBox_4)
+        self.checkBox_3 = QCheckBox(self.groupBox_3)
+        self.verticalLayout_32.addWidget(self.checkBox_3)
+        self.checkBox_2 = QCheckBox(self.groupBox_3)
+        self.verticalLayout_32.addWidget(self.checkBox_2)
+        self.horizontalLayout_13.addLayout(self.verticalLayout_32)
+        self.verticalLayout_19.addWidget(self.groupBox_3)
         self.horizontalLayout_3.addLayout(self.verticalLayout_19)
-
         self.verticalLayout_26 = QVBoxLayout()
-        self.frame_9 = QFrame()
-        self.frame_9.setFrameShape(QFrame.StyledPanel)
-        self.frame_9.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout_26.addWidget(self.frame_9)
-
+        self.groupBox_7 = QGroupBox()
+        self.groupBox_7.setTitle('Настройки окна')
+        self.horizontalLayout_18 = QHBoxLayout(self.groupBox_7)
+        self.verticalLayout_37 = QVBoxLayout()
+        self.label_25 = QLabel(self.groupBox_7)
+        self.label_25 = QLabel('Разрешить изменять размеры окна: ')
+        self.verticalLayout_37.addWidget(self.label_25)
+        self.label_27 = QLabel(self.groupBox_7)
+        self.label_27 = QLabel('Размер по вертикали: ')
+        self.verticalLayout_37.addWidget(self.label_27)
+        self.label_28 = QLabel(self.groupBox_7)
+        self.label_28 = QLabel('Размер по горизонтали: ')
+        self.verticalLayout_37.addWidget(self.label_28)
+        self.label_26 = QLabel(self.groupBox_7)
+        self.label_26 = QLabel('Сохранять пропорции при выходе: ')
+        self.verticalLayout_37.addWidget(self.label_26)
+        self.horizontalLayout_18.addLayout(self.verticalLayout_37)
+        self.verticalLayout_26.addWidget(self.groupBox_7)
         self.horizontalLayout_3.addLayout(self.verticalLayout_26)
-
         self.verticalLayout_17.addLayout(self.horizontalLayout_3)
-
         self.verticalLayout_14.addLayout(self.verticalLayout_17)
-
         self.verticalLayout_18 = QVBoxLayout()
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_5 = QHBoxLayout()
         self.verticalLayout_22 = QVBoxLayout()
-        self.frame_4 = QFrame()
-        self.frame_4.setFrameShape(QFrame.StyledPanel)
-        self.frame_4.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout_22.addWidget(self.frame_4)
-
+        self.groupBox_4 = QGroupBox()
+        self.groupBox_4.setTitle('Скачивание')
+        self.horizontalLayout_17 = QHBoxLayout(self.groupBox_4)
+        self.verticalLayout_34 = QVBoxLayout()
+        self.label_013 = QLabel(self.groupBox_4)
+        self.label_013 = QLabel('Тип скачивания: ')
+        self.verticalLayout_34.addWidget(self.label_013)
+        self.label_15 = QLabel(self.groupBox_4)
+        self.label_15 = QLabel('Проксирование: ')
+        self.verticalLayout_34.addWidget(self.label_15)
+        self.label_16 = QLabel(self.groupBox_4)
+        self.label_16 = QLabel('Ошибки при скачивании: ')
+        self.verticalLayout_34.addWidget(self.label_16)
+        self.label_14 = QLabel(self.groupBox_4)
+        self.label_14 = QLabel('Скачивание до отключения: ')
+        self.verticalLayout_34.addWidget(self.label_14)
+        self.horizontalLayout_17.addLayout(self.verticalLayout_34)
+        self.verticalLayout_22.addWidget(self.groupBox_4)
         self.horizontalLayout_5.addLayout(self.verticalLayout_22)
-
         self.verticalLayout_28 = QVBoxLayout()
-
+        self.groupBox_5 = QGroupBox()
+        self.groupBox_5.setTitle('Отображение данных во вкладках')
+        self.horizontalLayout_16 = QHBoxLayout(self.groupBox_5)
+        self.verticalLayout_35 = QVBoxLayout()
+        self.label_17 = QLabel(self.groupBox_5)
+        self.label_17 = QLabel('Отображать служебные утилиты: ')
+        self.verticalLayout_35.addWidget(self.label_17)
+        self.label_20 = QLabel(self.groupBox_5)
+        self.label_20 = QLabel('Разрешить манипуляцию со списком CRL: ')
+        self.verticalLayout_35.addWidget(self.label_20)
+        self.label_19 = QLabel(self.groupBox_5)
+        self.label_19 = QLabel('Скрыть кнопки во вкладках: ')
+        self.verticalLayout_35.addWidget(self.label_19)
+        self.label_18 = QLabel(self.groupBox_5)
+        self.label_18 = QLabel('Включить цветовую паркировку CRL: ')
+        self.verticalLayout_35.addWidget(self.label_18)
+        self.horizontalLayout_16.addLayout(self.verticalLayout_35)
+        self.verticalLayout_28.addWidget(self.groupBox_5)
         self.horizontalLayout_5.addLayout(self.verticalLayout_28)
-
         self.verticalLayout_21 = QVBoxLayout()
-        self.frame_10 = QFrame()
-        self.frame_10.setFrameShape(QFrame.StyledPanel)
-        self.frame_10.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout_21.addWidget(self.frame_10)
-
+        self.groupBox_6 = QGroupBox()
+        self.groupBox_6.setTitle('Расписание скачивания')
+        self.horizontalLayout_15 = QHBoxLayout(self.groupBox_6)
+        self.verticalLayout_36 = QVBoxLayout()
+        self.label_21 = QLabel(self.groupBox_6)
+        self.label_21 = QLabel('Работать по расписанию?: ')
+        self.verticalLayout_36.addWidget(self.label_21)
+        self.label_23 = QLabel(self.groupBox_6)
+        self.label_23 = QLabel('Сколько раз в день скачивать: ')
+        self.verticalLayout_36.addWidget(self.label_23)
+        self.label_24 = QLabel(self.groupBox_6)
+        self.label_24 = QLabel('Проводить самотестирование CRL?: ')
+        self.verticalLayout_36.addWidget(self.label_24)
+        self.label_22 = QLabel(self.groupBox_6)
+        self.label_22 = QLabel('Проверять УЦ?: ')
+        self.verticalLayout_36.addWidget(self.label_22)
+        self.horizontalLayout_15.addLayout(self.verticalLayout_36)
+        self.verticalLayout_21.addWidget(self.groupBox_6)
         self.horizontalLayout_5.addLayout(self.verticalLayout_21)
-
         self.horizontalLayout_4.addLayout(self.horizontalLayout_5)
-
         self.verticalLayout_18.addLayout(self.horizontalLayout_4)
-
         self.verticalLayout_14.addLayout(self.verticalLayout_18)
-
         self.verticalLayout_15.addLayout(self.verticalLayout_14)
         self.tab5.setLayout(self.verticalLayout_15)
 
@@ -1556,21 +1618,22 @@ class TabWidget(QWidget):
     def on_changed_find_custom_watching_crl(self, text=''):
         self.lableFindWatchingCustomCRL.setText('Ищем: ' + text)
         self.lableFindWatchingCustomCRL.adjustSize()
-
         query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
-                                           | WatchingCustomCRL.INN.contains(text)
-                                           | WatchingCustomCRL.OGRN.contains(text)
-                                           | WatchingCustomCRL.KeyId.contains(text)
-                                           | WatchingCustomCRL.Stamp.contains(text)
-                                           | WatchingCustomCRL.SerialNumber.contains(text)
-                                           | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
+                                                 | WatchingCustomCRL.INN.contains(text)
+                                                 | WatchingCustomCRL.OGRN.contains(text)
+                                                 | WatchingCustomCRL.KeyId.contains(text)
+                                                 | WatchingCustomCRL.Stamp.contains(text)
+                                                 | WatchingCustomCRL.SerialNumber.contains(text)
+                                                 | WatchingCustomCRL.UrlCRL.contains(text)).\
+            limit(config['Listing']['watch'])
         count_all = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
-                                               | WatchingCustomCRL.INN.contains(text)
-                                               | WatchingCustomCRL.OGRN.contains(text)
-                                               | WatchingCustomCRL.KeyId.contains(text)
-                                               | WatchingCustomCRL.Stamp.contains(text)
-                                               | WatchingCustomCRL.SerialNumber.contains(text)
-                                               | WatchingCustomCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
+                                                     | WatchingCustomCRL.INN.contains(text)
+                                                     | WatchingCustomCRL.OGRN.contains(text)
+                                                     | WatchingCustomCRL.KeyId.contains(text)
+                                                     | WatchingCustomCRL.Stamp.contains(text)
+                                                     | WatchingCustomCRL.SerialNumber.contains(text)
+                                                     | WatchingCustomCRL.UrlCRL.contains(text)).\
+            limit(config['Listing']['watch']).count()
         self.tableWidgetCustomWatchingCRL.setRowCount(count_all)
         count = 0
         for row in query:
@@ -1600,19 +1663,21 @@ class TabWidget(QWidget):
         self.lableFindWatchingDeleteCRL.adjustSize()
 
         query = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
-                                           | WatchingDeletedCRL.INN.contains(text)
-                                           | WatchingDeletedCRL.OGRN.contains(text)
-                                           | WatchingDeletedCRL.KeyId.contains(text)
-                                           | WatchingDeletedCRL.Stamp.contains(text)
-                                           | WatchingDeletedCRL.SerialNumber.contains(text)
-                                           | WatchingDeletedCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
+                                                  | WatchingDeletedCRL.INN.contains(text)
+                                                  | WatchingDeletedCRL.OGRN.contains(text)
+                                                  | WatchingDeletedCRL.KeyId.contains(text)
+                                                  | WatchingDeletedCRL.Stamp.contains(text)
+                                                  | WatchingDeletedCRL.SerialNumber.contains(text)
+                                                  | WatchingDeletedCRL.UrlCRL.contains(text)).\
+            limit(config['Listing']['watch'])
         count_all = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
-                                               | WatchingDeletedCRL.INN.contains(text)
-                                               | WatchingDeletedCRL.OGRN.contains(text)
-                                               | WatchingDeletedCRL.KeyId.contains(text)
-                                               | WatchingDeletedCRL.Stamp.contains(text)
-                                               | WatchingDeletedCRL.SerialNumber.contains(text)
-                                               | WatchingDeletedCRL.UrlCRL.contains(text)).limit(config['Listing']['watch']).count()
+                                                      | WatchingDeletedCRL.INN.contains(text)
+                                                      | WatchingDeletedCRL.OGRN.contains(text)
+                                                      | WatchingDeletedCRL.KeyId.contains(text)
+                                                      | WatchingDeletedCRL.Stamp.contains(text)
+                                                      | WatchingDeletedCRL.SerialNumber.contains(text)
+                                                      | WatchingDeletedCRL.UrlCRL.contains(text)).\
+            limit(config['Listing']['watch']).count()
         self.tableWidgetDeletedWatchingCRL.setRowCount(count_all)
         count = 0
         for row in query:
@@ -1657,6 +1722,7 @@ class TabWidget(QWidget):
         self.label_13.setText('Проверяем свой список CRl')
         check_custom_crl()
         self.label_13.setText('Готово')
+        self.textBrowser.setText(open('main.log', 'rb').read().decode())
 
     def init_xml(self):
         self.pushButton_2.setEnabled(False)
@@ -1831,7 +1897,7 @@ class TabWidget(QWidget):
         # current_version
         # last_update
         self.lable_2.setText(" Версия базы: " + current_version)
-        self.lable_3.setText(" Дата выпуска базы: " + last_update)
+        self.lable_3.setText(" Дата выпуска базы: " + last_update.replace('T', ' ').split('.')[0])
         self.lable_5.setText(" Всего УЦ: " + str(uc_count))
         self.lable_6.setText(" Всего Сертификатов: " + str(cert_count))
         self.lable_7.setText(" Всего CRL: " + str(crl_count))
@@ -1882,25 +1948,28 @@ class TabWidget(QWidget):
         self.on_changed_find_watching_crl('')
 
     def move_watching_to_delete(self, id, froms):
-        if froms == 'current':
-            from_bd = WatchingCRL.select().where(WatchingCRL.ID == id)
-            for row in from_bd:
-                to_bd = WatchingDeletedCRL(Name=row.Name,
-                                           INN=row.INN,
-                                           OGRN=row.OGRN,
-                                           KeyId=row.KeyId,
-                                           Stamp=row.Stamp,
-                                           SerialNumber=row.SerialNumber,
-                                           UrlCRL=row.UrlCRL)
-                to_bd.save()
-            WatchingCRL.delete_by_id(id)
-            self.on_changed_find_watching_crl()
-            self.on_changed_find_deleted_watching_crl()
-        elif froms == 'custom':
-            WatchingCustomCRL.delete_by_id(id)
-            self.on_changed_find_deleted_watching_crl('')
-        else:
-            print('Error: Ошибка перемещения')
+        try:
+            if froms == 'current':
+                from_bd = WatchingCRL.select().where(WatchingCRL.ID == id)
+                for row in from_bd:
+                    to_bd = WatchingDeletedCRL(Name=row.Name,
+                                               INN=row.INN,
+                                               OGRN=row.OGRN,
+                                               KeyId=row.KeyId,
+                                               Stamp=row.Stamp,
+                                               SerialNumber=row.SerialNumber,
+                                               UrlCRL=row.UrlCRL)
+                    to_bd.save()
+                WatchingCRL.delete_by_id(id)
+                self.on_changed_find_watching_crl()
+                self.on_changed_find_deleted_watching_crl()
+            elif froms == 'custom':
+                WatchingCustomCRL.delete_by_id(id)
+                self.on_changed_find_deleted_watching_crl('')
+            else:
+                print('Error: Ошибка перемещения')
+        except Exception:
+            print('Error: move_watching_to_delete()')
 
     # def delete_watching(self, id):
     #     WatchingCRL.delete_by_id(id)
