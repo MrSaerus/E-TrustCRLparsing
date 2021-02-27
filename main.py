@@ -1,4 +1,6 @@
 # PyQt5, lxml, peewee, ebcdic, OpenSSL, requests
+# TODO: Сделать самотестирование
+# TODO: Сделать обработчик ошибок
 import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests
 from urllib import request, error
 from os.path import expanduser
@@ -47,6 +49,7 @@ else:
 
 # socket.setdefaulttimeout(int(config['Socket']['timeout']))
 # TODO: Сделать проверку на корректность базы данных
+# TODO: Бекап базы данных
 connect = sqlite3.connect(config['Bd']['name'])
 db = SqliteDatabase(config['Bd']['name'])
 
@@ -120,7 +123,10 @@ class WatchingCRL(Model):
     SerialNumber = CharField()
     UrlCRL = CharField()
     status = CharField()
-    next_update = CharField()
+    download_status = CharField()
+    download_count = CharField()
+    last_update = DateTimeField()
+    next_update = DateTimeField()
 
     class Meta:
         database = db
@@ -136,7 +142,10 @@ class WatchingCustomCRL(Model):
     SerialNumber = CharField()
     UrlCRL = CharField()
     status = CharField()
-    next_update = CharField()
+    download_status = CharField()
+    download_count = CharField()
+    last_update = DateTimeField()
+    next_update = DateTimeField()
 
     class Meta:
         database = db
@@ -152,7 +161,10 @@ class WatchingDeletedCRL(Model):
     SerialNumber = CharField()
     UrlCRL = CharField()
     status = CharField()
-    next_update = CharField()
+    download_status = CharField()
+    download_count = CharField()
+    last_update = DateField()
+    next_update = DateField()
 
     class Meta:
         database = db
@@ -530,13 +542,13 @@ def parseXML(xmlFile):
     print('CRL:' + str(crl_count))
 
 
-def save_cert(seriall_number):
-    for certs in CERT.select().where(CERT.SerialNumber == seriall_number):
-        with open(config['Folders']['certs']+"/" + certs.SerialNumber + ".cer", "wb") as file:
+def save_cert(KeyId):
+    for certs in CERT.select().where(CERT.KeyId == KeyId):
+        with open(config['Folders']['certs']+"/" + certs.KeyId + ".cer", "wb") as file:
             file.write(base64.decodebytes(certs.Data.encode()))
     os.startfile(os.path.realpath(config['Folders']['certs']+"/"))
 
-# TODO: Доделать вариативность открытия файлов
+
 def open_file(file_name, file_type, url='None'):
     # open_file(sn + ".cer", "cer")
     # CryptExtAddCER «файл» Добавляет сертификат безопасности.
@@ -545,23 +557,33 @@ def open_file(file_name, file_type, url='None'):
     # CryptExtAddP7R «файл» Добавляет файл ответа на запрос сертификата.
     # CryptExtAddPFX «файл» Добавляет файл обмена личной информацией.
     # CryptExtAddSPC «файл» Добавляет сертификат PCKS #7.
-    # CryptExtOpenCAT «файл» Открывает каталог безопасности.
-    # CryptExtOpenCER «файл» Открывает сертификат безопасности.
-    # CryptExtOpenCRL «файл» Открывает список отзыва сертификатов.
-    # CryptExtOpenCTL «файл» Открывает список доверия сертификатов.
-    # CryptExtOpenP10 «файл» Открывает запрос на сертификат.
-    # CryptExtOpenP7R «файл» Открывает файл ответа на запрос сертификата.
-    # CryptExtOpenPKCS7 «файл» Открывает сертификат PCKS #7.
-    # CryptExtOpenSTR «файл» Открывает хранилище сериализированных сертификатов.
-
     type = ""
     folder = ""
-    if file_type == 'cer':
+    if file_type == 'cer':          # CryptExtOpenCER «файл» Открывает сертификат безопасности.
         type = 'CryptExtOpenCER'
         folder = 'certs'
-    elif file_type == 'crl':
+    elif file_type == 'crl':        # CryptExtOpenCRL «файл» Открывает список отзыва сертификатов.
         type = 'CryptExtOpenCRL'
         folder = 'crls'
+    elif file_type == 'cat':        # CryptExtOpenCAT «файл» Открывает каталог безопасности.
+        type = 'CryptExtOpenCAT'
+        folder = 'cats'
+    elif file_type == 'ctl':        # CryptExtOpenCTL «файл» Открывает список доверия сертификатов.
+        type = 'CryptExtOpenCTL'
+        folder = 'ctls'
+    elif file_type == 'p10':        # CryptExtOpenP10 «файл» Открывает запрос на сертификат.
+        type = 'CryptExtOpenP10'
+        folder = 'p10s'
+    elif file_type == 'p7r':        # CryptExtOpenP7R «файл» Открывает файл ответа на запрос сертификата.
+        type = 'CryptExtOpenP7R'
+        folder = 'p7rs'
+    elif file_type == 'pkcs7':      # CryptExtOpenPKCS7 «файл» Открывает сертификат PCKS #7.
+        type = 'CryptExtOpenPKCS7'
+        folder = 'pkcs7s'
+    elif file_type == 'str':        # CryptExtOpenSTR «файл» Открывает хранилище сериализированных сертификатов.
+        type = 'CryptExtOpenSTR'
+        folder = 'strs'
+
     run_dll = "%SystemRoot%\\System32\\rundll32.exe cryptext.dll,"+type
     path = os.path.realpath(config['Folders'][folder] + "/" + file_name + "." + file_type)
     print(path)
@@ -575,16 +597,19 @@ def open_file(file_name, file_type, url='None'):
         os.system(open_crl)
 
 
-def check_data_crl():
+def check_custom_crl():
     try:
-        query = WatchingCustomCRL.select().where(WatchingCustomCRL.status.contains('Info:'))
+        query = WatchingCustomCRL.select() #.where(WatchingCustomCRL.status.contains('Info:')
+                                           #      | WatchingCustomCRL.status.contains('Warning:'))
         for wcc in query:
             QCoreApplication.processEvents()
             issuer = {}
             print('----------------------------------------------------')
             try:
+                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
+                #                               open('crls/'+str(wcc.UrlCRL).split('/')[-1], 'rb').read())
                 crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                                              open('crls/'+str(wcc.UrlCRL).split('/')[-1], 'rb').read())
+                                              open('crls/'+str(wcc.KeyId)+'.crl', 'rb').read())
                 # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
                 crl_crypto = crl.get_issuer()
                 cryptography = crl.to_cryptography()
@@ -598,21 +623,69 @@ def check_data_crl():
                     Name = uc_data.Name
                 query_update = WatchingCustomCRL.update(INN=issuer['INN'],
                                                         OGRN=issuer['OGRN'],
-                                                        status='Error: NaN',
+                                                        status='Info: Filetype good',
+                                                        last_update=cryptography.last_update,
                                                         next_update=cryptography.next_update).\
                     where(WatchingCustomCRL.ID == wcc.ID)
                 query_update.execute()
-                print(wcc.ID, Name, issuer['OGRN'], issuer['INN'], cryptography.next_update)
+                print(wcc.ID, Name, issuer['OGRN'], issuer['INN'], cryptography.last_update, cryptography.next_update)
                 Name = 'Unknown'
                 issuer['INN'] = 'Unknown'
                 issuer['OGRN'] = 'Unknown'
             except Exception:
                 query_update = WatchingCustomCRL.update(status='Warning: FILETYPE ERROR',
-                                                        next_update='NaN').where(WatchingCustomCRL.ID == wcc.ID)
+                                                        last_update='1970-01-01',
+                                                        next_update='1970-01-01').where(WatchingCustomCRL.ID == wcc.ID)
                 query_update.execute()
-                print('Error: FILETYPE')
+                print('Warning: FILETYPE ERROR')
+    except Exception:
+        print('Error: check_custom_data_crl()')
+
+
+def check_crl():
+    try:
+        query = WatchingCRL.select() #.where(WatchingCustomCRL.download_status.contains('Info:')
+                                     #      | WatchingCustomCRL.download_status.contains('Warning:'))
+        for wc in query:
+            QCoreApplication.processEvents()
+            issuer = {}
+            print('----------------------------------------------------')
+            try:
+                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
+                #                               open('crls/'+str(wcc.UrlCRL).split('/')[-1], 'rb').read())
+                crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
+                                              open('crls/'+str(wc.KeyId)+'.crl', 'rb').read())
+                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
+                cryptography = crl.to_cryptography()
+                query_update = WatchingCRL.update(status='Info: Filetype good',
+                                                  last_update=cryptography.last_update,
+                                                  next_update=cryptography.next_update).where(WatchingCRL.ID == wc.ID)
+                query_update.execute()
+                print(wc.ID, wc.Name, wc.INN, wc.OGRN, cryptography.next_update)
+            except Exception:
+                query_update = WatchingCRL.update(status='Warning: FILETYPE ERROR',
+                                                  last_update='1970-01-01',
+                                                  next_update='1970-01-01').where(WatchingCRL.ID == wc.ID)
+                query_update.execute()
+                print('Warning: FILETYPE ERROR')
     except Exception:
         print('Error: check_data_crl()')
+
+
+def check_for_import_in_uc():
+    # TODO: Сделать проверку по времени
+    # TODO: Сделать проверку скачивания
+    current_datetime = '2021-02-27 17:42:00'
+    point_datetime = '2021-02-26 00:00:00'
+    last_date_copy = '2021-02-27 09:42:00'
+    query_1 = WatchingCRL.select().where(WatchingCRL.next_update.between(point_datetime, current_datetime))
+    query_2 = WatchingCustomCRL.select().where(WatchingCustomCRL.next_update.between(point_datetime, current_datetime))
+    for wc in query_1:
+        print(wc.Name, wc.next_update)
+    for wcc in query_2:
+        print(wcc.Name, wcc.next_update)
+    # TODO: Сделать проверку файлов и копирование
+# TODO: Сделать функцию копирования файлов для УЦ
 
 
 def download_file(file_url, file_name, folder, type='', w_id=''):
@@ -640,24 +713,24 @@ def download_file(file_url, file_name, folder, type='', w_id=''):
         print('\r\n' + file_url + ' download failed!' + '\r\n')
         if type == 'current':
             counter_failed_watching_crl = counter_failed_watching_crl + 1
-            query_update = WatchingCRL.update(status='Error: Download failed'
+            query_update = WatchingCRL.update(download_status='Error: Download failed'
                                                     ).where(WatchingCRL.ID == w_id)
             query_update.execute()
         elif type == 'custome':
             counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-            query_update = WatchingCustomCRL.update(status='Error: Download failed'
+            query_update = WatchingCustomCRL.update(download_status='Error: Download failed'
                                                     ).where(WatchingCustomCRL.ID == w_id)
             query_update.execute()
     else:
         print('\r\n' + file_url + ' download successfully!')
         if type == 'current':
             counter_failed_watching_crl = counter_failed_watching_crl + 1
-            query_update = WatchingCRL.update(status='Info: Download successfully'
+            query_update = WatchingCRL.update(download_status='Info: Download successfully'
                                                     ).where(WatchingCRL.ID == w_id)
             query_update.execute()
         elif type == 'custome':
             counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-            query_update = WatchingCustomCRL.update(status='Info: Download successfully'
+            query_update = WatchingCustomCRL.update(download_status='Info: Download successfully'
                                                     ).where(WatchingCustomCRL.ID == w_id)
             query_update.execute()
         # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
@@ -988,14 +1061,20 @@ class TabWidget(QWidget):
         self.pushButton_7 = QPushButton()
         self.pushButton_7.setText("Скачать CRL'ы")
         self.pushButton_7.pressed.connect(self.download_all_crls)
-        self.pushButton_7.setMaximumSize(QSize(200, 16777215))
+        self.pushButton_7.setMaximumSize(QSize(110, 16777215))
         self.horizontalLayout_14.addWidget(self.pushButton_7)
 
         self.pushButton_8 = QPushButton()
-        self.pushButton_8.setText("Проверить списки CRL")
-        self.pushButton_8.clicked.connect(check_data_crl)
-        self.pushButton_8.setMaximumSize(QSize(200, 16777215))
+        self.pushButton_8.setText("Проверить все CRL")
+        self.pushButton_8.clicked.connect(self.check_all_crl)
+        self.pushButton_8.setMaximumSize(QSize(110, 16777215))
         self.horizontalLayout_14.addWidget(self.pushButton_8)
+
+        self.pushButton_9 = QPushButton()
+        self.pushButton_9.setText("Копировать CRL для УЦ")
+        self.pushButton_9.clicked.connect(check_for_import_in_uc)
+        self.pushButton_9.setMaximumSize(QSize(150, 16777215))
+        self.horizontalLayout_14.addWidget(self.pushButton_9)
 
         self.layout_watching.addLayout(self.horizontalLayout_14)
 
@@ -1364,15 +1443,15 @@ class TabWidget(QWidget):
             self.buttonSert = QPushButton()
             self.buttonSert.setFixedSize(150, 30)
             self.buttonSert.setText("Просмотр сертификата")
-            serrial = row.SerialNumber
-            self.buttonSert.pressed.connect(lambda sn = serrial: open_file(sn, "cer"))
+            ki = row.KeyId
+            self.buttonSert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
             self.tableWidgetCert.setCellWidget(count, 5, self.buttonSert)
 
             buttonSertSave = QPushButton()
             buttonSertSave.setFixedSize(100, 30)
             buttonSertSave.setText("Сохранить")
-            sn = row.SerialNumber
-            buttonSertSave.pressed.connect(lambda serrial = sn: save_cert(serrial))
+            ki = row.KeyId
+            buttonSertSave.pressed.connect(lambda key_id=ki: save_cert(key_id))
             self.tableWidgetCert.setCellWidget(count, 6, buttonSertSave)
             count = count + 1
 
@@ -1460,7 +1539,7 @@ class TabWidget(QWidget):
             self.tableWidgetWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
             self.tableWidgetWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
-            if row.status == 'Info: Download successfully':
+            if row.status == 'Info: Filetype good':
                 self.tableWidgetWatchingCRL.setItem(count, 7, QTableWidgetItem('Dwn'))
             else:
                 self.tableWidgetWatchingCRL.setItem(count, 7, QTableWidgetItem('Err'))
@@ -1502,7 +1581,7 @@ class TabWidget(QWidget):
             self.tableWidgetCustomWatchingCRL.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
             self.tableWidgetCustomWatchingCRL.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
             self.tableWidgetCustomWatchingCRL.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
-            if row.status == 'Info: Download successfully':
+            if row.status == 'Info: Filetype good':
                 self.tableWidgetCustomWatchingCRL.setItem(count, 7, QTableWidgetItem('Dwn'))
             else:
                 self.tableWidgetCustomWatchingCRL.setItem(count, 7, QTableWidgetItem('Err'))
@@ -1571,6 +1650,13 @@ class TabWidget(QWidget):
         self._download.done.connect(lambda hint4: self.on_changed_find_cert(''))
         self._download.done.connect(lambda hint5: self.on_changed_find_crl(''))
         self._download.start()
+
+    def check_all_crl(self):
+        self.label_13.setText('Проверяем основной список CRl')
+        check_crl()
+        self.label_13.setText('Проверяем свой список CRl')
+        check_custom_crl()
+        self.label_13.setText('Готово')
 
     def init_xml(self):
         self.pushButton_2.setEnabled(False)
@@ -1844,7 +1930,7 @@ class TabWidget(QWidget):
             print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
         else:
             print('Not found crl_list.txt')
-    # TODO: Откорректировать код для работы со всеми типами
+
     def download_all_crls(self):
         QCoreApplication.processEvents()
         query_1 = WatchingCRL.select()
@@ -1858,7 +1944,8 @@ class TabWidget(QWidget):
             QCoreApplication.processEvents()
             counter_watching_crl = counter_watching_crl + 1
             file_url = wc.UrlCRL
-            file_name = wc.UrlCRL.split('/')[-1]
+            file_name = wc.KeyId+'.crl'
+            # file_name = wc.UrlCRL.split('/')[-1]
             # file_name = wcc.KeyId
             folder = config['Folders']['crls']
             self.label_13.setText(str(counter_watching_crl) + ' из '+ str(counter_watching_crl_all) + ' Загружаем: ' + str(wc.Name) + ' ' + str(wc.KeyId))
@@ -1869,7 +1956,8 @@ class TabWidget(QWidget):
             QCoreApplication.processEvents()
             counter_watching_custom_crl = counter_watching_custom_crl + 1
             file_url = wcc.UrlCRL
-            file_name = wcc.UrlCRL.split('/')[-1]
+            file_name = wcc.KeyId+'.crl'
+            # file_name = wcc.UrlCRL.split('/')[-1]
             # file_name = wcc.KeyId
             folder = config['Folders']['crls']
             self.label_13.setText(str(counter_watching_custom_crl) + ' из '+ str(watching_custom_crl_all) + ' Загружаем: ' + str(wcc.Name) + ' ' + str(wcc.KeyId))
