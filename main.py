@@ -600,79 +600,66 @@ def open_file(file_name, file_type, url='None'):
         os.system(open_crl)
 
 
-def check_custom_crl():
+def check_custom_crl(ID, Name, KeyId):
     try:
-        query = WatchingCustomCRL.select() #.where(WatchingCustomCRL.status.contains('Info:')
-                                           #      | WatchingCustomCRL.status.contains('Warning:'))
-        for wcc in query:
-            QCoreApplication.processEvents()
-            issuer = {}
-            print('----------------------------------------------------')
+        QCoreApplication.processEvents()
+        issuer = {}
+        print('----------------------------------------------------')
+        try:
+            crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
+                                          open('crls/'+str(KeyId)+'.crl', 'rb').read())
+            crl_crypto = crl.get_issuer()
+            cryptography = crl.to_cryptography()
             try:
-                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                #                               open('crls/'+str(wcc.UrlCRL).split('/')[-1], 'rb').read())
-                crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                                              open('crls/'+str(wcc.KeyId)+'.crl', 'rb').read())
-                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
-                crl_crypto = crl.get_issuer()
-                cryptography = crl.to_cryptography()
-                try:
-                    for type, data in crl_crypto.get_components():
-                        issuer[type.decode("utf-8")] = data.decode("utf-8")
-                except Exception:
-                    print('Error: get_components()')
-                query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
-                for uc_data in query_uc:
-                    Name = uc_data.Name
-                query_update = WatchingCustomCRL.update(INN=issuer['INN'],
-                                                        OGRN=issuer['OGRN'],
-                                                        status='Info: Filetype good',
-                                                        last_update=cryptography.last_update,
-                                                        next_update=cryptography.next_update).\
-                    where(WatchingCustomCRL.ID == wcc.ID)
-                query_update.execute()
-                print(wcc.ID, Name, issuer['OGRN'], issuer['INN'], cryptography.last_update, cryptography.next_update)
-                Name = 'Unknown'
-                issuer['INN'] = 'Unknown'
-                issuer['OGRN'] = 'Unknown'
+                for type, data in crl_crypto.get_components():
+                    issuer[type.decode("utf-8")] = data.decode("utf-8")
             except Exception:
-                query_update = WatchingCustomCRL.update(status='Warning: FILETYPE ERROR',
-                                                        last_update='1970-01-01',
-                                                        next_update='1970-01-01').where(WatchingCustomCRL.ID == wcc.ID)
-                query_update.execute()
-                print('Warning: FILETYPE ERROR')
+                print('Error: get_components()')
+            query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
+            for uc_data in query_uc:
+                Name = uc_data.Name
+            query_update = WatchingCustomCRL.update(INN=issuer['INN'],
+                                                    OGRN=issuer['OGRN'],
+                                                    status='Info: Filetype good',
+                                                    last_update=cryptography.last_update+datetime.timedelta(hours=5),
+                                                    next_update=cryptography.next_update+datetime.timedelta(hours=5)).\
+                where(WatchingCustomCRL.ID == ID)
+            query_update.execute()
+            print(ID, Name, cryptography.last_update, cryptography.next_update)
+            Name = 'Unknown'
+            issuer['INN'] = 'Unknown'
+            issuer['OGRN'] = 'Unknown'
+        except Exception:
+            query_update = WatchingCustomCRL.update(status='Warning: FILETYPE ERROR',
+                                                    last_update='1970-01-01',
+                                                    next_update='1970-01-01').where(WatchingCustomCRL.ID == ID)
+            query_update.execute()
+            print('Warning: FILETYPE ERROR')
     except Exception:
-        print('Error: check_custom_data_crl()')
+        print('Error: check_custom_crl()')
 
 
-def check_crl():
+def check_crl(id_wc, name_wc, key_id_wc):
     try:
-        query = WatchingCRL.select() #.where(WatchingCustomCRL.download_status.contains('Info:')
-                                     #      | WatchingCustomCRL.download_status.contains('Warning:'))
-        for wc in query:
-            QCoreApplication.processEvents()
-            issuer = {}
-            print('----------------------------------------------------')
-            try:
-                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                #                               open('crls/'+str(wcc.UrlCRL).split('/')[-1], 'rb').read())
-                crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                                              open('crls/'+str(wc.KeyId)+'.crl', 'rb').read())
-                # crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1, requests.get(str(wcc.UrlCRL)).content)
-                cryptography = crl.to_cryptography()
-                query_update = WatchingCRL.update(status='Info: Filetype good',
-                                                  last_update=cryptography.last_update,
-                                                  next_update=cryptography.next_update).where(WatchingCRL.ID == wc.ID)
-                query_update.execute()
-                print(wc.ID, wc.Name, wc.INN, wc.OGRN, cryptography.next_update)
-            except Exception:
-                query_update = WatchingCRL.update(status='Warning: FILETYPE ERROR',
-                                                  last_update='1970-01-01',
-                                                  next_update='1970-01-01').where(WatchingCRL.ID == wc.ID)
-                query_update.execute()
-                print('Warning: FILETYPE ERROR')
+        print('----------------------------------------------------')
+        try:
+            crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
+                                          open('crls/'+str(key_id_wc)+'.crl', 'rb').read())
+            cryptography = crl.to_cryptography()
+            print(cryptography.next_update)
+            query_update = WatchingCRL.update(status='Info: Filetype good',
+                                              last_update=cryptography.last_update+datetime.timedelta(hours=5),
+                                              next_update=cryptography.next_update+datetime.timedelta(hours=5)).where(WatchingCRL.ID == id_wc)
+            query_update.execute()
+            print(id_wc, name_wc, cryptography.last_update, cryptography.next_update)
+        except Exception:
+            query_update = WatchingCRL.update(status='Warning: FILETYPE ERROR',
+                                              last_update='1970-01-01',
+                                              next_update='1970-01-01').where(WatchingCRL.ID == id_wc)
+            query_update.execute()
+            print('Warning: FILETYPE ERROR')
     except Exception:
-        print('Error: check_data_crl()')
+        print('Error: check_crl()')
 
 
 def check_for_import_in_uc():
@@ -680,9 +667,9 @@ def check_for_import_in_uc():
         folder = config['Folders']['crls']
         current_datetime = datetime.datetime.now()
         before_current_datetime = datetime.datetime.now()-datetime.timedelta(days=5)
-        last_date_copy = '2021-02-28 00:00:00'
-        last_update = '2021-02-27 06:20:00'
-        next_update = '2021-02-27 19:52:00'
+        # last_date_copy = '2021-02-28 00:00:00'
+        # last_update = '2021-02-27 06:20:00'
+        # next_update = '2021-02-27 19:52:00'
         query_1 = WatchingCRL.select().where(
             WatchingCRL.last_update.between(before_current_datetime, current_datetime)
         )
@@ -691,17 +678,16 @@ def check_for_import_in_uc():
         )
         # datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S')
         for wc in query_1:
-            if wc.last_download < wc.last_update:
-                print('1 Copying', wc.Name, wc.last_update, wc.next_update)
-            if wc.last_download > wc.next_update:
-                print('1 Need to download', wc.Name, wc.last_update, wc.next_update)
-                download_file(wc.UrlCRL, wc.KeyId+'.crl', folder, 'current', wc.ID)
+            if current_datetime > wc.next_update:
+                print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
+                download_file(wc.UrlCRL, wc.KeyId+'.crl', folder, 'current', wc.ID, 'Yes')
+                check_crl(wc.ID, wc.Name, wc.KeyId)
         for wcc in query_2:
-            if wcc.last_download< wcc.last_update:
-                print('2 Copying', wcc.Name, wcc.last_update, wcc.next_update)
-            if wcc.last_download > wcc.next_update:
-                print('2 Need to download', wcc.Name, wcc.last_update, wcc.next_update)
-                download_file(wcc.UrlCRL, wcc.KeyId+'.crl', folder, 'custome', wcc.ID)
+            if current_datetime > wcc.next_update:
+                print('2 Need to download', wcc.Name, current_datetime, wcc.last_download, wcc.last_update, wcc.next_update)
+                download_file(wcc.UrlCRL, wcc.KeyId+'.crl', folder, 'custome', wcc.ID, 'Yes')
+                check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+        print('Complited')
         # TODO: Сделать проверку файлов и копирование
     except Exception:
         print('Error: check_for_import_in_uc()')
@@ -710,7 +696,7 @@ def check_for_import_in_uc():
 # TODO: Сделать функцию копирования файлов для УЦ
 
 
-def download_file(file_url, file_name, folder, type='', w_id=''):
+def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
     try:
         file_name_url = file_url.split('/')[-1]
         type_file = file_name_url.split('.')[-1]
@@ -734,34 +720,58 @@ def download_file(file_url, file_name, folder, type='', w_id=''):
         #         query_update.execute()
         except Exception:
             print('\r\n' + file_url + ' download failed!' + '\r\n')
-
-            if type == 'current':
-                counter_failed_watching_crl = counter_failed_watching_crl + 1
-                query_update = WatchingCRL.update(download_status='Error: Download failed',
-                                                  last_download=datetime.datetime.now()
-                                                  ).where(WatchingCRL.ID == w_id)
-                query_update.execute()
-            elif type == 'custome':
-                counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-                query_update = WatchingCustomCRL.update(download_status='Error: Download failed',
-                                                        last_download=datetime.datetime.now()
-                                                        ).where(WatchingCustomCRL.ID == w_id)
-                query_update.execute()
+            if set_dd == 'Yes':
+                if type == 'current':
+                    counter_failed_watching_crl = counter_failed_watching_crl + 1
+                    query_update = WatchingCRL.update(download_status='Error: Download failed',
+                                                      last_download=datetime.datetime.now()
+                                                      ).where(WatchingCRL.ID == w_id)
+                    query_update.execute()
+                elif type == 'custome':
+                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+                    query_update = WatchingCustomCRL.update(download_status='Error: Download failed',
+                                                            last_download=datetime.datetime.now()
+                                                            ).where(WatchingCustomCRL.ID == w_id)
+                    query_update.execute()
+            else:
+                if type == 'current':
+                    counter_failed_watching_crl = counter_failed_watching_crl + 1
+                    query_update = WatchingCRL.update(download_status='Error: Download failed'
+                                                      ).where(WatchingCRL.ID == w_id)
+                    query_update.execute()
+                elif type == 'custome':
+                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+                    query_update = WatchingCustomCRL.update(download_status='Error: Download failed'
+                                                            ).where(WatchingCustomCRL.ID == w_id)
+                    query_update.execute()
         else:
             print('\r\n' + file_url + ' download successfully!')
-            if type == 'current':
-                counter_failed_watching_crl = counter_failed_watching_crl + 1
-                query_update = WatchingCRL.update(download_status='Info: Download successfully',
-                                                  last_download=datetime.datetime.now()
-                                                  ).where(WatchingCRL.ID == w_id)
-                query_update.execute()
-            elif type == 'custome':
-                counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-                query_update = WatchingCustomCRL.update(download_status='Info: Download successfully',
-                                                        last_download=datetime.datetime.now()
-                                                        ).where(WatchingCustomCRL.ID == w_id)
-                query_update.execute()
-            # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
+            if set_dd == 'Yes':
+                if type == 'current':
+                    counter_failed_watching_crl = counter_failed_watching_crl + 1
+                    query_update = WatchingCRL.update(download_status='Info: Download successfully',
+                                                      last_download=datetime.datetime.now()
+                                                      ).where(WatchingCRL.ID == w_id)
+                    query_update.execute()
+                elif type == 'custome':
+                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+                    query_update = WatchingCustomCRL.update(download_status='Info: Download successfully',
+                                                            last_download=datetime.datetime.now()
+                                                            ).where(WatchingCustomCRL.ID == w_id)
+                    query_update.execute()
+                # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
+            else:
+                if type == 'current':
+                    counter_failed_watching_crl = counter_failed_watching_crl + 1
+                    query_update = WatchingCRL.update(download_status='Info: Download successfully'
+                                                      ).where(WatchingCRL.ID == w_id)
+                    query_update.execute()
+                elif type == 'custome':
+                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
+                    query_update = WatchingCustomCRL.update(download_status='Info: Download successfully'
+                                                            ).where(WatchingCustomCRL.ID == w_id)
+                    query_update.execute()
+
         print('cc' + str(counter_failed_watching_crl) + ' ccw' + str(counter_failed_watching_custom_crl))
     except Exception:
         print('Error: download_file()')
@@ -869,14 +879,18 @@ class MainWindow(QMainWindow):
         self.window_uc = None
         self.tab_info()
         self.tab_uc()
+        self.ui.lineEdit.textChanged[str].connect(self.tab_uc)
         self.tab_cert()
+        self.ui.lineEdit_2.textChanged[str].connect(self.tab_cert)
         self.tab_crl()
+        self.ui.lineEdit_3.textChanged[str].connect(self.tab_crl)
         self.tab_watching_crl()
         self.sub_tab_watching_crl()
+        self.ui.lineEdit_4.textChanged[str].connect(self.sub_tab_watching_crl)
         self.sub_tab_watching_custom_crl()
+        self.ui.lineEdit_5.textChanged[str].connect(self.sub_tab_watching_custom_crl)
         self.sub_tab_watching_off_crl()
-
-    # TODO: Need fix loop bug
+        self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_off_crl)
 
     def tab_info(self):
         try:
@@ -901,10 +915,11 @@ class MainWindow(QMainWindow):
             self.ui.label_5.setText(" Всего CRL: " + str(crls.count()))
             self.ui.label_6.setText(" CRL будет загружено: "
                                     + str(int(watching_crl.count())
-                                          +int(watching_cusom_crl.count())))
+                                          + int(watching_cusom_crl.count())))
             self.ui.pushButton.clicked.connect(self.download_xml)
             self.ui.pushButton_2.clicked.connect(self.init_xml)
             self.ui.pushButton_13.clicked.connect(self.export_crl)
+            self.ui.pushButton_6.pressed.connect(self.import_crl_list)
             watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(WatchingCRL.OGRN == '1047702026701')
             self.ui.tableWidget_7.resizeColumnsToContents()
             self.ui.tableWidget_7.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
@@ -936,8 +951,6 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_8.setColumnWidth(3, 180)
             self.ui.tableWidget_8.resizeColumnsToContents()
             self.ui.tableWidget_8.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-
-
         except Exception:
             print('Error: tab_info()')
 
@@ -945,7 +958,6 @@ class MainWindow(QMainWindow):
         try:
             # self.ui.label_8.setText('Ищем: ' + text)
             # self.ui.label_8.adjustSize()
-            self.ui.lineEdit.textChanged[str].connect(self.tab_uc)
 
             query = UC.select().where(UC.Registration_Number.contains(text)
                                       | UC.INN.contains(text)
@@ -979,7 +991,7 @@ class MainWindow(QMainWindow):
         try:
             # self.lableFindCert.setText('Ищем: ' + text)
             # self.lableFindCert.adjustSize()
-            self.ui.lineEdit_2.textChanged[str].connect(self.tab_cert)
+
 
             query = CERT.select().where(CERT.Registration_Number.contains(text)
                                         | CERT.Name.contains(text)
@@ -1027,7 +1039,6 @@ class MainWindow(QMainWindow):
         try:
             # self.lableFindCRL.setText('Ищем: ' + text)
             # self.lableFindCRL.adjustSize()
-            self.ui.lineEdit_3.textChanged[str].connect(self.tab_crl)
 
             query = CRL.select().where(CRL.Registration_Number.contains(text)
                                        | CRL.Name.contains(text)
@@ -1090,14 +1101,12 @@ class MainWindow(QMainWindow):
     def tab_watching_crl(self):
         self.ui.pushButton_4.pressed.connect(self.download_all_crls)
         self.ui.pushButton_5.clicked.connect(self.check_all_crl)
-        self.ui.pushButton_3.clicked.connect(check_for_import_in_uc)
-        self.ui.pushButton_6.pressed.connect(self.import_crl_list)
+        self.ui.pushButton_3.clicked.connect(self.copy_crl_to_uc)
 
     def sub_tab_watching_crl(self, text=''):
         try:
             self.ui.label_8.setText('Ищем: ' + text)
             self.ui.label_8.adjustSize()
-            self.ui.lineEdit_4.textChanged[str].connect(self.sub_tab_watching_crl)
 
             query = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
                                                | WatchingCRL.INN.contains(text)
@@ -1153,7 +1162,7 @@ class MainWindow(QMainWindow):
         try:
             self.ui.label_8.setText('Ищем: ' + text)
             self.ui.label_8.adjustSize()
-            self.ui.lineEdit_5.textChanged[str].connect(self.sub_tab_watching_custom_crl)
+
             query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
                                                      | WatchingCustomCRL.INN.contains(text)
                                                      | WatchingCustomCRL.OGRN.contains(text)
@@ -1208,7 +1217,7 @@ class MainWindow(QMainWindow):
         try:
             self.ui.label_8.setText('Ищем: ' + text)
             self.ui.label_8.adjustSize()
-            self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_off_crl)
+
             query = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
                                                       | WatchingDeletedCRL.INN.contains(text)
                                                       | WatchingDeletedCRL.OGRN.contains(text)
@@ -1309,11 +1318,17 @@ class MainWindow(QMainWindow):
 
     def check_all_crl(self):
         try:
+            query_1 = WatchingCRL.select()
+            query_2 = WatchingCustomCRL.select()
+            self.ui.pushButton_5.setEnabled(False)
             self.ui.label_8.setText('Проверяем основной список CRL')
-            check_crl()
+            for wc in query_1:
+                check_crl(wc.ID, wc.Name, wc.KeyId)
             self.ui.label_8.setText('Проверяем свой список CRL')
-            check_custom_crl()
+            for wcc in query_2:
+                check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
             self.ui.label_8.setText('Готово')
+            self.ui.pushButton_5.setEnabled(True)
             # self.textBrowser.setText(open('main.log', 'rb').read().decode())
         except Exception:
             print('Error: check_all_crl()')
@@ -1616,6 +1631,7 @@ class MainWindow(QMainWindow):
 
     def download_all_crls(self):
         try:
+            self.ui.pushButton_4.setEnabled(False)
             QCoreApplication.processEvents()
             query_1 = WatchingCRL.select()
             query_2 = WatchingCustomCRL.select()
@@ -1650,6 +1666,7 @@ class MainWindow(QMainWindow):
             self.ui.label_8.setText('Загрузка закончена')
             print('WatchingCustomCRL downloaded '+ str(counter_watching_custom_crl))
             print('All download done, w='+str(counter_watching_crl)+', c='+str(counter_watching_custom_crl))
+            self.ui.pushButton_4.setEnabled(True)
         except Exception:
             print('Error: download_all_crls()')
 
@@ -1657,6 +1674,13 @@ class MainWindow(QMainWindow):
         self.ui.label_7.setText('Генерируем файл')
         export_all_watching_crl()
         self.ui.label_7.setText('Файл сгенерирован')
+
+    def copy_crl_to_uc(self):
+        self.ui.pushButton_3.setEnabled(False)
+        self.ui.label_8.setText('Обрабатываем CRL для загрузки в УЦ')
+        check_for_import_in_uc()
+        self.ui.label_8.setText('Все CRL обработаны')
+        self.ui.pushButton_3.setEnabled(True)
 
 
 class UcWindow(QWidget):

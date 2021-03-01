@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainbZcQbH.ui'
+## Form generated from reading UI file 'mainpvmPiB.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -109,12 +109,46 @@ class Ui_MainWindow(object):
         self.verticalLayout_38.setSpacing(0)
         self.verticalLayout_38.setObjectName(u"verticalLayout_38")
         self.verticalLayout_38.setContentsMargins(0, 0, 0, 0)
-        self.pushButton_13 = QPushButton(self.frame_11)
+        self.frame_12 = QFrame(self.frame_11)
+        self.frame_12.setObjectName(u"frame_12")
+        self.frame_12.setFrameShape(QFrame.NoFrame)
+        self.frame_12.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_2 = QHBoxLayout(self.frame_12)
+        self.horizontalLayout_2.setSpacing(1)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(1, 1, 1, 1)
+        self.pushButton_6 = QPushButton(self.frame_12)
+        self.pushButton_6.setObjectName(u"pushButton_6")
+        self.pushButton_6.setMinimumSize(QSize(160, 30))
+
+        self.horizontalLayout_2.addWidget(self.pushButton_6)
+
+        self.pushButton_13 = QPushButton(self.frame_12)
         self.pushButton_13.setObjectName(u"pushButton_13")
-        self.pushButton_13.setMinimumSize(QSize(200, 30))
+        self.pushButton_13.setMinimumSize(QSize(150, 30))
         self.pushButton_13.setMaximumSize(QSize(250, 16777215))
 
-        self.verticalLayout_38.addWidget(self.pushButton_13, 0, Qt.AlignHCenter)
+        self.horizontalLayout_2.addWidget(self.pushButton_13)
+
+
+        self.verticalLayout_38.addWidget(self.frame_12)
+
+        self.frame_13 = QFrame(self.frame_11)
+        self.frame_13.setObjectName(u"frame_13")
+        self.frame_13.setFrameShape(QFrame.NoFrame)
+        self.frame_13.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_3 = QHBoxLayout(self.frame_13)
+        self.horizontalLayout_3.setSpacing(1)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(1, 1, 1, 1)
+        self.progressBar_3 = QProgressBar(self.frame_13)
+        self.progressBar_3.setObjectName(u"progressBar_3")
+        self.progressBar_3.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_3.addWidget(self.progressBar_3)
+
+
+        self.verticalLayout_38.addWidget(self.frame_13)
 
 
         self.verticalLayout_34.addWidget(self.frame_11, 0, Qt.AlignHCenter|Qt.AlignBottom)
@@ -183,19 +217,32 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.frame_3 = QFrame(self.tab)
         self.frame_3.setObjectName(u"frame_3")
-        self.frame_3.setFrameShape(QFrame.StyledPanel)
+        self.frame_3.setFrameShape(QFrame.NoFrame)
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.verticalLayout_16 = QVBoxLayout(self.frame_3)
+        self.verticalLayout_16.setSpacing(6)
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.verticalLayout_16.setContentsMargins(9, -1, 9, -1)
+        self.frame_14 = QFrame(self.frame_3)
+        self.frame_14.setObjectName(u"frame_14")
+        self.frame_14.setFrameShape(QFrame.StyledPanel)
+        self.frame_14.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_14 = QHBoxLayout(self.frame_14)
+        self.horizontalLayout_14.setSpacing(6)
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.horizontalLayout_14.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_15 = QVBoxLayout()
         self.verticalLayout_15.setObjectName(u"verticalLayout_15")
-        self.label_7 = QLabel(self.frame_3)
+        self.label_7 = QLabel(self.frame_14)
         self.label_7.setObjectName(u"label_7")
 
         self.verticalLayout_15.addWidget(self.label_7)
 
 
-        self.verticalLayout_16.addLayout(self.verticalLayout_15)
+        self.horizontalLayout_14.addLayout(self.verticalLayout_15)
+
+
+        self.verticalLayout_16.addWidget(self.frame_14)
 
 
         self.verticalLayout_6.addWidget(self.frame_3)
@@ -222,10 +269,12 @@ class Ui_MainWindow(object):
         self.frame_2.setMinimumSize(QSize(0, 0))
         self.frame_2.setStyleSheet(u";\n"
 "border-color: rgb(0, 0, 0);")
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
+        self.frame_2.setFrameShape(QFrame.NoFrame)
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.frame_2)
+        self.horizontalLayout_4.setSpacing(6)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_10 = QVBoxLayout()
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.pushButton = QPushButton(self.frame_2)
@@ -694,22 +743,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_17.addWidget(self.tabWidget_2)
 
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.pushButton_6 = QPushButton(self.tab_5)
-        self.pushButton_6.setObjectName(u"pushButton_6")
-
-        self.horizontalLayout_2.addWidget(self.pushButton_6)
-
-        self.progressBar_3 = QProgressBar(self.tab_5)
-        self.progressBar_3.setObjectName(u"progressBar_3")
-        self.progressBar_3.setAlignment(Qt.AlignCenter)
-
-        self.horizontalLayout_2.addWidget(self.progressBar_3)
-
-
-        self.verticalLayout_17.addLayout(self.horizontalLayout_2)
-
         self.tabWidget.addTab(self.tab_5, "")
         self.tab_6 = QWidget()
         self.tab_6.setObjectName(u"tab_6")
@@ -764,6 +797,7 @@ class Ui_MainWindow(object):
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0441\u0435\u0433\u043e CRL:", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u0423\u0426 \u0434\u043b\u044f \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 \u043e\u0442\u043c\u0435\u0447\u0435\u043d\u043e:", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"CRL \u0431\u0443\u0434\u0435\u0442 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u043e:", None))
+        self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"\u0418\u043c\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0441\u043f\u0438\u0441\u043e\u043a CRL", None))
         self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c CRL \u043b\u0438\u0441\u0442", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"\u0413\u043e\u043b\u043e\u0432\u043d\u043e\u0439 \u0423\u0434\u043e\u0441\u0442\u043e\u0432\u0435\u0440\u044f\u044e\u0449\u0438\u0439 \u0446\u0435\u043d\u0442\u0440", None))
         ___qtablewidgetitem = self.tableWidget_7.horizontalHeaderItem(0)
@@ -875,7 +909,6 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem43 = self.tableWidget_6.horizontalHeaderItem(6)
         ___qtablewidgetitem43.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441 CRL", None));
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_9), QCoreApplication.translate("MainWindow", u"\u041e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044b\u0435", None))
-        self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"\u0418\u043c\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0441\u043f\u0438\u0441\u043e\u043a CRL", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QCoreApplication.translate("MainWindow", u"\u0421\u043a\u0430\u0447\u0438\u0432\u0430\u0435\u043c\u044b\u0435 CRL", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_10), QCoreApplication.translate("MainWindow", u"\u041e\u0441\u043d\u043e\u0432\u043d\u043e\u0435", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_11), QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441", None))
