@@ -667,9 +667,6 @@ def check_for_import_in_uc():
         folder = config['Folders']['crls']
         current_datetime = datetime.datetime.now()
         before_current_datetime = datetime.datetime.now()-datetime.timedelta(days=5)
-        # last_date_copy = '2021-02-28 00:00:00'
-        # last_update = '2021-02-27 06:20:00'
-        # next_update = '2021-02-27 19:52:00'
         query_1 = WatchingCRL.select().where(
             WatchingCRL.last_update.between(before_current_datetime, current_datetime)
         )
@@ -677,23 +674,33 @@ def check_for_import_in_uc():
             WatchingCustomCRL.last_update.between(before_current_datetime, current_datetime)
         )
         # datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S')
+        count = 0
         for wc in query_1:
             if current_datetime > wc.next_update:
                 print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
                 download_file(wc.UrlCRL, wc.KeyId+'.crl', folder, 'current', wc.ID, 'Yes')
-                check_crl(wc.ID, wc.Name, wc.KeyId)
+                try:
+                    shutil.copy2('crls/'+wc.KeyId+'.crl', 'uc/current_'+wc.KeyId+'.crl')
+                    check_crl(wc.ID, wc.Name, wc.KeyId)
+                except Exception:
+                    print('Error: check_for_import_in_uc()::error_copy_current')
+                count = count + 1
         for wcc in query_2:
             if current_datetime > wcc.next_update:
                 print('2 Need to download', wcc.Name, current_datetime, wcc.last_download, wcc.last_update, wcc.next_update)
                 download_file(wcc.UrlCRL, wcc.KeyId+'.crl', folder, 'custome', wcc.ID, 'Yes')
-                check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
-        print('Complited')
-        # TODO: Сделать проверку файлов и копирование
+                try:
+                    shutil.copy2('crls/'+wcc.KeyId + '.crl', 'uc/custom_' + wcc.KeyId + '.crl')
+                    check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+                except Exception:
+                    print('Error: check_for_import_in_uc()::error_copy_custom')
+                count = count + 1
+        if count > 0:
+            print('Copied ' + str(count) + ' count\'s CRL')
+        else:
+            print('Needed CRL not found')
     except Exception:
         print('Error: check_for_import_in_uc()')
-
-
-# TODO: Сделать функцию копирования файлов для УЦ
 
 
 def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
@@ -701,46 +708,27 @@ def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
         file_name_url = file_url.split('/')[-1]
         type_file = file_name_url.split('.')[-1]
         path = folder + '/' + file_name # + '.' + type_file
-        counter_failed_watching_crl = 0
-        counter_failed_watching_custom_crl = 0
         try:
             request.urlretrieve(file_url, path, schedule)
-        # except error.HTTPError as e:
-        #     print(e)
-        #     print('\r\n' + file_url + ' download failed!' + '\r\n')
-        #     if type == 'current':
-        #         counter_failed_watching_crl = counter_failed_watching_crl + 1
-        #         query_update = WatchingCRL.update(status='Error: Download failed'
-        #                                                 ).where(WatchingCRL.ID == w_id)
-        #         query_update.execute()
-        #     elif type == 'custome':
-        #         counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
-        #         query_update = WatchingCustomCRL.update(status='Error: Download failed'
-        #                                                 ).where(WatchingCustomCRL.ID == w_id)
-        #         query_update.execute()
         except Exception:
             print('\r\n' + file_url + ' download failed!' + '\r\n')
             if set_dd == 'Yes':
                 if type == 'current':
-                    counter_failed_watching_crl = counter_failed_watching_crl + 1
                     query_update = WatchingCRL.update(download_status='Error: Download failed',
                                                       last_download=datetime.datetime.now()
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
                 elif type == 'custome':
-                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
                     query_update = WatchingCustomCRL.update(download_status='Error: Download failed',
                                                             last_download=datetime.datetime.now()
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
             else:
                 if type == 'current':
-                    counter_failed_watching_crl = counter_failed_watching_crl + 1
                     query_update = WatchingCRL.update(download_status='Error: Download failed'
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
                 elif type == 'custome':
-                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
                     query_update = WatchingCustomCRL.update(download_status='Error: Download failed'
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
@@ -748,13 +736,11 @@ def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
             print('\r\n' + file_url + ' download successfully!')
             if set_dd == 'Yes':
                 if type == 'current':
-                    counter_failed_watching_crl = counter_failed_watching_crl + 1
                     query_update = WatchingCRL.update(download_status='Info: Download successfully',
                                                       last_download=datetime.datetime.now()
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
                 elif type == 'custome':
-                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
                     query_update = WatchingCustomCRL.update(download_status='Info: Download successfully',
                                                             last_download=datetime.datetime.now()
                                                             ).where(WatchingCustomCRL.ID == w_id)
@@ -762,17 +748,13 @@ def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
                 # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
             else:
                 if type == 'current':
-                    counter_failed_watching_crl = counter_failed_watching_crl + 1
                     query_update = WatchingCRL.update(download_status='Info: Download successfully'
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
                 elif type == 'custome':
-                    counter_failed_watching_custom_crl = counter_failed_watching_custom_crl + 1
                     query_update = WatchingCustomCRL.update(download_status='Info: Download successfully'
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
-
-        print('cc' + str(counter_failed_watching_crl) + ' ccw' + str(counter_failed_watching_custom_crl))
     except Exception:
         print('Error: download_file()')
 
