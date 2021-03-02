@@ -31,10 +31,10 @@ class Worker(QObject):
             self._isRunning = True
             self._step = 0
 
-        while self._step < self._maxSteps and self._isRunning == True:
+        while self._isRunning == True:
             self._step += 1
             self.stepIncreased.emit(self._step)
-            time.sleep(0.1)
+            time.sleep(1)
 
         print("finished...")
 

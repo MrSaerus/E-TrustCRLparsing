@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1130</width>
-    <height>646</height>
+    <width>1118</width>
+    <height>659</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -237,7 +237,7 @@
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="">
+                     <layout class="QHBoxLayout" name="horizontalLayout_3">
                       <property name="spacing">
                        <number>1</number>
                       </property>
@@ -271,6 +271,15 @@
                   <layout class="QVBoxLayout" name="verticalLayout_35">
                    <item>
                     <widget class="QTableWidget" name="tableWidget_7">
+                     <property name="verticalScrollBarPolicy">
+                      <enum>Qt::ScrollBarAlwaysOff</enum>
+                     </property>
+                     <property name="sortingEnabled">
+                      <bool>true</bool>
+                     </property>
+                     <attribute name="verticalHeaderVisible">
+                      <bool>false</bool>
+                     </attribute>
                      <column>
                       <property name="text">
                        <string>Идентификатор ключа</string>
@@ -304,6 +313,15 @@
                   <layout class="QVBoxLayout" name="verticalLayout_36">
                    <item>
                     <widget class="QTableWidget" name="tableWidget_8">
+                     <property name="verticalScrollBarPolicy">
+                      <enum>Qt::ScrollBarAlwaysOff</enum>
+                     </property>
+                     <property name="sortingEnabled">
+                      <bool>true</bool>
+                     </property>
+                     <attribute name="verticalHeaderVisible">
+                      <bool>false</bool>
+                     </attribute>
                      <column>
                       <property name="text">
                        <string>Идентификатор ключа</string>
@@ -644,6 +662,9 @@ border-color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QTableWidget" name="tableWidget">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
           <column>
            <property name="text">
             <string>Р/Н</string>
@@ -732,6 +753,9 @@ border-color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QTableWidget" name="tableWidget_2">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
           <column>
            <property name="text">
             <string>Р/Н</string>
@@ -830,6 +854,9 @@ border-color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QTableWidget" name="tableWidget_3">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
           <column>
            <property name="text">
             <string>Р/Н</string>
@@ -993,6 +1020,9 @@ border-color: rgb(0, 0, 0);</string>
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget_4">
+              <property name="sortingEnabled">
+               <bool>true</bool>
+              </property>
               <column>
                <property name="text">
                 <string>Name</string>
@@ -1101,6 +1131,9 @@ border-color: rgb(0, 0, 0);</string>
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget_5">
+              <property name="sortingEnabled">
+               <bool>true</bool>
+              </property>
               <column>
                <property name="text">
                 <string>Name</string>
@@ -1209,6 +1242,9 @@ border-color: rgb(0, 0, 0);</string>
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget_6">
+              <property name="sortingEnabled">
+               <bool>true</bool>
+              </property>
               <column>
                <property name="text">
                 <string>Name</string>
@@ -1270,7 +1306,7 @@ border-color: rgb(0, 0, 0);</string>
         <item>
          <widget class="QTabWidget" name="tabWidget_3">
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_10">
            <attribute name="title">
@@ -1648,6 +1684,12 @@ border-color: rgb(0, 0, 0);</string>
                        </item>
                        <item>
                         <widget class="QProgressBar" name="progressBar_3">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
                          <property name="alignment">
                           <set>Qt::AlignCenter</set>
                          </property>
@@ -1911,186 +1953,178 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Настройки основного окна</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_58">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_57">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_38">
-                         <item alignment="Qt::AlignLeft">
-                          <widget class="QFrame" name="frame_16">
-                           <property name="frameShape">
-                            <enum>QFrame::NoFrame</enum>
-                           </property>
-                           <property name="frameShadow">
-                            <enum>QFrame::Raised</enum>
-                           </property>
-                           <layout class="QHBoxLayout" name="horizontalLayout_43">
-                            <item>
-                             <widget class="QLabel" name="label_22">
-                              <property name="minimumSize">
-                               <size>
-                                <width>100</width>
-                                <height>0</height>
-                               </size>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_23">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_95">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_57">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_38">
+                            <item alignment="Qt::AlignLeft">
+                             <widget class="QFrame" name="frame_16">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
                               </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>16777215</width>
-                                <height>16777215</height>
-                               </size>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
                               </property>
-                              <property name="text">
-                               <string>Высота окна:</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="lineEdit_12">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>100</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_41">
-                         <item alignment="Qt::AlignLeft">
-                          <widget class="QFrame" name="frame_15">
-                           <property name="frameShape">
-                            <enum>QFrame::NoFrame</enum>
-                           </property>
-                           <property name="frameShadow">
-                            <enum>QFrame::Raised</enum>
-                           </property>
-                           <layout class="QHBoxLayout" name="horizontalLayout_42">
-                            <item>
-                             <widget class="QLabel" name="label_23">
-                              <property name="minimumSize">
-                               <size>
-                                <width>100</width>
-                                <height>0</height>
-                               </size>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>16777215</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Ширина окна:</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="lineEdit_11">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>100</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_43">
+                               <item>
+                                <widget class="QLabel" name="label_22">
+                                 <property name="minimumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>0</height>
+                                  </size>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>16777215</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                 <property name="text">
+                                  <string>Высота окна:</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item>
+                                <widget class="QLineEdit" name="lineEdit_12">
+                                 <property name="sizePolicy">
+                                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                   <horstretch>0</horstretch>
+                                   <verstretch>0</verstretch>
+                                  </sizepolicy>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
                              </widget>
                             </item>
                            </layout>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_40">
-                         <item alignment="Qt::AlignLeft">
-                          <widget class="QFrame" name="frame_18">
-                           <property name="frameShape">
-                            <enum>QFrame::NoFrame</enum>
-                           </property>
-                           <property name="frameShadow">
-                            <enum>QFrame::Raised</enum>
-                           </property>
-                           <layout class="QHBoxLayout" name="horizontalLayout_44">
-                            <item>
-                             <widget class="QLabel" name="label_24">
-                              <property name="minimumSize">
-                               <size>
-                                <width>220</width>
-                                <height>20</height>
-                               </size>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_41">
+                            <item alignment="Qt::AlignLeft">
+                             <widget class="QFrame" name="frame_15">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
                               </property>
-                              <property name="text">
-                               <string>Заблокировать изменение размера окна</string>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
                               </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QCheckBox" name="checkBox_3">
-                              <property name="text">
-                               <string>Да</string>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_39">
-                         <item alignment="Qt::AlignLeft">
-                          <widget class="QFrame" name="frame_17">
-                           <property name="frameShape">
-                            <enum>QFrame::NoFrame</enum>
-                           </property>
-                           <property name="frameShadow">
-                            <enum>QFrame::Raised</enum>
-                           </property>
-                           <layout class="QHBoxLayout" name="horizontalLayout_45">
-                            <item>
-                             <widget class="QLabel" name="label_25">
-                              <property name="minimumSize">
-                               <size>
-                                <width>220</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Сохранять размер окна при выходе</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QCheckBox" name="checkBox_2">
-                              <property name="text">
-                               <string>Да</string>
-                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_42">
+                               <item>
+                                <widget class="QLabel" name="label_23">
+                                 <property name="minimumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>0</height>
+                                  </size>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>16777215</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                 <property name="text">
+                                  <string>Ширина окна:</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item>
+                                <widget class="QLineEdit" name="lineEdit_11">
+                                 <property name="sizePolicy">
+                                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                   <horstretch>0</horstretch>
+                                   <verstretch>0</verstretch>
+                                  </sizepolicy>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
                              </widget>
                             </item>
                            </layout>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_37"/>
-                       </item>
-                      </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_40">
+                            <item>
+                             <widget class="QFrame" name="frame_18">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
+                              </property>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_44">
+                               <item>
+                                <widget class="QCheckBox" name="checkBox_3">
+                                 <property name="layoutDirection">
+                                  <enum>Qt::RightToLeft</enum>
+                                 </property>
+                                 <property name="text">
+                                  <string>Заблокировать изменение размера окна</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_39">
+                            <item alignment="Qt::AlignLeft">
+                             <widget class="QFrame" name="frame_17">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
+                              </property>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_45">
+                               <item>
+                                <widget class="QCheckBox" name="checkBox_2">
+                                 <property name="layoutDirection">
+                                  <enum>Qt::RightToLeft</enum>
+                                 </property>
+                                 <property name="text">
+                                  <string>Сохранять размер окна при выходе</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_37"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2133,189 +2167,201 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Папки скачивания</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_46">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_45">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_21">
-                         <item>
-                          <widget class="QPushButton" name="pushButton_18">
-                           <property name="minimumSize">
-                            <size>
-                             <width>210</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>210</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Выбрать папку для САС</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_13">
-                           <property name="minimumSize">
-                            <size>
-                             <width>200</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_20">
-                         <item>
-                          <widget class="QPushButton" name="pushButton_17">
-                           <property name="minimumSize">
-                            <size>
-                             <width>210</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>210</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Выбрать папку для Сертификатов</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_12">
-                           <property name="minimumSize">
-                            <size>
-                             <width>200</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_19">
-                         <item>
-                          <widget class="QPushButton" name="pushButton_16">
-                           <property name="minimumSize">
-                            <size>
-                             <width>210</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>210</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Выбрать папку временных файлов УЦ</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_11">
-                           <property name="minimumSize">
-                            <size>
-                             <width>200</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_18">
-                         <item>
-                          <widget class="QPushButton" name="pushButton_15">
-                           <property name="minimumSize">
-                            <size>
-                             <width>210</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>210</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Выбрать папку временных файлов</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_10">
-                           <property name="minimumSize">
-                            <size>
-                             <width>200</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_17">
-                         <item>
-                          <widget class="QPushButton" name="pushButton_14">
-                           <property name="minimumSize">
-                            <size>
-                             <width>210</width>
-                             <height>30</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>210</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Выбрать папку для отправки в УЦ</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_9">
-                           <property name="minimumSize">
-                            <size>
-                             <width>200</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_24">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_96">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_45">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_21">
+                            <item>
+                             <widget class="QPushButton" name="pushButton_18">
+                              <property name="minimumSize">
+                               <size>
+                                <width>210</width>
+                                <height>30</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>210</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Выбрать папку для САС</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_13">
+                              <property name="minimumSize">
+                               <size>
+                                <width>200</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_20">
+                            <item>
+                             <widget class="QPushButton" name="pushButton_17">
+                              <property name="minimumSize">
+                               <size>
+                                <width>210</width>
+                                <height>30</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>210</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Выбрать папку для Сертификатов</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_12">
+                              <property name="minimumSize">
+                               <size>
+                                <width>200</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_19">
+                            <item>
+                             <widget class="QPushButton" name="pushButton_16">
+                              <property name="minimumSize">
+                               <size>
+                                <width>210</width>
+                                <height>30</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>210</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Выбрать папку временных файлов УЦ</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_11">
+                              <property name="minimumSize">
+                               <size>
+                                <width>200</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_18">
+                            <item>
+                             <widget class="QPushButton" name="pushButton_15">
+                              <property name="minimumSize">
+                               <size>
+                                <width>210</width>
+                                <height>30</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>210</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Выбрать папку временных файлов</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_10">
+                              <property name="minimumSize">
+                               <size>
+                                <width>200</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_17">
+                            <item>
+                             <widget class="QPushButton" name="pushButton_14">
+                              <property name="minimumSize">
+                               <size>
+                                <width>210</width>
+                                <height>30</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>210</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Выбрать папку для отправки в УЦ</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_9">
+                              <property name="minimumSize">
+                               <size>
+                                <width>200</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2330,34 +2376,52 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Приоритеты CRL</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_48">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_47">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_22">
-                         <item alignment="Qt::AlignHCenter">
-                          <widget class="QLabel" name="label_14">
-                           <property name="text">
-                            <string>Приоритет загрузки CRL в УЦ</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item alignment="Qt::AlignHCenter">
-                          <widget class="QRadioButton" name="radioButton_2">
-                           <property name="text">
-                            <string>Основные</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item alignment="Qt::AlignHCenter">
-                          <widget class="QRadioButton" name="radioButton">
-                           <property name="text">
-                            <string>Свои</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_27">
+                       <property name="minimumSize">
+                        <size>
+                         <width>400</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_98">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_47">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_22">
+                            <item alignment="Qt::AlignHCenter">
+                             <widget class="QLabel" name="label_14">
+                              <property name="text">
+                               <string>Приоритет загрузки CRL в УЦ</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                             <widget class="QRadioButton" name="radioButton_2">
+                              <property name="text">
+                               <string>Основные</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                             <widget class="QRadioButton" name="radioButton">
+                              <property name="text">
+                               <string>Свои</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2376,80 +2440,52 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Тестирование CRL</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_50">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_49">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_32">
-                         <item>
-                          <widget class="QLabel" name="label_20">
-                           <property name="minimumSize">
-                            <size>
-                             <width>180</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Тестировать на корректность CRL</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QRadioButton" name="radioButton_4">
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QRadioButton" name="radioButton_3">
-                           <property name="text">
-                            <string>Нет</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_31">
-                         <item>
-                          <widget class="QLabel" name="label_21">
-                           <property name="minimumSize">
-                            <size>
-                             <width>180</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Проверять на актуальность</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QRadioButton" name="radioButton_5">
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QRadioButton" name="radioButton_6">
-                           <property name="text">
-                            <string>Нет</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_30"/>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_29"/>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_28"/>
-                       </item>
-                      </layout>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_25">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_97">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_49">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_32">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_12">
+                              <property name="text">
+                               <string>Тестировать на корректность CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_31">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_13">
+                              <property name="text">
+                               <string>Проверять на актуальность</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_30"/>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_29"/>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_28"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2464,171 +2500,170 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Настройка прокси</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_52">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_51">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_27">
-                         <item>
-                          <widget class="QLabel" name="label_15">
-                           <property name="maximumSize">
-                            <size>
-                             <width>200</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Использовать прокси?</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QCheckBox" name="checkBox">
-                           <property name="maximumSize">
-                            <size>
-                             <width>200</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_26">
-                         <item>
-                          <widget class="QLabel" name="label_16">
-                           <property name="maximumSize">
-                            <size>
-                             <width>50</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Адрес:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_7">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>200</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_25">
-                         <item>
-                          <widget class="QLabel" name="label_17">
-                           <property name="maximumSize">
-                            <size>
-                             <width>50</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Порт:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_8">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>200</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_24">
-                         <item>
-                          <widget class="QLabel" name="label_18">
-                           <property name="maximumSize">
-                            <size>
-                             <width>50</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Логин:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_9">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>200</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_23">
-                         <item>
-                          <widget class="QLabel" name="label_19">
-                           <property name="maximumSize">
-                            <size>
-                             <width>50</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Пароль:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_10">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>200</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_26">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_99">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_51">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_27">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox">
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Использовать прокси?</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_26">
+                            <item>
+                             <widget class="QLabel" name="label_16">
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Адрес:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_7">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_25">
+                            <item>
+                             <widget class="QLabel" name="label_17">
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Порт:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_8">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_24">
+                            <item>
+                             <widget class="QLabel" name="label_18">
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Логин:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_9">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_23">
+                            <item>
+                             <widget class="QLabel" name="label_19">
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Пароль:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_10">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2658,49 +2693,61 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Настройки</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_70">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_66">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_51">
-                         <item>
-                          <widget class="QLabel" name="label_26">
-                           <property name="text">
-                            <string>Уровень логирования</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_52">
-                         <item>
-                          <widget class="QLabel" name="label_29">
-                           <property name="text">
-                            <string>Размер логов</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLabel" name="label_27">
-                           <property name="text">
-                            <string/>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_49">
-                         <item>
-                          <widget class="QLabel" name="label_28">
-                           <property name="text">
-                            <string>Логировать ошибки отдельно</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_28">
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_100">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_66">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_51">
+                            <item>
+                             <widget class="QLabel" name="label_26">
+                              <property name="text">
+                               <string>Уровень логирования</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_52">
+                            <item>
+                             <widget class="QLabel" name="label_29">
+                              <property name="text">
+                               <string>Размер логов</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_27">
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_49">
+                            <item>
+                             <widget class="QLabel" name="label_28">
+                              <property name="text">
+                               <string>Логировать ошибки отдельно</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2829,7 +2876,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1130</width>
+     <width>1118</width>
      <height>21</height>
     </rect>
    </property>
