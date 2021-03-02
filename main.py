@@ -1,6 +1,7 @@
 from ui_main import *
 from ui_sub_main import *
 import shutil
+import sleekxmpp
 import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests, datetime
 from urllib import request, error
 from os.path import expanduser
@@ -863,6 +864,18 @@ def exist_crl_in_custom_watch():
     for row in query:
         if WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == row.KeyId).count() > 0:
             print(row.KeyId, ' exist')
+
+
+def xmpp_sender():
+    username = 'username'
+    passwd = 'password'
+    server = 'server'
+    to = 'name@example.com'
+    msg = 'hello :)'
+    client = sleekxmpp.ClientXMPP(username+"@"+server, passwd)
+    client.connect()
+    client.process(blocking=False)
+    client.send_message(mto=to, mbody=msg)
 
 
 class Downloader(QThread):
