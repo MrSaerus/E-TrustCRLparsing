@@ -65,7 +65,14 @@ try:
     os.makedirs(config['Folders']['tmp'])
 except OSError:
     pass
-
+try:
+    os.makedirs(config['Folders']['to_uc'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['assests'])
+except OSError:
+    pass
 
 class UC(Model):
     ID = IntegerField(primary_key=True)
@@ -680,7 +687,7 @@ def check_for_import_in_uc():
                 print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
                 download_file(wc.UrlCRL, wc.KeyId+'.crl', folder, 'current', wc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/'+wc.KeyId+'.crl', 'uc/current_'+wc.KeyId+'.crl')
+                    shutil.copy2('crls/'+wc.KeyId+'.crl', config['Folders']['to_uc']+'current_'+wc.KeyId+'.crl')
                     check_crl(wc.ID, wc.Name, wc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_current')
@@ -690,7 +697,7 @@ def check_for_import_in_uc():
                 print('2 Need to download', wcc.Name, current_datetime, wcc.last_download, wcc.last_update, wcc.next_update)
                 download_file(wcc.UrlCRL, wcc.KeyId+'.crl', folder, 'custome', wcc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/'+wcc.KeyId + '.crl', 'uc/custom_' + wcc.KeyId + '.crl')
+                    shutil.copy2('crls/'+wcc.KeyId + '.crl', config['Folders']['to_uc']+'custom_' + wcc.KeyId + '.crl')
                     check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_custom')
