@@ -23,7 +23,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -126,6 +126,58 @@
                   </layout>
                  </widget>
                 </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_17">
+                  <property name="title">
+                   <string>Расписание обновления:</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_94">
+                   <item>
+                    <layout class="QVBoxLayout" name="verticalLayout_93">
+                     <item>
+                      <widget class="QLabel" name="label_37">
+                       <property name="text">
+                        <string>Предыдущее обновление: </string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_38">
+                       <property name="text">
+                        <string>Следующее обновление:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_36">
+                       <property name="text">
+                        <string>Таймер:</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_73">
+                     <item>
+                      <widget class="QPushButton" name="pushButton_19">
+                       <property name="text">
+                        <string>Запуск</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pushButton_20">
+                       <property name="text">
+                        <string>Остановить</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
                 <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
                  <widget class="QFrame" name="frame_11">
                   <property name="frameShape">
@@ -174,38 +226,6 @@
                       <property name="bottomMargin">
                        <number>1</number>
                       </property>
-                      <item>
-                       <widget class="QPushButton" name="pushButton_6">
-                        <property name="minimumSize">
-                         <size>
-                          <width>160</width>
-                          <height>30</height>
-                         </size>
-                        </property>
-                        <property name="text">
-                         <string>Импортировать список CRL</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="pushButton_13">
-                        <property name="minimumSize">
-                         <size>
-                          <width>150</width>
-                          <height>30</height>
-                         </size>
-                        </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>250</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="text">
-                         <string>Сгенерировать CRL лист</string>
-                        </property>
-                       </widget>
-                      </item>
                      </layout>
                     </widget>
                    </item>
@@ -217,7 +237,7 @@
                      <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
                      </property>
-                     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0">
+                     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="">
                       <property name="spacing">
                        <number>1</number>
                       </property>
@@ -233,13 +253,6 @@
                       <property name="bottomMargin">
                        <number>1</number>
                       </property>
-                      <item>
-                       <widget class="QProgressBar" name="progressBar_3">
-                        <property name="alignment">
-                         <set>Qt::AlignCenter</set>
-                        </property>
-                       </widget>
-                      </item>
                      </layout>
                     </widget>
                    </item>
@@ -1257,7 +1270,7 @@ border-color: rgb(0, 0, 0);</string>
         <item>
          <widget class="QTabWidget" name="tabWidget_3">
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="tab_10">
            <attribute name="title">
@@ -1276,171 +1289,199 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Настройка вкладок</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_81">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_56">
-                       <item>
-                        <widget class="QLabel" name="label_35">
-                         <property name="text">
-                          <string>Колличество выводимых строк в списке УЦ</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_13">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_63">
-                       <item>
-                        <widget class="QLabel" name="label_34">
-                         <property name="text">
-                          <string>Колличество выводимых строк в списке Сертификатов</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_18">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_62">
-                       <item>
-                        <widget class="QLabel" name="label_33">
-                         <property name="text">
-                          <string>Колличество выводимых строк в списке CRL</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_17">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_61">
-                       <item>
-                        <widget class="QLabel" name="label_32">
-                         <property name="text">
-                          <string>Колличество выводимых строк в основном списке скачивания CRL</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_16">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_57">
-                       <item>
-                        <widget class="QLabel" name="label_31">
-                         <property name="text">
-                          <string>Колличество выводимых строк в своем списке скачивания CRL</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="lineEdit_15">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>25</height>
-                          </size>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_80">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_55">
-                         <item>
-                          <widget class="QLabel" name="label_30">
-                           <property name="text">
-                            <string>Колличество выводимых строк в списке отключенных CRL</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QLineEdit" name="lineEdit_14">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>0</width>
-                             <height>25</height>
-                            </size>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_20">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_90">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_89">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_62">
+                            <item>
+                             <widget class="QLabel" name="label_33">
+                              <property name="text">
+                               <string>Колличество выводимых строк в списке CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_17">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_57">
+                            <item>
+                             <widget class="QLabel" name="label_31">
+                              <property name="text">
+                               <string>Колличество выводимых строк в своем списке скачивания CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_15">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_61">
+                            <item>
+                             <widget class="QLabel" name="label_32">
+                              <property name="text">
+                               <string>Колличество выводимых строк в основном списке скачивания CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_16">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_63">
+                            <item>
+                             <widget class="QLabel" name="label_34">
+                              <property name="text">
+                               <string>Колличество выводимых строк в списке Сертификатов</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_18">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_56">
+                            <item>
+                             <widget class="QLabel" name="label_35">
+                              <property name="text">
+                               <string>Колличество выводимых строк в списке УЦ</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_13">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QVBoxLayout" name="verticalLayout_80">
+                            <item>
+                             <layout class="QHBoxLayout" name="horizontalLayout_55">
+                              <item>
+                               <widget class="QLabel" name="label_30">
+                                <property name="text">
+                                 <string>Колличество выводимых строк в списке отключенных CRL</string>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QLineEdit" name="lineEdit_14">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                 <size>
+                                  <width>0</width>
+                                  <height>25</height>
+                                 </size>
+                                </property>
+                               </widget>
+                              </item>
+                             </layout>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -1455,129 +1496,88 @@ border-color: rgb(0, 0, 0);</string>
                      <string>Разрешения</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_86">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_83">
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_59">
-                         <item>
-                          <widget class="QLabel" name="label_36">
-                           <property name="minimumSize">
-                            <size>
-                             <width>250</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Разрешить импорт CRL</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QCheckBox" name="checkBox_4">
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_60">
-                         <item>
-                          <widget class="QLabel" name="label_37">
-                           <property name="minimumSize">
-                            <size>
-                             <width>250</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Разрешить экспорт CRL</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QCheckBox" name="checkBox_5">
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_58">
-                         <item>
-                          <widget class="QLabel" name="label_38">
-                           <property name="minimumSize">
-                            <size>
-                             <width>250</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Разрешить удалять CRL из списка скачиваемых</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QCheckBox" name="checkBox_6">
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_64">
-                         <item>
-                          <widget class="QLabel" name="label_39">
-                           <property name="minimumSize">
-                            <size>
-                             <width>250</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Включить кнопку &quot;Скачать все CRL&quot;</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QCheckBox" name="checkBox_7">
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_65">
-                         <item>
-                          <widget class="QLabel" name="label_40">
-                           <property name="minimumSize">
-                            <size>
-                             <width>250</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="text">
-                            <string>Включить кнопку &quot;Проверить все CRL&quot;</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <widget class="QCheckBox" name="checkBox_8">
-                           <property name="text">
-                            <string>Да</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </item>
-                      </layout>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_21">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_91">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_83">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_59">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_4">
+                              <property name="text">
+                               <string>Разрешить импорт CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_60">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_5">
+                              <property name="text">
+                               <string>Разрешить экспорт CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_58">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_6">
+                              <property name="text">
+                               <string>Разрешить удалять CRL из списка скачиваемых</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_64">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_7">
+                              <property name="text">
+                               <string>Включить кнопку &quot;Скачать все CRL&quot;</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_65">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_8">
+                              <property name="text">
+                               <string>Включить кнопку &quot;Проверить все CRL&quot;</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -1593,11 +1593,67 @@ border-color: rgb(0, 0, 0);</string>
                   <item>
                    <widget class="QGroupBox" name="groupBox_14">
                     <property name="title">
-                     <string>GroupBox</string>
+                     <string>Импорт / Экспорт CRL'ов</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_85">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_82"/>
+                      <layout class="QVBoxLayout" name="verticalLayout_82">
+                       <item alignment="Qt::AlignBottom">
+                        <widget class="QFrame" name="frame_22">
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_92">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_72">
+                            <item>
+                             <widget class="QPushButton" name="pushButton_6">
+                              <property name="minimumSize">
+                               <size>
+                                <width>160</width>
+                                <height>30</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Импортировать список CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QPushButton" name="pushButton_13">
+                              <property name="minimumSize">
+                               <size>
+                                <width>160</width>
+                                <height>30</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Сгенерировать CRL лист</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QProgressBar" name="progressBar_3">
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </item>
                     </layout>
                    </widget>
@@ -1609,11 +1665,223 @@ border-color: rgb(0, 0, 0);</string>
                   <item>
                    <widget class="QGroupBox" name="groupBox_15">
                     <property name="title">
-                     <string>GroupBox</string>
+                     <string>Оповещение по XMPP</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_87">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_84"/>
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_19">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_88">
+                        <property name="spacing">
+                         <number>6</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_84">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_67">
+                            <item>
+                             <widget class="QLabel" name="label_41">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Сервер XMPP</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_19">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_71">
+                            <item>
+                             <widget class="QLabel" name="label_42">
+                              <property name="minimumSize">
+                               <size>
+                                <width>100</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Логин</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_20">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_70">
+                            <item>
+                             <widget class="QLabel" name="label_43">
+                              <property name="minimumSize">
+                               <size>
+                                <width>100</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Пароль</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_21">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_68">
+                            <item>
+                             <widget class="QLabel" name="label_44">
+                              <property name="minimumSize">
+                               <size>
+                                <width>100</width>
+                                <height>0</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Кому отсылать</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_22">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>25</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_69">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_10">
+                              <property name="text">
+                               <string>Оповещать об ошибках</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_9">
+                              <property name="text">
+                               <string>Оповещать о новых CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_11">
+                              <property name="text">
+                               <string>Оповещать о новом TSL</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_66"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -1890,6 +2158,12 @@ border-color: rgb(0, 0, 0);</string>
                          </item>
                          <item>
                           <widget class="QLabel" name="label_13">
+                           <property name="minimumSize">
+                            <size>
+                             <width>200</width>
+                             <height>0</height>
+                            </size>
+                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -1920,6 +2194,12 @@ border-color: rgb(0, 0, 0);</string>
                          </item>
                          <item>
                           <widget class="QLabel" name="label_12">
+                           <property name="minimumSize">
+                            <size>
+                             <width>200</width>
+                             <height>0</height>
+                            </size>
+                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -1950,6 +2230,12 @@ border-color: rgb(0, 0, 0);</string>
                          </item>
                          <item>
                           <widget class="QLabel" name="label_11">
+                           <property name="minimumSize">
+                            <size>
+                             <width>200</width>
+                             <height>0</height>
+                            </size>
+                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -1980,6 +2266,12 @@ border-color: rgb(0, 0, 0);</string>
                          </item>
                          <item>
                           <widget class="QLabel" name="label_10">
+                           <property name="minimumSize">
+                            <size>
+                             <width>200</width>
+                             <height>0</height>
+                            </size>
+                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -2010,6 +2302,12 @@ border-color: rgb(0, 0, 0);</string>
                          </item>
                          <item>
                           <widget class="QLabel" name="label_9">
+                           <property name="minimumSize">
+                            <size>
+                             <width>200</width>
+                             <height>0</height>
+                            </size>
+                           </property>
                            <property name="text">
                             <string/>
                            </property>
