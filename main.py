@@ -17,21 +17,85 @@ from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
 from lxml import etree
 from peewee import *
 
+
+def logs(body, t=''):
+    if t == 'errors':
+        with open(r"error_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
+            file.write(str(datetime.datetime.now()) + '    ' + body + '\n')
+        file.close()
+    else:
+        with open(r"log_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
+            file.write(str(datetime.datetime.now()) + '    ' + body + '\n')
+        file.close()
+
 config = configparser.ConfigParser()
 if os.path.isfile('settings.ini'):
     config.read('settings.ini')
 else:
     open('settings.ini', 'w').close()
-    config['Folders'] = {'certs': 'certs/',
-                         'crls': 'crls/',
-                         'tmp': 'temp/',
-                         'assests': 'assests/'}
-    config['MainWindow'] = {'width': '1200',
-                            'height': '400'}
-    config['Bd'] = {'type': 'sqlite3',
-                    'name': 'cert_crl.db'}
-    config['Socket'] = {'timeout': '15'}
-    config['Style'] = {'Window': 'Fusion'}
+    # config['Folders'] = {'certs': 'certs/',
+    #                      'crls': 'crls/',
+    #                      'tmp': 'temp/',
+    #                      'assests': 'assests/'}
+    # config['MainWindow'] = {'width': '1200',
+    #                         'height': '400'}
+    # config['Bd'] = {'type': 'sqlite3',
+    #                 'name': 'cert_crl.db'}
+    # config['Socket'] = {'timeout': '15'}
+    # config['Style'] = {'Window': 'Fusion'}
+
+    config['Folders']={'certs': 'certs/',
+                       'crls': 'crls/',
+                       'tmp': 'temp/',
+                       'assests': 'assests/',
+                       'to_uc': 'uc/'}
+
+    config['MainWindow']={'width ': '1200',
+                          'height ': '600',
+                          'saveWidth': 'No',
+                          'AllowResize': 'Yes'}
+    config['Bd']={'type': 'sqlite3',
+                  'name': 'cert_crl.db'}
+    config['Socket']={'timeout ': 'No'}
+    config['Listing']={'uc': '500',
+                       'crl': '500',
+                       'cert': '500',
+                       'watch': '500'}
+    # windowsvista, Windows, Fusion
+    config['Style']={'window': 'Fusion',
+                     'extendetColorInfo': 'No'}
+    config['Proxy']={'proxyOn': 'No',
+                     'ip': '',
+                     'port': '',
+                     'login': '',
+                     'password': ''}
+    config['Update']={'priority': 'custom',
+                      'advancedChecking': 'Yes',
+                      'viewingCRLlastNextUpdate': 'Yes'}
+    config['Backup']={'backUPbyStart': 'Yes'}
+    config['Tabs']={'ucLimit': '500',
+                    'ucAllowDelete': 'No',
+                    'crlLimit': '500',
+                    'crlAllowDelete': 'No',
+                    'certLimit': '500',
+                    'certAllowDelete': 'No',
+                    'wcLimit': '500',
+                    'wcAllowDelete': 'No',
+                    'wccLimit': '500',
+                    'wccAllowDelete': 'No',
+                    'wcdLimit': '500',
+                    'wcdAllowDelete': 'No'}
+    config['Schedule']={'allowSchedule': 'No',
+                        'weekUpdate': 'All',
+                        'timeUpdate': '9:00; 12:00; 16:00',
+                        'allowUpdateTSLbyStart': 'No',
+                        'allowUpdateCRLbyStart': 'No',
+                        'rangeUpdateCRL': '5day'}
+    config['Sec']={'allowImportCRL': 'Yes',
+                   'allowExportCRL': 'Yes',
+                   'allowDeleteWatchingCRL': 'Yes',
+                   'allowDownloadButtomCRL': 'Yes',
+                   'allowCheckButtomCRL': 'Yes'}
     with open('settings.ini', 'w') as configfile:
         config.write(configfile)
 
@@ -41,17 +105,21 @@ else:
 bd_backup_name = str('cert_crl.db_')+datetime.datetime.now().strftime('%Y%m%d')+'.bkp'
 if os.path.isfile(bd_backup_name):
     print('Info: '+bd_backup_name+' exist')
+    logs('Info: '+bd_backup_name+' exist')
 else:
     try:
         shutil.copy2('cert_crl.db', bd_backup_name)
         print('Info: ' + bd_backup_name + ' created')
+        logs('Info: ' + bd_backup_name + ' created')
     except Exception:
         print('Error: cert_crl.db NOT FOUND')
+        logs('Error: cert_crl.db NOT FOUND', 'errors')
 try:
     connect = sqlite3.connect(config['Bd']['name'])
     db = SqliteDatabase(config['Bd']['name'])
 except Exception:
     print('Error: Connect to BD failed')
+    logs('Error: Connect to BD failed', 'errors')
 
 try:
     os.makedirs(config['Folders']['certs'])
@@ -65,7 +133,14 @@ try:
     os.makedirs(config['Folders']['tmp'])
 except OSError:
     pass
-
+try:
+    os.makedirs(config['Folders']['to_uc'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['assests'])
+except OSError:
+    pass
 
 class UC(Model):
     ID = IntegerField(primary_key=True)
@@ -615,6 +690,7 @@ def check_custom_crl(ID, Name, KeyId):
                     issuer[type.decode("utf-8")] = data.decode("utf-8")
             except Exception:
                 print('Error: get_components()')
+                logs('Error: check_custom_crl()::get_components()', 'errors')
             query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
             for uc_data in query_uc:
                 Name = uc_data.Name
@@ -635,8 +711,10 @@ def check_custom_crl(ID, Name, KeyId):
                                                     next_update='1970-01-01').where(WatchingCustomCRL.ID == ID)
             query_update.execute()
             print('Warning: FILETYPE ERROR')
+            logs('Warning: check_custom_crl()::FILETYPE_ERROR')
     except Exception:
         print('Error: check_custom_crl()')
+        logs('Error: check_custom_crl()', 'errors')
 
 
 def check_crl(id_wc, name_wc, key_id_wc):
@@ -658,8 +736,10 @@ def check_crl(id_wc, name_wc, key_id_wc):
                                               next_update='1970-01-01').where(WatchingCRL.ID == id_wc)
             query_update.execute()
             print('Warning: FILETYPE ERROR')
+            logs('Warning: check_crl()::FILETYPE_ERROR')
     except Exception:
         print('Error: check_crl()')
+        logs('Error: check_crl()', 'errors')
 
 
 def check_for_import_in_uc():
@@ -680,20 +760,22 @@ def check_for_import_in_uc():
                 print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
                 download_file(wc.UrlCRL, wc.KeyId+'.crl', folder, 'current', wc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/'+wc.KeyId+'.crl', 'uc/current_'+wc.KeyId+'.crl')
+                    shutil.copy2('crls/'+wc.KeyId+'.crl', config['Folders']['to_uc']+'current_'+wc.KeyId+'.crl')
                     check_crl(wc.ID, wc.Name, wc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_current')
+                    logs('Error: check_for_import_in_uc()::error_copy_current', 'errors')
                 count = count + 1
         for wcc in query_2:
             if current_datetime > wcc.next_update:
                 print('2 Need to download', wcc.Name, current_datetime, wcc.last_download, wcc.last_update, wcc.next_update)
                 download_file(wcc.UrlCRL, wcc.KeyId+'.crl', folder, 'custome', wcc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/'+wcc.KeyId + '.crl', 'uc/custom_' + wcc.KeyId + '.crl')
+                    shutil.copy2('crls/'+wcc.KeyId + '.crl', config['Folders']['to_uc']+'custom_' + wcc.KeyId + '.crl')
                     check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_custom')
+                    logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors')
                 count = count + 1
         if count > 0:
             print('Copied ' + str(count) + ' count\'s CRL')
@@ -701,6 +783,7 @@ def check_for_import_in_uc():
             print('Needed CRL not found')
     except Exception:
         print('Error: check_for_import_in_uc()')
+        logs('Error: check_for_import_in_uc()', 'errors')
 
 
 def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
@@ -712,6 +795,7 @@ def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
             request.urlretrieve(file_url, path, schedule)
         except Exception:
             print('\r\n' + file_url + ' download failed!' + '\r\n')
+            logs('Info: '+file_url + ' download failed!')
             if set_dd == 'Yes':
                 if type == 'current':
                     query_update = WatchingCRL.update(download_status='Error: Download failed',
@@ -734,6 +818,7 @@ def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
                     query_update.execute()
         else:
             print('\r\n' + file_url + ' download successfully!')
+            logs('Info: ' + file_url + ' download successfully!')
             if set_dd == 'Yes':
                 if type == 'current':
                     query_update = WatchingCRL.update(download_status='Info: Download successfully',
@@ -757,6 +842,7 @@ def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
                     query_update.execute()
     except Exception:
         print('Error: download_file()')
+        logs('Error: download_file()', 'errors')
 
 
 def export_all_watching_crl():
@@ -802,28 +888,32 @@ class Downloader(QThread):
             # тест на локальных данных, но работать должно и с сетью
             # request.urlretrieve(self.fileUrl, self.fileName, self._progress)
             try:
+                logs('Info: Downloading TSL')
                 request.urlretrieve(self.fileUrl, self.fileName, self._progress)
             except error.HTTPError as e:
                 print(e)
                 self.done.emit('Ошибка загрузки')
+                logs('Info: download failed')
             except Exception:
                 self.done.emit('Ошибка загрузки')
+                logs('Info: download failed')
             else:
                 print('Загрузка завершена')
-
+                logs('Info: Downloading succesful')
                 #self.done.emit('Загрузка завершена')
                 query_get_settings = Settings.select()
                 ver_from_tsl = get_info_xlm('current_version')
                 st = {}
-
                 for setings in query_get_settings:
                     ver = setings.value
                     break
                 if int(ver) == int(ver_from_tsl):
                     print('Info: update not need')
+                    logs('Info: update not need')
                     self.done.emit('Загрузка завершена, обновление не требуется')
                 else:
                     print('Info: Need update')
+                    logs('Info: Need update, new version '+ver_from_tsl+', old '+ver)
                     self.done.emit('Загрузка завершена, требуются обновления Базы УЦ и сертификатов. Новая версия '
                                    +ver_from_tsl+' текущая версия '+ver)
 
@@ -850,6 +940,7 @@ class Downloader(QThread):
                 self.progress.emit(total_size)
     except Exception:
         print('Error: Downloader(QThread)')
+        logs('Error: Downloader(QThread)', 'errors')
 
 
 class MainWindow(QMainWindow):
@@ -859,6 +950,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon('assests/favicon.ico'))
         self.window_uc = None
+        self.init_settings()
         self.tab_info()
         self.tab_uc()
         self.ui.lineEdit.textChanged[str].connect(self.tab_uc)
@@ -935,6 +1027,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_8.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_info()')
+            logs('Error: tab_info()', 'errors')
 
     def tab_uc(self, text=''):
         try:
@@ -968,6 +1061,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_uc()')
+            logs('Error: tab_uc()', 'errors')
 
     def tab_cert(self, text=''):
         try:
@@ -1016,6 +1110,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_2.resizeColumnToContents(5)
         except Exception:
             print('Error: tab_cert()')
+            logs('Error: tab_cert()', 'errors')
 
     def tab_crl(self, text=''):
         try:
@@ -1079,11 +1174,12 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_3.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_crl()')
+            logs('Error: tab_crl()', 'errors')
 
     def tab_watching_crl(self):
         self.ui.pushButton_4.pressed.connect(self.download_all_crls)
         self.ui.pushButton_5.clicked.connect(self.check_all_crl)
-        self.ui.pushButton_3.clicked.connect(self.copy_crl_to_uc)
+        self.ui.pushButton_3.clicked.connect(self.export_crl_to_uc)
 
     def sub_tab_watching_crl(self, text=''):
         try:
@@ -1126,7 +1222,7 @@ class MainWindow(QMainWindow):
                 buttonDeleteWatch.setFixedSize(100, 30)
                 buttonDeleteWatch.setText("Убрать")
                 id = row.ID
-                buttonDeleteWatch.pressed.connect(lambda o=id: self.move_watching_to_delete(o, 'current'))
+                buttonDeleteWatch.pressed.connect(lambda o=id: self.move_watching_to_passed(o, 'current'))
                 self.ui.tableWidget_4.setCellWidget(count, 8, buttonDeleteWatch)
                 count = count + 1
             self.ui.tableWidget_4.setColumnWidth(1, 150)
@@ -1139,6 +1235,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_4.setColumnWidth(7, 20)
         except Exception:
             print('Error: sub_tab_watching_crl()')
+            logs('Error: sub_tab_watching_crl()', 'errors')
 
     def sub_tab_watching_custom_crl(self, text=''):
         try:
@@ -1194,6 +1291,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_5.setColumnWidth(7, 20)
         except Exception:
             print('Error: sub_tab_watching_custom_crl()')
+            logs('Error: sub_tab_watching_custom_crl()', 'errors')
 
     def sub_tab_watching_off_crl(self, text=''):
         try:
@@ -1243,77 +1341,71 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_6.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
         except Exception:
             print('Error: sub_tab_watching_off_crl()')
+            logs('Error: sub_tab_watching_off_crl()', 'errors')
 
-    def tab_settings(self):
+    def init_settings(self):
         try:
-            self.pushButton_4.clicked.connect(lambda: self.choose_directory('crl'))
-            self.pushButton_5.clicked.connect(lambda: self.choose_directory('cert'))
-            self.pushButton_3.clicked.connect(lambda: self.choose_directory('uc'))
-        except Exception:
-            print('Error: tab_settings()')
+            # main config
+            self.ui.lineEdit_13.setText(config['Tabs']['ucLimit'])
+            self.ui.lineEdit_18.setText(config['Tabs']['certLimit'])
+            self.ui.lineEdit_17.setText(config['Tabs']['crlLimit'])
+            self.ui.lineEdit_16.setText(config['Tabs']['wcLimit'])
+            self.ui.lineEdit_15.setText(config['Tabs']['wccLimit'])
+            self.ui.lineEdit_14.setText(config['Tabs']['wcdLimit'])
 
-    def open_sub_window_info_uc(self, reg_number):
-        try:
-            if self.window_uc is None:
-                self.window_uc = UcWindow(reg_number)
-                self.window_uc.show()
+            if config['Sec']['allowImportCRL'] == 'Yes':
+                self.ui.checkBox_4.setChecked(True)
             else:
-                self.window_uc.close()  # Close window.
-                self.window_uc = None  # Discard reference.
-        except Exception:
-            print('Error: open_sub_window_info_uc()')
+                self.ui.pushButton_6.setDisabled(True)
+            if config['Sec']['allowExportCRL'] == 'Yes':
+                self.ui.checkBox_5.setChecked(True)
+            else:
+                self.ui.pushButton_13.setDisabled(True)
+            if config['Sec']['allowDeleteWatchingCRL'] == 'Yes':
+                self.ui.checkBox_6.setChecked(True)
+                #self.ui.pushButton_X.setDisabled(True)
+            if config['Sec']['allowDownloadBottomCRL'] == 'Yes':
+                self.ui.checkBox_7.setChecked(True)
+            else:
+                self.ui.pushButton_4.setDisabled(True)
+            if config['Sec']['allowCheckBottomCRL'] == 'Yes':
+                self.ui.checkBox_8.setChecked(True)
+            else:
+                self.ui.pushButton_5.setDisabled(True)
 
-    def choose_directory(self, type):
-        try:
-            input_dir = QFileDialog.getExistingDirectory(None, 'Выбор директории:', expanduser("~"))
-            if type == 'crl':
-                self.label_9.setText('  Папка с CRL: '+input_dir)
-            if type == 'cert':
-                self.label_10.setText('  Папка с сертификатами: '+input_dir)
-            if type == 'uc':
-                self.label_11.setText('  Папка для УЦ: '+input_dir)
-        except Exception:
-            print('Error: choose_directory()')
+            # Interface  config
+            self.ui.lineEdit_12.setText(config['MainWindow']['height'])
+            self.ui.lineEdit_11.setText(config['MainWindow']['width'])
+            if config['MainWindow']['saveWidth'] == 'Yes':
+                self.ui.checkBox_3.setChecked(True)
+            if config['MainWindow']['AllowResize'] == 'Yes':
+                self.ui.checkBox_2.setChecked(True)
 
-    def download_xml(self):
-        try:
-            self.ui.label_7.setText('Скачиваем список.')
-            self.ui.label_7.adjustSize()
-            self.ui.pushButton.setEnabled(False)
-            self.ui.pushButton_2.setEnabled(False)
-            self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
-            # Устанавливаем максимальный размер данных
-            self._download.preprogress.connect(lambda x: self.ui.progressBar.setMaximum(x))
-            # Промежуточный/скачанный размер
-            self._download.progress.connect(lambda y: self.ui.progressBar.setValue(y))
-            # говорим что всё скачано
-            self._download.downloading.connect(lambda z: self.ui.label_7.setText(z))
-            self._download.done.connect(lambda z: self.ui.label_7.setText(z))
-            self._download.done.connect(lambda hint1: self.ui.pushButton.setEnabled(True))
-            self._download.done.connect(lambda hint2: self.ui.pushButton_2.setEnabled(True))
-            # self._download.done.connect(lambda hint3: self.on_changed_find_uc(''))
-            # self._download.done.connect(lambda hint4: self.on_changed_find_cert(''))
-            # self._download.done.connect(lambda hint5: self.on_changed_find_crl(''))
-            self._download.start()
-        except Exception:
-            print('Error: download_xml()')
+            # download config
+            self.ui.label_13.setText(config['Folders']['crls'])
+            self.ui.label_12.setText(config['Folders']['certs'])
+            self.ui.label_11.setText(config['Folders']['to_uc'])
+            self.ui.label_10.setText(config['Folders']['tmp'])
+            self.ui.label_9.setText(config['Folders']['to_uc'])
 
-    def check_all_crl(self):
-        try:
-            query_1 = WatchingCRL.select()
-            query_2 = WatchingCustomCRL.select()
-            self.ui.pushButton_5.setEnabled(False)
-            self.ui.label_8.setText('Проверяем основной список CRL')
-            for wc in query_1:
-                check_crl(wc.ID, wc.Name, wc.KeyId)
-            self.ui.label_8.setText('Проверяем свой список CRL')
-            for wcc in query_2:
-                check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
-            self.ui.label_8.setText('Готово')
-            self.ui.pushButton_5.setEnabled(True)
-            # self.textBrowser.setText(open('main.log', 'rb').read().decode())
+            self.ui.pushButton_18.clicked.connect(lambda: self.choose_directory('crl'))
+            self.ui.pushButton_17.clicked.connect(lambda: self.choose_directory('cert'))
+            self.ui.pushButton_16.clicked.connect(lambda: self.choose_directory('to_uc'))
+            self.ui.pushButton_15.clicked.connect(lambda: self.choose_directory('tmp'))
+            self.ui.pushButton_14.clicked.connect(lambda: self.choose_directory('uc'))
+
+            # Logs
+            try:
+                self.ui.textBrowser.setText(open('log_'+datetime.datetime.now().strftime('%Y%m%d')+'.log', 'r').read())
+            except Exception:
+                logs('Error: init_settings()::Filed_open_log::log_'+ datetime.datetime.now().strftime('%Y%m%d') + '.log', 'errors')
+            try:
+                self.ui.textBrowser_2.setText(open('error_' + datetime.datetime.now().strftime('%Y%m%d') + '.log', 'r').read())
+            except Exception:
+                logs('Error: init_settings()::Filed_open_log::error_'+ datetime.datetime.now().strftime('%Y%m%d') + '.log', 'errors')
         except Exception:
-            print('Error: check_all_crl()')
+            print('Error: init_settings()')
+            logs('Error: init_settings()', 'errors')
 
     def init_xml(self):
         try:
@@ -1326,6 +1418,7 @@ class MainWindow(QMainWindow):
             CERT.create_table()
             CRL.create_table()
             self.ui.label_7.setText('Обрабатываем данные.')
+            logs('Info: Init TLS started')
             with open('tsl.xml', "rt", encoding="utf-8") as obj:
                 xml = obj.read().encode()
 
@@ -1433,6 +1526,7 @@ class MainWindow(QMainWindow):
                             uc_count = uc_count + 1
                 if Registration_Number != '':
                     self.ui.label_7.setText('Обрабатываем данные:\n УЦ: ' + Name)
+                    logs('Info: Procesing - UC:' + Name)
                     uc = UC(Registration_Number=Registration_Number,
                             INN=INN,
                             OGRN=OGRN,
@@ -1501,8 +1595,58 @@ class MainWindow(QMainWindow):
             self.ui.pushButton.setEnabled(True)
             self.ui.pushButton_2.setEnabled(True)
             self.ui.label_7.setText('Готово.')
+            logs('Info: Procesing successful done')
         except Exception:
             print('Error: init_xml()')
+            logs('Error: init_xml()', 'errors')
+
+    def open_sub_window_info_uc(self, reg_number):
+        try:
+            if self.window_uc is None:
+                self.window_uc = UcWindow(reg_number)
+                self.window_uc.show()
+            else:
+                self.window_uc.close()  # Close window.
+                self.window_uc = None  # Discard reference.
+        except Exception:
+            print('Error: open_sub_window_info_uc()')
+            logs('Error: open_sub_window_info_uc()', 'errors')
+
+    def choose_directory(self, type):
+        try:
+            input_dir = QFileDialog.getExistingDirectory(None, 'Выбор директории:', expanduser("~"))
+            if type == 'crl':
+                self.ui.label_13.setText(input_dir)
+            if type == 'cert':
+                self.ui.label_12.setText(input_dir)
+            if type == 'uc':
+                self.ui.label_9.setText(input_dir)
+            if type == 'tmp':
+                self.ui.label_10.setText(input_dir)
+            if type == 'to_uc':
+                self.ui.label_11.setText(input_dir)
+        except Exception:
+            print('Error: choose_directory()')
+            logs('Error: choose_directory()', 'errors')
+
+    def check_all_crl(self):
+        try:
+            query_1 = WatchingCRL.select()
+            query_2 = WatchingCustomCRL.select()
+            self.ui.pushButton_5.setEnabled(False)
+            self.ui.label_8.setText('Проверяем основной список CRL')
+            for wc in query_1:
+                check_crl(wc.ID, wc.Name, wc.KeyId)
+            self.ui.label_8.setText('Проверяем свой список CRL')
+            for wcc in query_2:
+                check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+            self.ui.label_8.setText('Готово')
+            self.ui.pushButton_5.setEnabled(True)
+            # self.textBrowser.setText(open('main.log', 'rb').read().decode())
+        except Exception:
+            print('Error: check_all_crl()')
+            logs('Error: check_all_crl()', 'errors')
+
 
     def add_watch_cert_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
         try:
@@ -1530,10 +1674,12 @@ class MainWindow(QMainWindow):
                     # self.counter_added = self.counter_added + 1
             else:
                 print('crl exist')
+                logs('Info: add_watch_cert_crl()::Crl_Exist:'+keyid)
                 # self.counter_added_exist = self.counter_added_exist + 1
             # self.on_changed_find_watching_crl('')
         except Exception:
             print('Error: add_watch_cert_crl()')
+            logs('Error: add_watch_cert_crl()', 'errors')
 
     def add_watch_custom_cert_crl(self, url_crl):
         try:
@@ -1550,12 +1696,14 @@ class MainWindow(QMainWindow):
                 self.counter_added_custom = self.counter_added_custom + 1
             else:
                 print('crl exist')
+                logs('Info: add_watch_custom_cert_crl()::Crl_Exist:'+url_crl)
                 self.counter_added_exist = self.counter_added_exist + 1
             self.on_changed_find_watching_crl('')
         except Exception:
             print('Error: add_watch_custom_cert_crl()')
+            logs('Error: add_watch_custom_cert_crl()', 'errors')
 
-    def move_watching_to_delete(self, id, froms):
+    def move_watching_to_passed(self, id, froms):
         try:
             if froms == 'current':
                 from_bd = WatchingCRL.select().where(WatchingCRL.ID == id)
@@ -1576,13 +1724,87 @@ class MainWindow(QMainWindow):
                 self.on_changed_find_deleted_watching_crl('')
             else:
                 print('Error: Ошибка перемещения')
+                logs('Error: add_watch_custom_cert_crl()::Error_Moving', 'errors')
         except Exception:
             print('Error: move_watching_to_delete()')
+            logs('Error: move_watching_to_delete()', 'errors')
 
     # def delete_watching(self, id):
     #     WatchingCRL.delete_by_id(id)
     #     self.on_changed_find_watching_crl('')
     #     print(id + ' id is deleted')
+
+
+
+    def download_xml(self):
+        try:
+            self.ui.label_7.setText('Скачиваем список.')
+            self.ui.label_7.adjustSize()
+            self.ui.pushButton.setEnabled(False)
+            self.ui.pushButton_2.setEnabled(False)
+            self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
+            # Устанавливаем максимальный размер данных
+            self._download.preprogress.connect(lambda x: self.ui.progressBar.setMaximum(x))
+            # Промежуточный/скачанный размер
+            self._download.progress.connect(lambda y: self.ui.progressBar.setValue(y))
+            # говорим что всё скачано
+            self._download.downloading.connect(lambda z: self.ui.label_7.setText(z))
+            self._download.done.connect(lambda z: self.ui.label_7.setText(z))
+            self._download.done.connect(lambda hint1: self.ui.pushButton.setEnabled(True))
+            self._download.done.connect(lambda hint2: self.ui.pushButton_2.setEnabled(True))
+            # self._download.done.connect(lambda hint3: self.on_changed_find_uc(''))
+            # self._download.done.connect(lambda hint4: self.on_changed_find_cert(''))
+            # self._download.done.connect(lambda hint5: self.on_changed_find_crl(''))
+            self._download.start()
+        except Exception:
+            print('Error: download_xml()')
+            logs('Error: download_xml()', 'errors')
+
+
+    def download_all_crls(self):
+        try:
+            self.ui.pushButton_4.setEnabled(False)
+            QCoreApplication.processEvents()
+            query_1 = WatchingCRL.select()
+            query_2 = WatchingCustomCRL.select()
+            counter_watching_crl_all = WatchingCRL.select().count()
+            watching_custom_crl_all = WatchingCustomCRL.select().count()
+            counter_watching_crl = 0
+            counter_watching_custom_crl = 0
+            self.ui.label_8.setText('Загрузка началась')
+            for wc in query_1:
+                QCoreApplication.processEvents()
+                counter_watching_crl = counter_watching_crl + 1
+                file_url = wc.UrlCRL
+                file_name = wc.KeyId+'.crl'
+                # file_name = wc.UrlCRL.split('/')[-1]
+                # file_name = wcc.KeyId
+                folder = config['Folders']['crls']
+                self.ui.label_8.setText(str(counter_watching_crl) + ' из '+ str(counter_watching_crl_all) + ' Загружаем: ' + str(wc.Name) + ' ' + str(wc.KeyId))
+                download_file(file_url, file_name, folder, 'current', wc.ID)
+                # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
+            print('WatchingCRL downloaded ' + str(counter_watching_crl))
+            logs('Info: WatchingCRL downloaded ' + str(counter_watching_crl))
+            for wcc in query_2:
+                QCoreApplication.processEvents()
+                counter_watching_custom_crl = counter_watching_custom_crl + 1
+                file_url = wcc.UrlCRL
+                file_name = wcc.KeyId+'.crl'
+                # file_name = wcc.UrlCRL.split('/')[-1]
+                # file_name = wcc.KeyId
+                folder = config['Folders']['crls']
+                self.ui.label_8.setText(str(counter_watching_custom_crl) + ' из '+ str(watching_custom_crl_all) + ' Загружаем: ' + str(wcc.Name) + ' ' + str(wcc.KeyId))
+                download_file(file_url, file_name, folder, 'custome', wcc.ID)
+                # Downloader(str(wcc.UrlCRL), str(wcc.SerialNumber)+'.crl'
+            self.ui.label_8.setText('Загрузка закончена')
+            print('WatchingCustomCRL downloaded '+ str(counter_watching_custom_crl))
+            logs('Info: WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl))
+            print('All download done, w='+str(counter_watching_crl)+', c='+str(counter_watching_custom_crl))
+            logs('Info: All download done, w='+str(counter_watching_crl)+', c='+str(counter_watching_custom_crl))
+            self.ui.pushButton_4.setEnabled(True)
+        except Exception:
+            print('Error: download_all_crls()')
+            logs('Error: download_all_crls()', 'errors')
 
     def import_crl_list(self, file_name='crl_list.txt'):
         try:
@@ -1608,56 +1830,17 @@ class MainWindow(QMainWindow):
                 print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
             else:
                 print('Not found crl_list.txt')
+                logs('Info: Not found crl_list.txt')
         except Exception:
             print('Error: import_crl_list()')
-
-    def download_all_crls(self):
-        try:
-            self.ui.pushButton_4.setEnabled(False)
-            QCoreApplication.processEvents()
-            query_1 = WatchingCRL.select()
-            query_2 = WatchingCustomCRL.select()
-            counter_watching_crl_all = WatchingCRL.select().count()
-            watching_custom_crl_all = WatchingCustomCRL.select().count()
-            counter_watching_crl = 0
-            counter_watching_custom_crl = 0
-            self.ui.label_8.setText('Загрузка началась')
-            for wc in query_1:
-                QCoreApplication.processEvents()
-                counter_watching_crl = counter_watching_crl + 1
-                file_url = wc.UrlCRL
-                file_name = wc.KeyId+'.crl'
-                # file_name = wc.UrlCRL.split('/')[-1]
-                # file_name = wcc.KeyId
-                folder = config['Folders']['crls']
-                self.ui.label_8.setText(str(counter_watching_crl) + ' из '+ str(counter_watching_crl_all) + ' Загружаем: ' + str(wc.Name) + ' ' + str(wc.KeyId))
-                download_file(file_url, file_name, folder, 'current', wc.ID)
-                # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
-            print('WatchingCRL downloaded ' + str(counter_watching_crl))
-            for wcc in query_2:
-                QCoreApplication.processEvents()
-                counter_watching_custom_crl = counter_watching_custom_crl + 1
-                file_url = wcc.UrlCRL
-                file_name = wcc.KeyId+'.crl'
-                # file_name = wcc.UrlCRL.split('/')[-1]
-                # file_name = wcc.KeyId
-                folder = config['Folders']['crls']
-                self.ui.label_8.setText(str(counter_watching_custom_crl) + ' из '+ str(watching_custom_crl_all) + ' Загружаем: ' + str(wcc.Name) + ' ' + str(wcc.KeyId))
-                download_file(file_url, file_name, folder, 'custome', wcc.ID)
-                # Downloader(str(wcc.UrlCRL), str(wcc.SerialNumber)+'.crl'
-            self.ui.label_8.setText('Загрузка закончена')
-            print('WatchingCustomCRL downloaded '+ str(counter_watching_custom_crl))
-            print('All download done, w='+str(counter_watching_crl)+', c='+str(counter_watching_custom_crl))
-            self.ui.pushButton_4.setEnabled(True)
-        except Exception:
-            print('Error: download_all_crls()')
+            logs('Error: import_crl_list()', 'errors')
 
     def export_crl(self):
         self.ui.label_7.setText('Генерируем файл')
         export_all_watching_crl()
         self.ui.label_7.setText('Файл сгенерирован')
 
-    def copy_crl_to_uc(self):
+    def export_crl_to_uc(self):
         self.ui.pushButton_3.setEnabled(False)
         self.ui.label_8.setText('Обрабатываем CRL для загрузки в УЦ')
         check_for_import_in_uc()
@@ -1747,8 +1930,10 @@ class UcWindow(QWidget):
                 self.ui.tableWidget.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
             except Exception:
                 print('Error: UcWindow()::init()::query_to_row')
+                logs('Error: UcWindow()::init()::query_to_row', 'errors')
         except Exception:
             print('Error: UcWindow()::init()')
+            logs('Error: UcWindow()::init()', 'errors')
 
 
 if __name__ == "__main__":
