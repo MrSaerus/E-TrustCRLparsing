@@ -18,37 +18,15 @@ from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
 from lxml import etree
 from peewee import *
 
-
-def logs(body, t=''):
-    if t == 'errors':
-        with open(r"error_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
-            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
-        file.close()
-    else:
-        with open(r"log_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
-            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
-        file.close()
-
 config = configparser.ConfigParser()
 if os.path.isfile('settings.ini'):
     config.read('settings.ini')
 else:
     open('settings.ini', 'w').close()
-    # config['Folders'] = {'certs': 'certs/',
-    #                      'crls': 'crls/',
-    #                      'tmp': 'temp/',
-    #                      'assests': 'assests/'}
-    # config['MainWindow'] = {'width': '1200',
-    #                         'height': '400'}
-    # config['Bd'] = {'type': 'sqlite3',
-    #                 'name': 'cert_crl.db'}
-    # config['Socket'] = {'timeout': '15'}
-    # config['Style'] = {'Window': 'Fusion'}
-
     config['Folders']={'certs': 'certs/',
                        'crls': 'crls/',
                        'tmp': 'temp/',
-                       'assests': 'assests/',
+                       'logs': 'logs/',
                        'to_uc': 'uc/'}
 
     config['MainWindow']={'width ': '1200',
@@ -88,17 +66,52 @@ else:
                     'wcdAllowDelete': 'No'}
     config['Schedule']={'allowSchedule': 'No',
                         'weekUpdate': 'All',
-                        'timeUpdate': '9:00; 12:00; 16:00',
+                        'timeUpdate': '10M',
+                        'periodUpdate': '9:00; 12:00; 16:00',
                         'allowUpdateTSLbyStart': 'No',
                         'allowUpdateCRLbyStart': 'No',
                         'rangeUpdateCRL': '5day'}
-    config['Sec']={'allowImportCRL': 'Yes',
-                   'allowExportCRL': 'Yes',
-                   'allowDeleteWatchingCRL': 'Yes',
-                   'allowDownloadButtomCRL': 'Yes',
-                   'allowCheckButtomCRL': 'Yes'}
+    config['Sec']={'allowImportCRL': 'No',
+                   'allowExportCRL': 'No',
+                   'allowDeleteWatchingCRL': 'No',
+                   'allowDownloadButtonCRL': 'Yes',
+                   'allowCheckButtonCRL': 'Yes'}
     with open('settings.ini', 'w') as configfile:
         config.write(configfile)
+
+
+try:
+    os.makedirs(config['Folders']['certs'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['crls'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['tmp'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['to_uc'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['logs'])
+except OSError:
+    pass
+
+
+def logs(body, t=''):
+    if t == 'errors':
+        with open(config['Folders']['logs']+"/error_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
+            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
+        file.close()
+    else:
+        with open(config['Folders']['logs']+"/log_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
+            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
+        file.close()
+
 
 # socket.setdefaulttimeout(int(config['Socket']['timeout']))
 
@@ -122,26 +135,6 @@ except Exception:
     print('Error: Connect to BD failed')
     logs('Error: Connect to BD failed', 'errors')
 
-try:
-    os.makedirs(config['Folders']['certs'])
-except OSError:
-    pass
-try:
-    os.makedirs(config['Folders']['crls'])
-except OSError:
-    pass
-try:
-    os.makedirs(config['Folders']['tmp'])
-except OSError:
-    pass
-try:
-    os.makedirs(config['Folders']['to_uc'])
-except OSError:
-    pass
-try:
-    os.makedirs(config['Folders']['assests'])
-except OSError:
-    pass
 
 class UC(Model):
     ID = IntegerField(primary_key=True)
@@ -266,6 +259,8 @@ if not CRL.table_exists():
     CRL.create_table()
 if not Settings.table_exists():
     Settings.create_table()
+    Settings(name='ver',value=0).save()
+    Settings(name='data_update', value='1970-01-01 00:00:00').save()
 if not WatchingCRL.table_exists():
     WatchingCRL.create_table()
 if not WatchingCustomCRL.table_exists():
@@ -1065,8 +1060,6 @@ class Downloader(QThread):
             # print(meta)
 
         def run(self):
-            # тест на локальных данных, но работать должно и с сетью
-            # request.urlretrieve(self.fileUrl, self.fileName, self._progress)
             try:
                 logs('Info: Downloading TSL')
                 request.urlretrieve(self.fileUrl, self.fileName, self._progress)
@@ -1080,7 +1073,7 @@ class Downloader(QThread):
             else:
                 print('Загрузка завершена')
                 logs('Info: Downloading succesful')
-                #self.done.emit('Загрузка завершена')
+
                 query_get_settings = Settings.select()
                 ver_from_tsl = get_info_xlm('current_version')
                 st = {}
@@ -1347,9 +1340,7 @@ class MainWindow(QMainWindow):
                 buttonCRLSave = QPushButton()
                 buttonCRLSave.setFixedSize(100, 30)
                 buttonCRLSave.setText("Скачать")
-                stamp = row.Stamp
-                url = row.UrlCRL
-                buttonCRLSave.pressed.connect(lambda u=url, s=stamp: download_file(u, s+'.crl', config['Folders']['crls']))
+                buttonCRLSave.pressed.connect(lambda u=row.UrlCRL, s=row.Stamp: download_file(u, s+'.crl', config['Folders']['crls']))
                 self.ui.tableWidget_3.setCellWidget(count, 6, buttonCRLSave)
 
                 button_add_to_watch = QPushButton()
@@ -1576,11 +1567,11 @@ class MainWindow(QMainWindow):
             if config['Sec']['allowDeleteWatchingCRL'] == 'Yes':
                 self.ui.checkBox_6.setChecked(True)
                 #self.ui.pushButton_X.setDisabled(True)
-            if config['Sec']['allowDownloadBottomCRL'] == 'Yes':
+            if config['Sec']['allowDownloadButtonCRL'] == 'Yes':
                 self.ui.checkBox_7.setChecked(True)
             else:
                 self.ui.pushButton_4.setDisabled(True)
-            if config['Sec']['allowCheckBottomCRL'] == 'Yes':
+            if config['Sec']['allowCheckButtonCRL'] == 'Yes':
                 self.ui.checkBox_8.setChecked(True)
             else:
                 self.ui.pushButton_5.setDisabled(True)
@@ -2063,6 +2054,7 @@ class MainWindow(QMainWindow):
         self.worker.stop()
         self.thread.quit()
         self.thread.wait()
+
 
 class UcWindow(QWidget):
     def __init__(self, RegNumber):

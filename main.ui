@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1118</width>
+    <width>1168</width>
     <height>659</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -126,7 +126,7 @@
                   </layout>
                  </widget>
                 </item>
-                <item>
+                <item alignment="Qt::AlignTop">
                  <widget class="QGroupBox" name="groupBox_17">
                   <property name="title">
                    <string>Расписание обновления:</string>
@@ -385,10 +385,10 @@
                  <item>
                   <widget class="QFrame" name="frame_14">
                    <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
+                    <enum>QFrame::NoFrame</enum>
                    </property>
                    <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
+                    <enum>QFrame::Plain</enum>
                    </property>
                    <layout class="QHBoxLayout" name="horizontalLayout_14">
                     <property name="spacing">
@@ -621,7 +621,7 @@ border-color: rgb(0, 0, 0);</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_7">
              <property name="spacing">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="leftMargin">
               <number>0</number>
@@ -718,7 +718,7 @@ border-color: rgb(0, 0, 0);</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_28">
              <property name="spacing">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="leftMargin">
               <number>0</number>
@@ -819,7 +819,7 @@ border-color: rgb(0, 0, 0);</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_29">
              <property name="spacing">
-              <number>0</number>
+              <number>6</number>
              </property>
              <property name="leftMargin">
               <number>0</number>
@@ -985,7 +985,7 @@ border-color: rgb(0, 0, 0);</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_31">
                  <property name="spacing">
-                  <number>0</number>
+                  <number>6</number>
                  </property>
                  <property name="leftMargin">
                   <number>0</number>
@@ -1096,7 +1096,7 @@ border-color: rgb(0, 0, 0);</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_32">
                  <property name="spacing">
-                  <number>0</number>
+                  <number>6</number>
                  </property>
                  <property name="leftMargin">
                   <number>0</number>
@@ -1207,7 +1207,7 @@ border-color: rgb(0, 0, 0);</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_30">
                  <property name="spacing">
-                  <number>0</number>
+                  <number>6</number>
                  </property>
                  <property name="leftMargin">
                   <number>0</number>
@@ -1644,7 +1644,7 @@ border-color: rgb(0, 0, 0);</string>
                        <item alignment="Qt::AlignBottom">
                         <widget class="QFrame" name="frame_22">
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::NoFrame</enum>
                          </property>
                          <property name="frameShadow">
                           <enum>QFrame::Raised</enum>
@@ -2146,17 +2146,41 @@ border-color: rgb(0, 0, 0);</string>
                  </layout>
                 </item>
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_55"/>
+                 <layout class="QVBoxLayout" name="verticalLayout_55">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_19">
+                    <property name="title">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_33">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_36"/>
+                 <layout class="QHBoxLayout" name="horizontalLayout_36">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_18">
+                    <property name="title">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_35"/>
+                 <layout class="QHBoxLayout" name="horizontalLayout_35">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_20">
+                    <property name="title">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>
@@ -2911,7 +2935,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1118</width>
+     <width>1168</width>
      <height>21</height>
     </rect>
    </property>

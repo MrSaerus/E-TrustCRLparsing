@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'maindndtPF.ui'
+## Form generated from reading UI file 'mainXyYELL.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -20,7 +20,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1118, 659)
+        MainWindow.resize(1168, 659)
         icon = QIcon()
         iconThemeName = u"assests/favicon.ico"
         if QIcon.hasThemeIcon(iconThemeName):
@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_94.addLayout(self.horizontalLayout_73)
 
 
-        self.verticalLayout_34.addWidget(self.groupBox_17)
+        self.verticalLayout_34.addWidget(self.groupBox_17, 0, Qt.AlignTop)
 
         self.frame_11 = QFrame(self.tab)
         self.frame_11.setObjectName(u"frame_11")
@@ -259,8 +259,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.setContentsMargins(9, -1, 9, -1)
         self.frame_14 = QFrame(self.frame_3)
         self.frame_14.setObjectName(u"frame_14")
-        self.frame_14.setFrameShape(QFrame.StyledPanel)
-        self.frame_14.setFrameShadow(QFrame.Raised)
+        self.frame_14.setFrameShape(QFrame.NoFrame)
+        self.frame_14.setFrameShadow(QFrame.Plain)
         self.horizontalLayout_14 = QHBoxLayout(self.frame_14)
         self.horizontalLayout_14.setSpacing(6)
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
@@ -392,7 +392,7 @@ class Ui_MainWindow(object):
         self.frame_4.setFrameShape(QFrame.NoFrame)
         self.frame_4.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_7 = QHBoxLayout(self.frame_4)
-        self.horizontalLayout_7.setSpacing(0)
+        self.horizontalLayout_7.setSpacing(6)
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_6 = QHBoxLayout()
@@ -448,7 +448,7 @@ class Ui_MainWindow(object):
         self.frame_5.setFrameShape(QFrame.NoFrame)
         self.frame_5.setFrameShadow(QFrame.Raised)
         self.verticalLayout_28 = QVBoxLayout(self.frame_5)
-        self.verticalLayout_28.setSpacing(0)
+        self.verticalLayout_28.setSpacing(6)
         self.verticalLayout_28.setObjectName(u"verticalLayout_28")
         self.verticalLayout_28.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_8 = QHBoxLayout()
@@ -507,7 +507,7 @@ class Ui_MainWindow(object):
         self.frame_6.setFrameShape(QFrame.NoFrame)
         self.frame_6.setFrameShadow(QFrame.Raised)
         self.verticalLayout_29 = QVBoxLayout(self.frame_6)
-        self.verticalLayout_29.setSpacing(0)
+        self.verticalLayout_29.setSpacing(6)
         self.verticalLayout_29.setObjectName(u"verticalLayout_29")
         self.verticalLayout_29.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_9 = QHBoxLayout()
@@ -602,7 +602,7 @@ class Ui_MainWindow(object):
         self.frame_7.setFrameShape(QFrame.NoFrame)
         self.frame_7.setFrameShadow(QFrame.Raised)
         self.verticalLayout_31 = QVBoxLayout(self.frame_7)
-        self.verticalLayout_31.setSpacing(0)
+        self.verticalLayout_31.setSpacing(6)
         self.verticalLayout_31.setObjectName(u"verticalLayout_31")
         self.verticalLayout_31.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_10 = QHBoxLayout()
@@ -665,7 +665,7 @@ class Ui_MainWindow(object):
         self.frame_8.setFrameShape(QFrame.NoFrame)
         self.frame_8.setFrameShadow(QFrame.Raised)
         self.verticalLayout_32 = QVBoxLayout(self.frame_8)
-        self.verticalLayout_32.setSpacing(0)
+        self.verticalLayout_32.setSpacing(6)
         self.verticalLayout_32.setObjectName(u"verticalLayout_32")
         self.verticalLayout_32.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_11 = QHBoxLayout()
@@ -728,7 +728,7 @@ class Ui_MainWindow(object):
         self.frame_9.setFrameShape(QFrame.NoFrame)
         self.frame_9.setFrameShadow(QFrame.Raised)
         self.verticalLayout_30 = QVBoxLayout(self.frame_9)
-        self.verticalLayout_30.setSpacing(0)
+        self.verticalLayout_30.setSpacing(6)
         self.verticalLayout_30.setObjectName(u"verticalLayout_30")
         self.verticalLayout_30.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_12 = QHBoxLayout()
@@ -1033,7 +1033,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_82.setObjectName(u"verticalLayout_82")
         self.frame_22 = QFrame(self.groupBox_14)
         self.frame_22.setObjectName(u"frame_22")
-        self.frame_22.setFrameShape(QFrame.StyledPanel)
+        self.frame_22.setFrameShape(QFrame.NoFrame)
         self.frame_22.setFrameShadow(QFrame.Raised)
         self.verticalLayout_92 = QVBoxLayout(self.frame_22)
         self.verticalLayout_92.setObjectName(u"verticalLayout_92")
@@ -1362,6 +1362,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_55 = QVBoxLayout()
         self.verticalLayout_55.setObjectName(u"verticalLayout_55")
+        self.groupBox_19 = QGroupBox(self.tab_11)
+        self.groupBox_19.setObjectName(u"groupBox_19")
+
+        self.verticalLayout_55.addWidget(self.groupBox_19)
+
 
         self.horizontalLayout_34.addLayout(self.verticalLayout_55)
 
@@ -1372,11 +1377,21 @@ class Ui_MainWindow(object):
         self.horizontalLayout_33.setObjectName(u"horizontalLayout_33")
         self.horizontalLayout_36 = QHBoxLayout()
         self.horizontalLayout_36.setObjectName(u"horizontalLayout_36")
+        self.groupBox_18 = QGroupBox(self.tab_11)
+        self.groupBox_18.setObjectName(u"groupBox_18")
+
+        self.horizontalLayout_36.addWidget(self.groupBox_18)
+
 
         self.horizontalLayout_33.addLayout(self.horizontalLayout_36)
 
         self.horizontalLayout_35 = QHBoxLayout()
         self.horizontalLayout_35.setObjectName(u"horizontalLayout_35")
+        self.groupBox_20 = QGroupBox(self.tab_11)
+        self.groupBox_20.setObjectName(u"groupBox_20")
+
+        self.horizontalLayout_35.addWidget(self.groupBox_20)
+
 
         self.horizontalLayout_33.addLayout(self.horizontalLayout_35)
 
@@ -1929,7 +1944,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1118, 21))
+        self.menubar.setGeometry(QRect(0, 0, 1168, 21))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -1937,7 +1952,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
         self.tabWidget_3.setCurrentIndex(0)
 
@@ -2103,6 +2118,9 @@ class Ui_MainWindow(object):
         self.label_23.setText(QCoreApplication.translate("MainWindow", u"\u0428\u0438\u0440\u0438\u043d\u0430 \u043e\u043a\u043d\u0430:", None))
         self.checkBox_3.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0435 \u0440\u0430\u0437\u043c\u0435\u0440\u0430 \u043e\u043a\u043d\u0430", None))
         self.checkBox_2.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440 \u043e\u043a\u043d\u0430 \u043f\u0440\u0438 \u0432\u044b\u0445\u043e\u0434\u0435", None))
+        self.groupBox_19.setTitle("")
+        self.groupBox_18.setTitle("")
+        self.groupBox_20.setTitle("")
         self.pushButton_22.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_11), QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u0430\u043f\u043a\u0438 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u044f", None))
