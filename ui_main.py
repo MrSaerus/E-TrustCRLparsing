@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainrzykfo.ui'
+## Form generated from reading UI file 'maindndtPF.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -121,6 +121,11 @@ class Ui_MainWindow(object):
         self.label_36.setObjectName(u"label_36")
 
         self.verticalLayout_93.addWidget(self.label_36)
+
+        self.label_15 = QLabel(self.groupBox_17)
+        self.label_15.setObjectName(u"label_15")
+
+        self.verticalLayout_93.addWidget(self.label_15)
 
 
         self.verticalLayout_94.addLayout(self.verticalLayout_93)
@@ -1212,6 +1217,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_75.addLayout(self.verticalLayout_74)
 
+        self.pushButton_21 = QPushButton(self.tab_10)
+        self.pushButton_21.setObjectName(u"pushButton_21")
+
+        self.verticalLayout_75.addWidget(self.pushButton_21, 0, Qt.AlignRight)
+
         self.tabWidget_3.addTab(self.tab_10, "")
         self.tab_11 = QWidget()
         self.tab_11.setObjectName(u"tab_11")
@@ -1375,6 +1385,11 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_54.addLayout(self.verticalLayout_53)
+
+        self.pushButton_22 = QPushButton(self.tab_11)
+        self.pushButton_22.setObjectName(u"pushButton_22")
+
+        self.verticalLayout_54.addWidget(self.pushButton_22, 0, Qt.AlignRight)
 
         self.tabWidget_3.addTab(self.tab_11, "")
         self.tab_12 = QWidget()
@@ -1733,6 +1748,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_40.addLayout(self.verticalLayout_39)
 
+        self.pushButton_23 = QPushButton(self.tab_12)
+        self.pushButton_23.setObjectName(u"pushButton_23")
+
+        self.verticalLayout_40.addWidget(self.pushButton_23, 0, Qt.AlignRight)
+
         self.tabWidget_3.addTab(self.tab_12, "")
         self.tab_13 = QWidget()
         self.tab_13.setObjectName(u"tab_13")
@@ -1882,6 +1902,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_61.addLayout(self.verticalLayout_60)
 
+        self.pushButton_24 = QPushButton(self.tab_13)
+        self.pushButton_24.setObjectName(u"pushButton_24")
+
+        self.verticalLayout_61.addWidget(self.pushButton_24, 0, Qt.AlignRight)
+
         self.tabWidget_3.addTab(self.tab_13, "")
 
         self.verticalLayout.addWidget(self.tabWidget_3)
@@ -1912,7 +1937,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(5)
         self.tabWidget_2.setCurrentIndex(0)
         self.tabWidget_3.setCurrentIndex(0)
 
@@ -1932,7 +1957,8 @@ class Ui_MainWindow(object):
         self.groupBox_17.setTitle(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0441\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f:", None))
         self.label_37.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u0435\u0434\u044b\u0434\u0443\u0449\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435: ", None))
         self.label_38.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435:", None))
-        self.label_36.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0430\u0439\u043c\u0435\u0440:", None))
+        self.label_36.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0440\u0435\u043c\u044f \u0432 \u0440\u0430\u0431\u043e\u0442\u0435:", None))
+        self.label_15.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0430\u0439\u043c\u0435\u0440:", None))
         self.pushButton_19.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043f\u0443\u0441\u043a", None))
         self.pushButton_20.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"\u0413\u043e\u043b\u043e\u0432\u043d\u043e\u0439 \u0423\u0434\u043e\u0441\u0442\u043e\u0432\u0435\u0440\u044f\u044e\u0449\u0438\u0439 \u0446\u0435\u043d\u0442\u0440", None))
@@ -2070,12 +2096,14 @@ class Ui_MainWindow(object):
         self.checkBox_10.setText(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u043e\u0432\u0435\u0449\u0430\u0442\u044c \u043e\u0431 \u043e\u0448\u0438\u0431\u043a\u0430\u0445", None))
         self.checkBox_9.setText(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u043e\u0432\u0435\u0449\u0430\u0442\u044c \u043e \u043d\u043e\u0432\u044b\u0445 CRL", None))
         self.checkBox_11.setText(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u043e\u0432\u0435\u0449\u0430\u0442\u044c \u043e \u043d\u043e\u0432\u043e\u043c TSL", None))
+        self.pushButton_21.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_10), QCoreApplication.translate("MainWindow", u"\u041e\u0441\u043d\u043e\u0432\u043d\u043e\u0435", None))
         self.groupBox_8.setTitle(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u043e\u0441\u043d\u043e\u0432\u043d\u043e\u0433\u043e \u043e\u043a\u043d\u0430", None))
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0441\u043e\u0442\u0430 \u043e\u043a\u043d\u0430:", None))
         self.label_23.setText(QCoreApplication.translate("MainWindow", u"\u0428\u0438\u0440\u0438\u043d\u0430 \u043e\u043a\u043d\u0430:", None))
         self.checkBox_3.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0435 \u0440\u0430\u0437\u043c\u0435\u0440\u0430 \u043e\u043a\u043d\u0430", None))
         self.checkBox_2.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440 \u043e\u043a\u043d\u0430 \u043f\u0440\u0438 \u0432\u044b\u0445\u043e\u0434\u0435", None))
+        self.pushButton_22.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_11), QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0442\u0435\u0440\u0444\u0435\u0439\u0441", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u0430\u043f\u043a\u0438 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u044f", None))
         self.pushButton_18.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u043f\u0430\u043f\u043a\u0443 \u0434\u043b\u044f \u0421\u0410\u0421", None))
@@ -2101,6 +2129,7 @@ class Ui_MainWindow(object):
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0440\u0442:", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438\u043d:", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0430\u0440\u043e\u043b\u044c:", None))
+        self.pushButton_23.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_12), QCoreApplication.translate("MainWindow", u"\u0421\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u0435", None))
         self.groupBox_10.setTitle(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438", None))
         self.label_26.setText(QCoreApplication.translate("MainWindow", u"\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043b\u043e\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f", None))
@@ -2110,6 +2139,7 @@ class Ui_MainWindow(object):
         self.groupBox_11.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0432\u0435\u0434\u0435\u043d\u0438\u0435", None))
         self.groupBox_9.setTitle(QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438", None))
         self.groupBox_12.setTitle(QCoreApplication.translate("MainWindow", u"\u041e\u0448\u0438\u0431\u043a\u0438", None))
+        self.pushButton_24.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_13), QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438", None))
         self.textEdit.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"

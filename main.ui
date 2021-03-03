@@ -23,7 +23,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -150,6 +150,13 @@
                      </item>
                      <item>
                       <widget class="QLabel" name="label_36">
+                       <property name="text">
+                        <string>Время в работе:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_15">
                        <property name="text">
                         <string>Таймер:</string>
                        </property>
@@ -1934,6 +1941,13 @@ border-color: rgb(0, 0, 0);</string>
               </item>
              </layout>
             </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QPushButton" name="pushButton_21">
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="tab_11">
@@ -2147,6 +2161,13 @@ border-color: rgb(0, 0, 0);</string>
                </layout>
               </item>
              </layout>
+            </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QPushButton" name="pushButton_22">
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -2674,6 +2695,13 @@ border-color: rgb(0, 0, 0);</string>
               </item>
              </layout>
             </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QPushButton" name="pushButton_23">
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="tab_13">
@@ -2831,6 +2859,13 @@ border-color: rgb(0, 0, 0);</string>
                </layout>
               </item>
              </layout>
+            </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QPushButton" name="pushButton_24">
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

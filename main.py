@@ -1,8 +1,7 @@
 from ui_main import *
 from ui_sub_main import *
 import shutil
-import sleekxmpp
-import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests, datetime
+import sleekxmpp, re
 import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests, datetime, time
 from urllib import request, error
 from os.path import expanduser
@@ -23,11 +22,11 @@ from peewee import *
 def logs(body, t=''):
     if t == 'errors':
         with open(r"error_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
-            file.write(str(datetime.datetime.now()) + '    ' + body + '\n')
+            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
         file.close()
     else:
         with open(r"log_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
-            file.write(str(datetime.datetime.now()) + '    ' + body + '\n')
+            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
         file.close()
 
 config = configparser.ConfigParser()
@@ -671,7 +670,7 @@ def open_file(file_name, file_type, url='None'):
         if file_type == 'cer':
             save_cert(file_name)
         elif file_type == 'crl':
-            download_file(url, file_name, config['Folders']['crls'])
+            download_file(url, file_name+'.crl', config['Folders']['crls'])
     else:
         open_crl = run_dll + "  " + path
         os.system(open_crl)
@@ -780,9 +779,11 @@ def check_for_import_in_uc():
                     logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors')
                 count = count + 1
         if count > 0:
-            print('Copied ' + str(count) + ' count\'s CRL')
+            print('Info: Copied ' + str(count) + ' count\'s CRL')
+            logs('Info: Copied ' + str(count) + ' count\'s CRL')
         else:
-            print('Needed CRL not found')
+            print('Info: Needed CRL not found')
+            logs('Info: Needed CRL not found')
     except Exception:
         print('Error: check_for_import_in_uc()')
         logs('Error: check_for_import_in_uc()', 'errors')
@@ -867,54 +868,6 @@ def exist_crl_in_custom_watch():
             print(row.KeyId, ' exist')
 
 
-class Worker(QObject):
-    stepIncreased = pyqtSignal(str)
-    buttonStartE = pyqtSignal(str)
-    buttonStopE = pyqtSignal(str)
-    buttonStartD = pyqtSignal(str)
-    buttonStopD = pyqtSignal(str)
-    infoThreadSignal = pyqtSignal(str)
-    def __init__(self):
-        super(Worker, self).__init__()
-        self._step = 0
-        self._hour = 0
-        self._minutes = 0
-        self._isRunning = True
-
-    def task(self):
-        print('Info: Start monitoring CRL')
-        logs('Info: Start monitoring CRL')
-        self.infoThreadSignal.emit('Info: Start monitoring CRL')
-        self.buttonStartD.emit('True')
-        self.buttonStopE.emit('True')
-        if not self._isRunning:
-            self._isRunning = True
-            self._step = 0
-            self._hour = 0
-            self._minutes = 0
-
-        while self._isRunning:
-            self._step += 1
-            if self._step == 60:
-                self._minutes += 1
-            if self._minutes == 60:
-                self._hour += 1
-            timer = str(self._hour) + ':' + str(self._minutes) + ':' + str(self._step)
-            self.stepIncreased.emit(timer)
-            time.sleep(1)
-            if self._step == 60:
-                check_for_import_in_uc()
-                self._step = 0
-        print('Info: Monitoring is stopped')
-        logs('Info: Monitoring is stopped')
-        self.infoThreadSignal.emit('Info: Мonitoring is stopped')
-        self.buttonStartE.emit('True')
-        self.buttonStopD.emit('True')
-
-    def stop(self):
-        self._isRunning = False
-
-
 def xmpp_sender():
     username = 'username'
     passwd = 'password'
@@ -925,6 +878,171 @@ def xmpp_sender():
     client.connect()
     client.process(blocking=False)
     client.send_message(mto=to, mbody=msg)
+
+
+class Worker(QObject):
+    try:
+        threadTimerSender = pyqtSignal(str)
+        threadButtonStartE = pyqtSignal(str)
+        threadButtonStopE = pyqtSignal(str)
+        threadButtonStartD = pyqtSignal(str)
+        threadButtonStopD = pyqtSignal(str)
+        threadInfoMessage = pyqtSignal(str)
+        threadBefore = pyqtSignal(str)
+        threadAfter = pyqtSignal(str)
+
+        def __init__(self):
+            try:
+                super(Worker, self).__init__()
+                self._step = 0
+                self._seconds = 0
+                self._minutes = 0
+                self._hour = 0
+                self._day = 0
+                self._isRunning = True
+            except Exception:
+                print('Error: Worker(QObject)::__init__')
+                logs('Error: Worker(QObject)::__init__', 'errors')
+
+        def task(self):
+            try:
+                timer_getting = config['Schedule']['timeUpdate']
+                r = re.compile(r"([0-9]+)([a-zA-Z]+)")
+                m = r.match(timer_getting)
+
+                if m.group(2) == 'S':
+                    sec_to_get = int(m.group(1))
+                elif m.group(2) == 'M':
+                    sec_to_get = int(m.group(1))*60
+                elif m.group(2) == 'H':
+                    sec_to_get = int(m.group(1))*60*60
+                elif m.group(2) == 'D':
+                    sec_to_get = int(m.group(1))*60*60*24
+                else:
+                    print('error')
+
+                day_get = 0
+                hour_get = 0
+                minutes_get = 0
+                sec_get = 0
+
+                day_get = math.floor(sec_to_get/60/60/24)
+                hour_get = math.floor(sec_to_get/60/60)
+                minutes_get = math.floor(sec_to_get/60)
+                sec_get = math.floor(sec_to_get)
+
+                day_start = 0
+                hour_start = 0
+                minutes_start = 0
+                sec_start = 0
+                if day_get > 0:
+                    day_start = day_get
+                else:
+                    if hour_get > 0:
+                        hour_start = hour_get
+                    else:
+                        if minutes_get > 0:
+                            minutes_start = minutes_get
+                        else:
+                            if sec_get > 0:
+                                sec_start = sec_get
+                            else:
+                                print('error')
+
+                print('Info: Start monitoring CRL')
+                logs('Info: Start monitoring CRL')
+                self.threadInfoMessage.emit('Info: Start monitoring CRL')
+                self.threadButtonStartD.emit('True')
+                self.threadButtonStopE.emit('True')
+                timerB = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                timerA = datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get)
+                timerA = datetime.datetime.strftime(timerA, '%Y-%m-%d %H:%M:%S')
+                self.threadBefore.emit(timerB)
+                self.threadAfter.emit(timerA)
+                if not self._isRunning:
+                    self._isRunning = True
+                    self._step = 0
+                    self._seconds = 0
+                    self._minutes = 0
+                    self._hour = 0
+                    self._day = 0
+                while self._isRunning:
+                    # print('Дне ', day_start)
+                    # print('Час ', hour_start)
+                    # print('Мин ', minutes_start)
+                    # print('Сек ', sec_start)
+                    self._step += 1
+                    self._seconds += 1
+
+                    # ---------------------------------------------------
+                    if day_start == 0:
+                        hour_start -= 1
+                    if hour_start == 0:
+                        hour_start = 60
+                        day_start -= 1
+                    if minutes_start == 0:
+                        minutes_start = 60
+                        hour_start -= 1
+                    if sec_start == 0:
+                        sec_start = 60
+                        minutes_start -= 1
+                    # ---------------------------------------------------
+                    if self._seconds == 60:
+                        self._minutes += 1
+                        self._seconds = 0
+                    if self._minutes == 60:
+                        self._hour += 1
+                        self._minutes = 0
+                    if self._hour == 24:
+                        self._day += 1
+                        self._hour = 0
+                    sec_c = str(self._seconds)
+                    min_c = str(self._minutes)
+                    hou_c = str(self._hour)
+                    day_c = str(self._day)
+                    if self._seconds < 10:
+                        sec_c = '0' + sec_c
+                    if self._minutes < 10:
+                        min_c = '0' + min_c
+                    if self._hour < 10:
+                        hou_c = '0' + hou_c
+                    if self._day < 10:
+                        day_c = '0' + day_c
+                    # ---------------------------------------------------
+                    timer = day_c + ' ' + hou_c + ':' + min_c + ':' + sec_c
+
+                    # print('Дне ', day_start)
+                    # print('Час ', hour_start)
+                    # print('Мин ', minutes_start)
+                    # print('Сек ', sec_start)
+                    self.threadTimerSender.emit(timer)
+                    if self._step == int(sec_to_get) - 1:
+                        check_for_import_in_uc()
+                        timerB = str(datetime.datetime.now())
+                        timerA = str(datetime.datetime.now()+datetime.timedelta(seconds=sec_to_get))
+                        self.threadBefore.emit(timerB)
+                        self.threadAfter.emit(timerA)
+                        self._step = 0
+                    sec_start -= 1
+                    time.sleep(1)
+                print('Info: Monitoring is stopped')
+                logs('Info: Monitoring is stopped')
+                self.threadInfoMessage.emit('Info: Мonitoring is stopped')
+                self.threadButtonStartE.emit('True')
+                self.threadButtonStopD.emit('True')
+            except Exception:
+                print('Error: Worker(QObject)::task(self)')
+                logs('Error: Worker(QObject)::task(self)', 'errors')
+
+        def stop(self):
+            try:
+                self._isRunning = False
+            except Exception:
+                print('Error: Worker(QObject)::top(self)')
+                logs('Error: Worker(QObject)::top(self)', 'errors')
+    except Exception:
+        print('Error: Worker(QObject)')
+        logs('Error: Worker(QObject)', 'errors')
 
 
 class Downloader(QThread):
@@ -1095,27 +1213,29 @@ class MainWindow(QMainWindow):
             self.thread.start()
             self.worker = Worker()
             self.worker.moveToThread(self.thread)
-            self.worker.stepIncreased.connect(lambda y: self.ui.label_36.setText('Таймер: ' + str(y)))
-            self.worker.buttonStartD.connect(lambda x: self.ui.pushButton_19.setDisabled(True))
-            self.worker.buttonStopD.connect(lambda z: self.ui.pushButton_20.setDisabled(True))
-            self.worker.buttonStartE.connect(lambda r: self.ui.pushButton_19.setEnabled(True))
-            self.worker.buttonStopE.connect(lambda t: self.ui.pushButton_20.setEnabled(True))
-            self.worker.infoThreadSignal.connect(lambda msg: self.ui.label_7.setText(msg))
+
+            self.worker.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
+            self.worker.threadBefore.connect(lambda msg: self.ui.label_37.setText('Предыдущее обновление: : ' + str(msg)))
+            self.worker.threadAfter.connect(lambda msg: self.ui.label_38.setText('Следующее обновление: ' + str(msg)))
+            self.worker.threadButtonStartD.connect(lambda x: self.ui.pushButton_19.setDisabled(True))
+            self.worker.threadButtonStopD.connect(lambda z: self.ui.pushButton_20.setDisabled(True))
+            self.worker.threadButtonStartE.connect(lambda r: self.ui.pushButton_19.setEnabled(True))
+            self.worker.threadButtonStopE.connect(lambda t: self.ui.pushButton_20.setEnabled(True))
+            self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
+            self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
+            self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.ui.pushButton_20.clicked.connect(lambda: self.worker.stop() and self.stop_thread)
             self.ui.pushButton_19.clicked.connect(self.worker.task)
         except Exception:
             print('Error: tab_info()')
             logs('Error: tab_info()', 'errors')
 
-    def stop_thread(self):
-        self.worker.stop()
-        self.thread.quit()
-        self.thread.wait()
-
     def tab_uc(self, text=''):
         try:
             # self.ui.label_8.setText('Ищем: ' + text)
             # self.ui.label_8.adjustSize()
+
+            self.ui.pushButton_7.pressed.connect(lambda: self.ui.lineEdit.setText(''))
 
             query = UC.select().where(UC.Registration_Number.contains(text)
                                       | UC.INN.contains(text)
@@ -1151,6 +1271,7 @@ class MainWindow(QMainWindow):
             # self.lableFindCert.setText('Ищем: ' + text)
             # self.lableFindCert.adjustSize()
 
+            self.ui.pushButton_8.pressed.connect(lambda: self.ui.lineEdit_2.setText(''))
 
             query = CERT.select().where(CERT.Registration_Number.contains(text)
                                         | CERT.Name.contains(text)
@@ -1200,6 +1321,8 @@ class MainWindow(QMainWindow):
             # self.lableFindCRL.setText('Ищем: ' + text)
             # self.lableFindCRL.adjustSize()
 
+            self.ui.pushButton_9.pressed.connect(lambda: self.ui.lineEdit_3.setText(''))
+
             query = CRL.select().where(CRL.Registration_Number.contains(text)
                                        | CRL.Name.contains(text)
                                        | CRL.KeyId.contains(text)
@@ -1226,7 +1349,7 @@ class MainWindow(QMainWindow):
                 buttonCRLSave.setText("Скачать")
                 stamp = row.Stamp
                 url = row.UrlCRL
-                buttonCRLSave.pressed.connect(lambda u=url, s=stamp: download_file(u, s, config['Folders']['crls']))
+                buttonCRLSave.pressed.connect(lambda u=url, s=stamp: download_file(u, s+'.crl', config['Folders']['crls']))
                 self.ui.tableWidget_3.setCellWidget(count, 6, buttonCRLSave)
 
                 button_add_to_watch = QPushButton()
@@ -1268,6 +1391,8 @@ class MainWindow(QMainWindow):
         try:
             self.ui.label_8.setText('Ищем: ' + text)
             self.ui.label_8.adjustSize()
+
+            self.ui.pushButton_10.pressed.connect(lambda: self.ui.lineEdit_4.setText(''))
 
             query = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
                                                | WatchingCRL.INN.contains(text)
@@ -1325,6 +1450,8 @@ class MainWindow(QMainWindow):
             self.ui.label_8.setText('Ищем: ' + text)
             self.ui.label_8.adjustSize()
 
+            self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
+
             query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
                                                      | WatchingCustomCRL.INN.contains(text)
                                                      | WatchingCustomCRL.OGRN.contains(text)
@@ -1380,6 +1507,8 @@ class MainWindow(QMainWindow):
         try:
             self.ui.label_8.setText('Ищем: ' + text)
             self.ui.label_8.adjustSize()
+
+            self.ui.pushButton_12.pressed.connect(lambda: self.ui.lineEdit_6.setText(''))
 
             query = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
                                                       | WatchingDeletedCRL.INN.contains(text)
@@ -1930,6 +2059,10 @@ class MainWindow(QMainWindow):
         self.ui.label_8.setText('Все CRL обработаны')
         self.ui.pushButton_3.setEnabled(True)
 
+    def stop_thread(self):
+        self.worker.stop()
+        self.thread.quit()
+        self.thread.wait()
 
 class UcWindow(QWidget):
     def __init__(self, RegNumber):
