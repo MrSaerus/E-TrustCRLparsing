@@ -3,6 +3,7 @@ from ui_sub_main import *
 import shutil
 import sleekxmpp
 import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests, datetime
+import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests, datetime, time
 from urllib import request, error
 from os.path import expanduser
 from PyQt5.QtWidgets import \
@@ -866,6 +867,54 @@ def exist_crl_in_custom_watch():
             print(row.KeyId, ' exist')
 
 
+class Worker(QObject):
+    stepIncreased = pyqtSignal(str)
+    buttonStartE = pyqtSignal(str)
+    buttonStopE = pyqtSignal(str)
+    buttonStartD = pyqtSignal(str)
+    buttonStopD = pyqtSignal(str)
+    infoThreadSignal = pyqtSignal(str)
+    def __init__(self):
+        super(Worker, self).__init__()
+        self._step = 0
+        self._hour = 0
+        self._minutes = 0
+        self._isRunning = True
+
+    def task(self):
+        print('Info: Start monitoring CRL')
+        logs('Info: Start monitoring CRL')
+        self.infoThreadSignal.emit('Info: Start monitoring CRL')
+        self.buttonStartD.emit('True')
+        self.buttonStopE.emit('True')
+        if not self._isRunning:
+            self._isRunning = True
+            self._step = 0
+            self._hour = 0
+            self._minutes = 0
+
+        while self._isRunning:
+            self._step += 1
+            if self._step == 60:
+                self._minutes += 1
+            if self._minutes == 60:
+                self._hour += 1
+            timer = str(self._hour) + ':' + str(self._minutes) + ':' + str(self._step)
+            self.stepIncreased.emit(timer)
+            time.sleep(1)
+            if self._step == 60:
+                check_for_import_in_uc()
+                self._step = 0
+        print('Info: Monitoring is stopped')
+        logs('Info: Monitoring is stopped')
+        self.infoThreadSignal.emit('Info: Мonitoring is stopped')
+        self.buttonStartE.emit('True')
+        self.buttonStopD.emit('True')
+
+    def stop(self):
+        self._isRunning = False
+
+
 def xmpp_sender():
     username = 'username'
     passwd = 'password'
@@ -1007,6 +1056,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_2.clicked.connect(self.init_xml)
             self.ui.pushButton_13.clicked.connect(self.export_crl)
             self.ui.pushButton_6.pressed.connect(self.import_crl_list)
+
             watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(WatchingCRL.OGRN == '1047702026701')
             self.ui.tableWidget_7.resizeColumnsToContents()
             self.ui.tableWidget_7.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
@@ -1021,6 +1071,8 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_7.setColumnWidth(1, 180)
             self.ui.tableWidget_7.setColumnWidth(2, 180)
             self.ui.tableWidget_7.setColumnWidth(3, 180)
+            self.ui.tableWidget_7.resizeColumnsToContents()
+            self.ui.tableWidget_7.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
             watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(WatchingCRL.OGRN == '1020203227263')
             self.ui.tableWidget_8.resizeColumnsToContents()
@@ -1038,9 +1090,27 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_8.setColumnWidth(3, 180)
             self.ui.tableWidget_8.resizeColumnsToContents()
             self.ui.tableWidget_8.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+
+            self.thread = QThread()
+            self.thread.start()
+            self.worker = Worker()
+            self.worker.moveToThread(self.thread)
+            self.worker.stepIncreased.connect(lambda y: self.ui.label_36.setText('Таймер: ' + str(y)))
+            self.worker.buttonStartD.connect(lambda x: self.ui.pushButton_19.setDisabled(True))
+            self.worker.buttonStopD.connect(lambda z: self.ui.pushButton_20.setDisabled(True))
+            self.worker.buttonStartE.connect(lambda r: self.ui.pushButton_19.setEnabled(True))
+            self.worker.buttonStopE.connect(lambda t: self.ui.pushButton_20.setEnabled(True))
+            self.worker.infoThreadSignal.connect(lambda msg: self.ui.label_7.setText(msg))
+            self.ui.pushButton_20.clicked.connect(lambda: self.worker.stop() and self.stop_thread)
+            self.ui.pushButton_19.clicked.connect(self.worker.task)
         except Exception:
             print('Error: tab_info()')
             logs('Error: tab_info()', 'errors')
+
+    def stop_thread(self):
+        self.worker.stop()
+        self.thread.quit()
+        self.thread.wait()
 
     def tab_uc(self, text=''):
         try:
