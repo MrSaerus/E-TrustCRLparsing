@@ -22,7 +22,7 @@ class Ui_MainWindow(object):
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1168, 659)
         icon = QIcon()
-        iconThemeName = u"assests/favicon.ico"
+        iconThemeName = u"assists/favicon.ico"
         if QIcon.hasThemeIcon(iconThemeName):
             icon = QIcon.fromTheme(iconThemeName)
         else:
