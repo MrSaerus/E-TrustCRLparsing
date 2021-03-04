@@ -1,84 +1,82 @@
-from ui_main import *
-from ui_sub_main import *
-import shutil
-import sleekxmpp, re
-import base64, sys, socket, sqlite3, os, configparser, math, OpenSSL, requests, datetime, time
+from PyQt5.QtWidgets import QPushButton, QWidget, QTableWidgetItem, QHeaderView, QFileDialog
+from PyQt5.QtCore import pyqtSignal, QThread
 from urllib import request, error
-from os.path import expanduser
-from PyQt5.QtWidgets import \
-    QMainWindow, \
-    QApplication, \
-    QPushButton, \
-    QWidget, \
-    QTableWidgetItem, \
-    QHeaderView, \
-    QFileDialog
-from PyQt5.QtGui import QIcon, QFont, QBrush, QColor
-from PyQt5.QtCore import QCoreApplication, Qt, pyqtSignal, QThread, QRect, QSize
+from ui_sub_main import *
 from lxml import etree
+from ui_main import *
 from peewee import *
+import OpenSSL
+import base64
+import configparser
+import datetime
+import math
+import os
+import re
+import shutil
+import sqlite3
+import sys
+import time
 
 config = configparser.ConfigParser()
 if os.path.isfile('settings.ini'):
     config.read('settings.ini')
 else:
     open('settings.ini', 'w').close()
-    config['Folders']={'certs': 'certs/',
-                       'crls': 'crls/',
-                       'tmp': 'temp/',
-                       'logs': 'logs/',
-                       'to_uc': 'uc/'}
+    config['Folders'] = {'certs': 'certs/',
+                         'crls': 'crls/',
+                         'tmp': 'temp/',
+                         'logs': 'logs/',
+                         'to_uc': 'uc/'}
 
-    config['MainWindow']={'width ': '1200',
-                          'height ': '600',
-                          'saveWidth': 'No',
-                          'AllowResize': 'Yes'}
-    config['Bd']={'type': 'sqlite3',
-                  'name': 'cert_crl.db'}
-    config['Socket']={'timeout ': 'No'}
-    config['Listing']={'uc': '500',
-                       'crl': '500',
-                       'cert': '500',
-                       'watch': '500'}
+    config['MainWindow'] = {'width ': '1200',
+                            'height ': '600',
+                            'saveWidth': 'No',
+                            'AllowResize': 'Yes'}
+    config['Bd'] = {'type': 'sqlite3',
+                    'name': 'cert_crl.db'}
+    config['Socket'] = {'timeout ': 'No'}
+    config['Listing'] = {'uc': '500',
+                         'crl': '500',
+                         'cert': '500',
+                         'watch': '500'}
     # windowsvista, Windows, Fusion
-    config['Style']={'window': 'Fusion',
-                     'extendetColorInfo': 'No'}
-    config['Proxy']={'proxyOn': 'No',
-                     'ip': '',
-                     'port': '',
-                     'login': '',
-                     'password': ''}
-    config['Update']={'priority': 'custom',
-                      'advancedChecking': 'Yes',
-                      'viewingCRLlastNextUpdate': 'Yes'}
-    config['Backup']={'backUPbyStart': 'Yes'}
-    config['Tabs']={'ucLimit': '500',
-                    'ucAllowDelete': 'No',
-                    'crlLimit': '500',
-                    'crlAllowDelete': 'No',
-                    'certLimit': '500',
-                    'certAllowDelete': 'No',
-                    'wcLimit': '500',
-                    'wcAllowDelete': 'No',
-                    'wccLimit': '500',
-                    'wccAllowDelete': 'No',
-                    'wcdLimit': '500',
-                    'wcdAllowDelete': 'No'}
-    config['Schedule']={'allowSchedule': 'No',
-                        'weekUpdate': 'All',
-                        'timeUpdate': '10M',
-                        'periodUpdate': '9:00; 12:00; 16:00',
-                        'allowUpdateTSLbyStart': 'No',
-                        'allowUpdateCRLbyStart': 'No',
-                        'rangeUpdateCRL': '5day'}
-    config['Sec']={'allowImportCRL': 'No',
-                   'allowExportCRL': 'No',
-                   'allowDeleteWatchingCRL': 'No',
-                   'allowDownloadButtonCRL': 'Yes',
-                   'allowCheckButtonCRL': 'Yes'}
+    config['Style'] = {'window': 'Fusion',
+                       'extendetColorInfo': 'No'}
+    config['Proxy'] = {'proxyOn': 'No',
+                       'ip': '',
+                       'port': '',
+                       'login': '',
+                       'password': ''}
+    config['Update'] = {'priority': 'custom',
+                        'advancedChecking': 'Yes',
+                        'viewingCRLlastNextUpdate': 'Yes'}
+    config['Backup'] = {'backUPbyStart': 'Yes'}
+    config['Tabs'] = {'ucLimit': '500',
+                      'ucAllowDelete': 'No',
+                      'crlLimit': '500',
+                      'crlAllowDelete': 'No',
+                      'certLimit': '500',
+                      'certAllowDelete': 'No',
+                      'wcLimit': '500',
+                      'wcAllowDelete': 'No',
+                      'wccLimit': '500',
+                      'wccAllowDelete': 'No',
+                      'wcdLimit': '500',
+                      'wcdAllowDelete': 'No'}
+    config['Schedule'] = {'allowSchedule': 'No',
+                          'weekUpdate': 'All',
+                          'timeUpdate': '10M',
+                          'periodUpdate': '9:00; 12:00; 16:00',
+                          'allowUpdateTSLbyStart': 'No',
+                          'allowUpdateCRLbyStart': 'No',
+                          'rangeUpdateCRL': '5day'}
+    config['Sec'] = {'allowImportCRL': 'No',
+                     'allowExportCRL': 'No',
+                     'allowDeleteWatchingCRL': 'No',
+                     'allowDownloadButtonCRL': 'Yes',
+                     'allowCheckButtonCRL': 'Yes'}
     with open('settings.ini', 'w') as configfile:
         config.write(configfile)
-
 
 try:
     os.makedirs(config['Folders']['certs'])
@@ -104,22 +102,21 @@ except OSError:
 
 def logs(body, t=''):
     if t == 'errors':
-        with open(config['Folders']['logs']+"/error_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
+        with open(config['Folders']['logs'] + "/error_" + datetime.datetime.now().strftime('%Y%m%d') + ".log",
+                  "a") as file:
             file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
         file.close()
     else:
-        with open(config['Folders']['logs']+"/log_"+datetime.datetime.now().strftime('%Y%m%d')+".log", "a") as file:
+        with open(config['Folders']['logs'] + "/log_" + datetime.datetime.now().strftime('%Y%m%d') + ".log",
+                  "a") as file:
             file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
         file.close()
 
 
-# socket.setdefaulttimeout(int(config['Socket']['timeout']))
-
-# bd_backup_name = str('cert_crl.db_')+datetime.datetime.now().strftime('%Y%m%d%H%M%S')+'.bkp'
-bd_backup_name = str('cert_crl.db_')+datetime.datetime.now().strftime('%Y%m%d')+'.bkp'
+bd_backup_name = str('cert_crl.db_') + datetime.datetime.now().strftime('%Y%m%d') + '.bkp'
 if os.path.isfile(bd_backup_name):
-    print('Info: '+bd_backup_name+' exist')
-    logs('Info: '+bd_backup_name+' exist')
+    print('Info: ' + bd_backup_name + ' exist')
+    logs('Info: ' + bd_backup_name + ' exist')
 else:
     try:
         shutil.copy2('cert_crl.db', bd_backup_name)
@@ -259,7 +256,7 @@ if not CRL.table_exists():
     CRL.create_table()
 if not Settings.table_exists():
     Settings.create_table()
-    Settings(name='ver',value=0).save()
+    Settings(name='ver', value=0).save()
     Settings(name='data_update', value='1970-01-01 00:00:00').save()
 if not WatchingCRL.table_exists():
     WatchingCRL.create_table()
@@ -277,16 +274,16 @@ def progressbar(cur, total=100):
     sys.stdout.flush()
 
 
-def schedule(blocknum, blocksize, totalsize):
+def schedule(block_num, block_size, total_size):
     QCoreApplication.processEvents()
-    if totalsize == 0:
+    if total_size == 0:
         percent = 0
     else:
-        percent = blocknum * blocksize / totalsize
+        percent = block_num * block_size / total_size
     if percent > 1.0:
         percent = 1.0
     percent = percent * 100
-    print("\ndownload : %.2f%%" %(percent))
+    print("\n download : %.2f%%" % (percent))
     progressbar(percent)
 
 
@@ -297,330 +294,24 @@ def get_info_xlm(type_data, xml_file='tsl.xml'):
         xml = obj.read().encode()
 
     root = etree.fromstring(xml)
-    for appt in root.getchildren():
-        if appt.text:
-            if appt.tag == 'Версия':
-                current_version = appt.text
-        if appt.text:
-            if appt.tag == 'Дата':
-                last_update = appt.text
+    for row in root.getchildren():
+        if row.text:
+            if row.tag == 'Версия':
+                current_version = row.text
+        if row.text:
+            if row.tag == 'Дата':
+                last_update = row.text
     if type_data == 'current_version':
         return current_version
     if type_data == 'last_update':
         return last_update
 
 
-def xml_parsing(xml_file, type_data):
-
-    with open(xml_file, "rt", encoding="utf-8") as obj:
-        xml = obj.read().encode()
-
-    root = etree.fromstring(xml)
-    uc_count = 0
-    cert_count = 0
-    crl_count = 0
-    for appt in root.getchildren():
-        for elem in appt.getchildren():
-            if not elem.text:
-                for sub_elem in elem.getchildren():
-                    if not sub_elem.text:
-                        for two_elem in sub_elem.getchildren():
-                            if not two_elem.text:
-                                for tree_elem in two_elem.getchildren():
-                                    if not tree_elem.text:
-                                        if tree_elem.tag == 'Ключ':
-                                            for four_elem in tree_elem.getchildren():
-                                                if not four_elem.text:
-                                                    for five_elem in four_elem.getchildren():
-                                                        if not five_elem.text:
-                                                            for six_elem in five_elem.getchildren():
-                                                                if not six_elem.text:
-                                                                    six_text = "None"
-                                                                else:
-                                                                    if six_elem.tag == 'СерийныйНомер':
-                                                                        cert_count = cert_count + 1
-                                                        else:
-                                                            if five_elem.tag == 'Адрес':
-                                                                crl_count = crl_count + 1
-                                                else:
-                                                    four_text = four_elem.text
-                                    else:
-                                        tree_text = tree_elem.text
-                            else:
-                                two_text = two_elem.text
-                    else:
-                        sub_text = sub_elem.text
-            else:
-                text = elem.text
-                if elem.tag == 'Название':
-                    name = text
-                if elem.tag == 'ИНН':
-                    inn = text
-                if elem.tag == 'ОГРН':
-                    ogrn = text
-                if elem.tag == 'РеестровыйНомер':
-                    reesterNumber = text
-                    uc_count = uc_count + 1
-
-    if type_data == 'uc_count':
-        return str(uc_count)
-    if type_data == 'cert_count':
-        return str(cert_count)
-    if type_data == 'crl_count':
-        return str(crl_count)
-
-
-def parseXML(xmlFile):
-    with open(xmlFile, "rt", encoding="utf-8") as obj:
-        xml = obj.read().encode()
-
-    root = etree.fromstring(xml)
-    uc_count = 0
-    cert_count = 0
-    crl_count = 0
-    for appt in root.getchildren():
-        QCoreApplication.processEvents()
-        AddresCode = ''
-        AddresName = ''
-        AddresIndex = ''
-        AddresAddres = ''
-        AddresStreet = ''
-        AddresTown = ''
-        Registration_Number = ''
-        INN = ''
-        OGRN = ''
-        Full_Name = ''
-        Email = ''
-        Name = ''
-        URL = ''
-        keyIdent = ''
-        stamp = ''
-        cert_data = []
-        if appt.text:
-            if appt.tag == 'Версия':
-                current_version = appt.text
-        if appt.text:
-            if appt.tag == 'Дата':
-                last_update = appt.text
-        print('------------------begin------------------')
-        for elem in appt.getchildren():
-            if not elem.text:
-                print("   1<" + elem.tag + ">")
-                for sub_elem in elem.getchildren():
-                    if not sub_elem.text:
-                        print("      2<" + sub_elem.tag + ">")
-                        for two_elem in sub_elem.getchildren():
-                            if not two_elem.text:
-                                print("         3<" + two_elem.tag + ">")
-                                for tree_elem in two_elem.getchildren():
-                                    if not tree_elem.text:
-                                        if tree_elem.tag == 'Ключ':
-                                            print("            4<" + tree_elem.tag + ">")
-                                            data_cert = {}
-                                            adr_crl = []
-                                            keyIdent = {}
-                                            for four_elem in tree_elem.getchildren():
-                                                if not four_elem.text:
-                                                    print("               5<" + four_elem.tag + ">")
-                                                    for five_elem in four_elem.getchildren():
-                                                        if not five_elem.text:
-                                                            print("                  6<" + five_elem.tag + ">")
-                                                            for six_elem in five_elem.getchildren():
-                                                                if not six_elem.text:
-                                                                    six_text = "None"
-                                                                else:
-                                                                    if six_elem.tag == 'Отпечаток':
-                                                                        stamp = six_elem.text
-                                                                        #data_cert.append(six_elem.text)
-                                                                        data_cert['stamp'] = six_elem.text
-                                                                    if six_elem.tag == 'СерийныйНомер':
-                                                                        cert_count = cert_count + 1
-                                                                        data_cert['serrial'] = six_elem.text
-                                                                        #data_cert.append(six_elem.text)
-                                                                    if six_elem.tag == 'Данные':
-                                                                        #with open("certs/"+stamp+".cer", "wb") as fh:
-                                                                        #    fh.write(base64.decodebytes(six_elem.text.encode()))
-                                                                        #data_cert.append(six_elem.text)
-                                                                        data_cert['data'] = six_elem.text
-                                                                    six_text = six_elem.text
-                                                                    print("                     " + six_elem.tag + " => " + six_text)
-                                                            print("                  </" + five_elem.tag + ">")
-                                                        else:
-                                                            if five_elem.tag == 'Адрес':
-                                                                five_text = five_elem.text
-                                                                adr_crl.append(five_text)
-                                                                print("                  "+five_text)
-                                                                file_name = five_text.split('/')[-1]
-                                                                url = five_text
-                                                                path = 'crls/' + stamp + '.crl'
-                                                                #try:
-                                                                #    request.urlretrieve(url, path, schedule)
-                                                                #except error.HTTPError as e:
-                                                                #    print(e)
-                                                                #    print('\r\n' + url + ' download failed!' + '\r\n')
-                                                                #except Exception:
-                                                                #    print('\r\n' + url + ' download failed!' + '\r\n')
-                                                                #else:
-                                                                #    print('\r\n' + url + ' download successfully!')
-                                                                #try:
-                                                                #    urllib.request.urlretrieve(five_text, 'crls/' + file_name + '.crl')
-                                                                #except Exception:
-                                                                #    print('download error')
-                                                                crl_count = crl_count + 1
-                                                            print("                  " + five_elem.tag + " => " + five_text)
-                                                    print("               </" + four_elem.tag + ">")
-                                                else:
-                                                    four_text = four_elem.text
-                                                    if four_elem.tag == 'ИдентификаторКлюча':
-                                                        keyIdent['keyid'] = four_text
-                                                    print("               " + four_elem.tag + " => " + four_text)
-
-                                            print("            </" + tree_elem.tag + ">")
-                                            cert_data.append([keyIdent, data_cert, adr_crl])
-                                        elif tree_elem.tag == 'Адрес':
-                                            print("            4<" + tree_elem.tag + ">")
-                                            for four_elem in tree_elem.getchildren():
-                                                if not four_elem.text:
-                                                    print("               5<" + four_elem.tag + ">")
-                                                    for five_elem in four_elem.getchildren():
-                                                        if not five_elem.text:
-                                                            print("                  6<" + five_elem.tag + ">")
-                                                            for six_elem in five_elem.getchildren():
-                                                                if not six_elem.text:
-                                                                    six_text = "None"
-                                                                else:
-                                                                    six_text = six_elem.text
-                                                                    print("                     " + six_elem.tag + " => " + six_text)
-                                                            print("                  </" + five_elem.tag + ">")
-                                                        else:
-                                                            print("                  " + five_elem.tag + " => " + five_text)
-                                                    print("               </" + four_elem.tag + ">")
-                                                else:
-                                                    four_text = four_elem.text
-                                                    print("               " + four_elem.tag + " => " + four_text)
-                                            print("            </" + tree_elem.tag + ">")
-
-                                    else:
-                                        tree_text = tree_elem.text
-                                        print("            " + tree_elem.tag + " => " + tree_text)
-                                print("         </" + two_elem.tag + ">")
-                            else:
-                                two_text = two_elem.text
-                                if two_elem.tag == 'Код':
-                                    AddresCode = two_text
-                                if two_elem.tag == 'Название':
-                                    AddresName = two_text
-                                print("         " + two_elem.tag + " => " + two_text)
-
-                        print("      </" + sub_elem.tag + ">")
-                    else:
-                        sub_text = sub_elem.text
-                        if sub_elem.tag == 'Индекс':
-                            AddresIndex = sub_text
-                        if sub_elem.tag == 'УлицаДом':
-                            AddresStreet = sub_text
-                        if sub_elem.tag == 'Город':
-                            AddresTown = sub_text
-                        if sub_elem.tag == 'Страна':
-                            AddresAddres = sub_text
-                        print("      " + sub_elem.tag + " => " + sub_text)
-                print("   </" + elem.tag + ">")
-            else:
-                text = elem.text
-                if elem.tag == 'Название':
-                    Full_Name = text
-                if elem.tag == 'ЭлектроннаяПочта':
-                    Email = text
-                if elem.tag == 'КраткоеНазвание':
-                    Name = text
-                if elem.tag == 'АдресСИнформациейПоУЦ':
-                    URL = text
-                if elem.tag == 'ИНН':
-                    INN = text
-                if elem.tag == 'ОГРН':
-                    OGRN = text
-                if elem.tag == 'РеестровыйНомер':
-                    Registration_Number = text
-                    uc_count = uc_count + 1
-                print(elem.tag + " => " + text)
-        print('------------------end------------------')
-        '''
-        print(''
-              + ' Name:' + Name
-              + ', Email:' + Email
-              + ', Full_Name:' + Full_Name
-              + ', URL:' + URL
-              + ', AddresAddres:' + AddresAddres
-              + ', AddresCode:' + AddresCode
-              + ', AddresName:' + AddresName
-              + ', AddresIndex:' + AddresIndex
-              + ', AddresStreet:' + AddresStreet
-              + ', AddresTown:' + AddresTown
-              + ', INN:' + INN
-              + ', OGRN:' + OGRN
-              + ', Registration_Number:' + Registration_Number
-              + ', certs:', cert_data)
-        '''
-        if Registration_Number != '':
-            uc = UC(Registration_Number=Registration_Number,
-                    INN=INN,
-                    OGRN=OGRN,
-                    Full_Name=Full_Name,
-                    Email=Email,
-                    Name=Name,
-                    URL=URL,
-                    AddresCode=AddresCode,
-                    AddresName=AddresName,
-                    AddresIndex=AddresIndex,
-                    AddresAddres=AddresAddres,
-                    AddresStreet=AddresStreet,
-                    AddresTown=AddresTown)
-            uc.save()
-            # print(type(cert_data))
-            for cert in cert_data:
-                if type(cert_data) == list:
-                    for data in cert:
-                        if type(data) == dict:
-                            for id, dats in data.items():
-                                if id == 'keyid':
-                                    KeyId = dats
-                                    # print(dats)
-                                if id == 'stamp':
-                                    Stamp = dats
-                                    # print(dats)
-                                if id == 'serrial':
-                                    SerialNumber = dats
-                                    # print(dats)
-                                if id == 'data':
-                                    Data = dats
-                                    # print(dats)
-
-                        if type(data) == list:
-                            for dats in data:
-                                UrlCRL = dats
-                                crl = CRL(Registration_Number=Registration_Number,
-                                          KeyId=KeyId,
-                                          Stamp=Stamp,
-                                          SerialNumber=SerialNumber,
-                                          UrlCRL=UrlCRL)
-                                crl.save()
-                cert = CERT(Registration_Number=Registration_Number,
-                            KeyId=KeyId,
-                            Stamp=Stamp,
-                            SerialNumber=SerialNumber,
-                            Data=Data)
-                cert.save()
-
-    print('Центров:' + str(uc_count))
-    print('Сертов:' + str(cert_count))
-    print('CRL:' + str(crl_count))
-
-
-def save_cert(KeyId):
-    for certs in CERT.select().where(CERT.KeyId == KeyId):
-        with open(config['Folders']['certs']+"/" + certs.KeyId + ".cer", "wb") as file:
+def save_cert(key_id):
+    for certs in CERT.select().where(CERT.KeyId == key_id):
+        with open(config['Folders']['certs'] + "/" + certs.KeyId + ".cer", "wb") as file:
             file.write(base64.decodebytes(certs.Data.encode()))
-    os.startfile(os.path.realpath(config['Folders']['certs']+"/"))
+    os.startfile(os.path.realpath(config['Folders']['certs'] + "/"))
 
 
 def open_file(file_name, file_type, url='None'):
@@ -631,80 +322,82 @@ def open_file(file_name, file_type, url='None'):
     # CryptExtAddP7R «файл» Добавляет файл ответа на запрос сертификата.
     # CryptExtAddPFX «файл» Добавляет файл обмена личной информацией.
     # CryptExtAddSPC «файл» Добавляет сертификат PCKS #7.
-    type = ""
-    folder = ""
-    if file_type == 'cer':          # CryptExtOpenCER «файл» Открывает сертификат безопасности.
-        type = 'CryptExtOpenCER'
+    type_crypto_dll = ''
+    folder = ''
+    if file_type == 'cer':  # CryptExtOpenCER «файл» Открывает сертификат безопасности.
+        type_crypto_dll = 'CryptExtOpenCER'
         folder = 'certs'
-    elif file_type == 'crl':        # CryptExtOpenCRL «файл» Открывает список отзыва сертификатов.
-        type = 'CryptExtOpenCRL'
+    elif file_type == 'crl':  # CryptExtOpenCRL «файл» Открывает список отзыва сертификатов.
+        type_crypto_dll = 'CryptExtOpenCRL'
         folder = 'crls'
-    elif file_type == 'cat':        # CryptExtOpenCAT «файл» Открывает каталог безопасности.
-        type = 'CryptExtOpenCAT'
+    elif file_type == 'cat':  # CryptExtOpenCAT «файл» Открывает каталог безопасности.
+        type_crypto_dll = 'CryptExtOpenCAT'
         folder = 'cats'
-    elif file_type == 'ctl':        # CryptExtOpenCTL «файл» Открывает список доверия сертификатов.
-        type = 'CryptExtOpenCTL'
+    elif file_type == 'ctl':  # CryptExtOpenCTL «файл» Открывает список доверия сертификатов.
+        type_crypto_dll = 'CryptExtOpenCTL'
         folder = 'ctls'
-    elif file_type == 'p10':        # CryptExtOpenP10 «файл» Открывает запрос на сертификат.
-        type = 'CryptExtOpenP10'
+    elif file_type == 'p10':  # CryptExtOpenP10 «файл» Открывает запрос на сертификат.
+        type_crypto_dll = 'CryptExtOpenP10'
         folder = 'p10s'
-    elif file_type == 'p7r':        # CryptExtOpenP7R «файл» Открывает файл ответа на запрос сертификата.
-        type = 'CryptExtOpenP7R'
+    elif file_type == 'p7r':  # CryptExtOpenP7R «файл» Открывает файл ответа на запрос сертификата.
+        type_crypto_dll = 'CryptExtOpenP7R'
         folder = 'p7rs'
-    elif file_type == 'pkcs7':      # CryptExtOpenPKCS7 «файл» Открывает сертификат PCKS #7.
-        type = 'CryptExtOpenPKCS7'
+    elif file_type == 'pkcs7':  # CryptExtOpenPKCS7 «файл» Открывает сертификат PCKS #7.
+        type_crypto_dll = 'CryptExtOpenPKCS7'
         folder = 'pkcs7s'
-    elif file_type == 'str':        # CryptExtOpenSTR «файл» Открывает хранилище сериализированных сертификатов.
-        type = 'CryptExtOpenSTR'
+    elif file_type == 'str':  # CryptExtOpenSTR «файл» Открывает хранилище сериализированных сертификатов.
+        type_crypto_dll = 'CryptExtOpenSTR'
         folder = 'strs'
 
-    run_dll = "%SystemRoot%\\System32\\rundll32.exe cryptext.dll,"+type
+    run_dll = "%SystemRoot%\\System32\\rundll32.exe cryptext.dll," + type_crypto_dll
     path = os.path.realpath(config['Folders'][folder] + "/" + file_name + "." + file_type)
     print(path)
     if not os.path.exists(path):
         if file_type == 'cer':
             save_cert(file_name)
         elif file_type == 'crl':
-            download_file(url, file_name+'.crl', config['Folders']['crls'])
+            download_file(url, file_name + '.crl', config['Folders']['crls'])
     else:
         open_crl = run_dll + "  " + path
         os.system(open_crl)
 
 
-def check_custom_crl(ID, Name, KeyId):
+def check_custom_crl(id_custom_crl, name, id_key):
     try:
         QCoreApplication.processEvents()
         issuer = {}
         print('----------------------------------------------------')
         try:
             crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                                          open('crls/'+str(KeyId)+'.crl', 'rb').read())
+                                          open('crls/' + str(id_key) + '.crl', 'rb').read())
             crl_crypto = crl.get_issuer()
             cryptography = crl.to_cryptography()
             try:
-                for type, data in crl_crypto.get_components():
-                    issuer[type.decode("utf-8")] = data.decode("utf-8")
+                for var, data in crl_crypto.get_components():
+                    issuer[var.decode("utf-8")] = data.decode("utf-8")
             except Exception:
                 print('Error: get_components()')
                 logs('Error: check_custom_crl()::get_components()', 'errors')
             query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
             for uc_data in query_uc:
-                Name = uc_data.Name
+                name = uc_data.Name
             query_update = WatchingCustomCRL.update(INN=issuer['INN'],
                                                     OGRN=issuer['OGRN'],
                                                     status='Info: Filetype good',
-                                                    last_update=cryptography.last_update+datetime.timedelta(hours=5),
-                                                    next_update=cryptography.next_update+datetime.timedelta(hours=5)).\
-                where(WatchingCustomCRL.ID == ID)
+                                                    last_update=cryptography.last_update +
+                                                                datetime.timedelta(hours=5),
+                                                    next_update=cryptography.next_update +
+                                                                datetime.timedelta(hours=5)). \
+                where(WatchingCustomCRL.ID == id_custom_crl)
             query_update.execute()
-            print(ID, Name, cryptography.last_update, cryptography.next_update)
-            Name = 'Unknown'
+            print(id_custom_crl, name, cryptography.last_update, cryptography.next_update)
             issuer['INN'] = 'Unknown'
             issuer['OGRN'] = 'Unknown'
         except Exception:
             query_update = WatchingCustomCRL.update(status='Warning: FILETYPE ERROR',
                                                     last_update='1970-01-01',
-                                                    next_update='1970-01-01').where(WatchingCustomCRL.ID == ID)
+                                                    next_update='1970-01-01').where(
+                WatchingCustomCRL.ID == id_custom_crl)
             query_update.execute()
             print('Warning: FILETYPE ERROR')
             logs('Warning: check_custom_crl()::FILETYPE_ERROR')
@@ -718,12 +411,13 @@ def check_crl(id_wc, name_wc, key_id_wc):
         print('----------------------------------------------------')
         try:
             crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                                          open('crls/'+str(key_id_wc)+'.crl', 'rb').read())
+                                          open('crls/' + str(key_id_wc) + '.crl', 'rb').read())
             cryptography = crl.to_cryptography()
             print(cryptography.next_update)
             query_update = WatchingCRL.update(status='Info: Filetype good',
-                                              last_update=cryptography.last_update+datetime.timedelta(hours=5),
-                                              next_update=cryptography.next_update+datetime.timedelta(hours=5)).where(WatchingCRL.ID == id_wc)
+                                              last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                                              next_update=cryptography.next_update + datetime.timedelta(hours=5)).where(
+                WatchingCRL.ID == id_wc)
             query_update.execute()
             print(id_wc, name_wc, cryptography.last_update, cryptography.next_update)
         except Exception:
@@ -742,7 +436,7 @@ def check_for_import_in_uc():
     try:
         folder = config['Folders']['crls']
         current_datetime = datetime.datetime.now()
-        before_current_datetime = datetime.datetime.now()-datetime.timedelta(days=5)
+        before_current_datetime = datetime.datetime.now() - datetime.timedelta(days=5)
         query_1 = WatchingCRL.select().where(
             WatchingCRL.last_update.between(before_current_datetime, current_datetime)
         )
@@ -754,9 +448,10 @@ def check_for_import_in_uc():
         for wc in query_1:
             if current_datetime > wc.next_update:
                 print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
-                download_file(wc.UrlCRL, wc.KeyId+'.crl', folder, 'current', wc.ID, 'Yes')
+                download_file(wc.UrlCRL, wc.KeyId + '.crl', folder, 'current', wc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/'+wc.KeyId+'.crl', config['Folders']['to_uc']+'current_'+wc.KeyId+'.crl')
+                    shutil.copy2('crls/' + wc.KeyId + '.crl',
+                                 config['Folders']['to_uc'] + 'current_' + wc.KeyId + '.crl')
                     check_crl(wc.ID, wc.Name, wc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_current')
@@ -764,10 +459,12 @@ def check_for_import_in_uc():
                 count = count + 1
         for wcc in query_2:
             if current_datetime > wcc.next_update:
-                print('2 Need to download', wcc.Name, current_datetime, wcc.last_download, wcc.last_update, wcc.next_update)
-                download_file(wcc.UrlCRL, wcc.KeyId+'.crl', folder, 'custome', wcc.ID, 'Yes')
+                print('2 Need to download', wcc.Name, current_datetime, wcc.last_download, wcc.last_update,
+                      wcc.next_update)
+                download_file(wcc.UrlCRL, wcc.KeyId + '.crl', folder, 'custome', wcc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/'+wcc.KeyId + '.crl', config['Folders']['to_uc']+'custom_' + wcc.KeyId + '.crl')
+                    shutil.copy2('crls/' + wcc.KeyId + '.crl',
+                                 config['Folders']['to_uc'] + 'custom_' + wcc.KeyId + '.crl')
                     check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_custom')
@@ -784,33 +481,36 @@ def check_for_import_in_uc():
         logs('Error: check_for_import_in_uc()', 'errors')
 
 
-def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
+def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd='No'):
     try:
-        file_name_url = file_url.split('/')[-1]
-        type_file = file_name_url.split('.')[-1]
-        path = folder + '/' + file_name # + '.' + type_file
+        path = folder + '/' + file_name  # + '.' + type_file
         try:
+            if config['Proxy']['proxyon'] == 'Yes':
+                proxy = request.ProxyHandler({'https': 'https://10.2.248.50:8080', 'http': 'http://10.2.248.50:8080'})
+                opener = request.build_opener(proxy)
+                request.install_opener(opener)
+                logs('Info: Used proxy')
             request.urlretrieve(file_url, path, schedule)
         except Exception:
             print('\r\n' + file_url + ' download failed!' + '\r\n')
-            logs('Info: '+file_url + ' download failed!')
+            logs('Info: ' + file_url + ' download failed!')
             if set_dd == 'Yes':
-                if type == 'current':
+                if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Error: Download failed',
                                                       last_download=datetime.datetime.now()
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
-                elif type == 'custome':
+                elif type_download == 'custome':
                     query_update = WatchingCustomCRL.update(download_status='Error: Download failed',
                                                             last_download=datetime.datetime.now()
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
             else:
-                if type == 'current':
+                if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Error: Download failed'
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
-                elif type == 'custome':
+                elif type_download == 'custome':
                     query_update = WatchingCustomCRL.update(download_status='Error: Download failed'
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
@@ -818,23 +518,23 @@ def download_file(file_url, file_name, folder, type='', w_id='', set_dd='No'):
             print('\r\n' + file_url + ' download successfully!')
             logs('Info: ' + file_url + ' download successfully!')
             if set_dd == 'Yes':
-                if type == 'current':
+                if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Info: Download successfully',
                                                       last_download=datetime.datetime.now()
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
-                elif type == 'custome':
+                elif type_download == 'custome':
                     query_update = WatchingCustomCRL.update(download_status='Info: Download successfully',
                                                             last_download=datetime.datetime.now()
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
                 # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
             else:
-                if type == 'current':
+                if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Info: Download successfully'
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
-                elif type == 'custome':
+                elif type_download == 'custome':
                     query_update = WatchingCustomCRL.update(download_status='Info: Download successfully'
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
@@ -863,16 +563,13 @@ def exist_crl_in_custom_watch():
             print(row.KeyId, ' exist')
 
 
-def xmpp_sender():
-    username = 'username'
-    passwd = 'password'
-    server = 'server'
-    to = 'name@example.com'
-    msg = 'hello :)'
-    client = sleekxmpp.ClientXMPP(username+"@"+server, passwd)
-    client.connect()
-    client.process(blocking=False)
-    client.send_message(mto=to, mbody=msg)
+def set_value_in_property_file(file_path, section, key, value):
+    set_config = configparser.ConfigParser()
+    set_config.read(file_path)
+    set_config.set(section, key, value)
+    configfile = open(file_path, 'w')
+    set_config.write(configfile, space_around_delimiters=False)  # use flag in case case you need to avoid white space.
+    configfile.close()
 
 
 class Worker(QObject):
@@ -908,22 +605,18 @@ class Worker(QObject):
                 if m.group(2) == 'S':
                     sec_to_get = int(m.group(1))
                 elif m.group(2) == 'M':
-                    sec_to_get = int(m.group(1))*60
+                    sec_to_get = int(m.group(1)) * 60
                 elif m.group(2) == 'H':
-                    sec_to_get = int(m.group(1))*60*60
+                    sec_to_get = int(m.group(1)) * 60 * 60
                 elif m.group(2) == 'D':
-                    sec_to_get = int(m.group(1))*60*60*24
+                    sec_to_get = int(m.group(1)) * 60 * 60 * 24
                 else:
                     print('error')
+                    sec_to_get = 0
 
-                day_get = 0
-                hour_get = 0
-                minutes_get = 0
-                sec_get = 0
-
-                day_get = math.floor(sec_to_get/60/60/24)
-                hour_get = math.floor(sec_to_get/60/60)
-                minutes_get = math.floor(sec_to_get/60)
+                day_get = math.floor(sec_to_get / 60 / 60 / 24)
+                hour_get = math.floor(sec_to_get / 60 / 60)
+                minutes_get = math.floor(sec_to_get / 60)
                 sec_get = math.floor(sec_to_get)
 
                 day_start = 0
@@ -949,11 +642,11 @@ class Worker(QObject):
                 self.threadInfoMessage.emit('Info: Start monitoring CRL')
                 self.threadButtonStartD.emit('True')
                 self.threadButtonStopE.emit('True')
-                timerB = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                timerA = datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get)
-                timerA = datetime.datetime.strftime(timerA, '%Y-%m-%d %H:%M:%S')
-                self.threadBefore.emit(timerB)
-                self.threadAfter.emit(timerA)
+                timer_b = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                timer_a = datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get)
+                timer_a = datetime.datetime.strftime(timer_a, '%Y-%m-%d %H:%M:%S')
+                self.threadBefore.emit(timer_b)
+                self.threadAfter.emit(timer_a)
                 if not self._isRunning:
                     self._isRunning = True
                     self._step = 0
@@ -962,10 +655,6 @@ class Worker(QObject):
                     self._hour = 0
                     self._day = 0
                 while self._isRunning:
-                    # print('Дне ', day_start)
-                    # print('Час ', hour_start)
-                    # print('Мин ', minutes_start)
-                    # print('Сек ', sec_start)
                     self._step += 1
                     self._seconds += 1
 
@@ -1013,16 +702,16 @@ class Worker(QObject):
                     self.threadTimerSender.emit(timer)
                     if self._step == int(sec_to_get) - 1:
                         check_for_import_in_uc()
-                        timerB = str(datetime.datetime.now())
-                        timerA = str(datetime.datetime.now()+datetime.timedelta(seconds=sec_to_get))
-                        self.threadBefore.emit(timerB)
-                        self.threadAfter.emit(timerA)
+                        timer_b = str(datetime.datetime.now())
+                        timer_a = str(datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get))
+                        self.threadBefore.emit(timer_b)
+                        self.threadAfter.emit(timer_a)
                         self._step = 0
                     sec_start -= 1
                     time.sleep(1)
                 print('Info: Monitoring is stopped')
                 logs('Info: Monitoring is stopped')
-                self.threadInfoMessage.emit('Info: Мonitoring is stopped')
+                self.threadInfoMessage.emit('Info: Monitoring is stopped')
                 self.threadButtonStartE.emit('True')
                 self.threadButtonStopD.emit('True')
             except Exception:
@@ -1042,26 +731,29 @@ class Worker(QObject):
 
 class Downloader(QThread):
     try:
-        preprogress = pyqtSignal(int)
+        pre_progress = pyqtSignal(int)
         progress = pyqtSignal(int)
         done = pyqtSignal(str)
         downloading = pyqtSignal(str)
 
-        def __init__(self, fileUrl, fileName):
+        def __init__(self, file_url, file_name):
             QThread.__init__(self)
             # Флаг инициализации
             self._init = False
-            self.fileUrl = fileUrl
-            self.fileName = fileName
-            print(fileUrl)
-            print(fileName)
-            # site = request.urlopen(fileUrl)
-            # meta = site.info()
-            # print(meta)
+            self.fileUrl = file_url
+            self.fileName = file_name
+            print(file_url)
+            print(file_name)
 
         def run(self):
             try:
                 logs('Info: Downloading TSL')
+                if config['Proxy']['proxyon'] == 'Yes':
+                    proxy = request.ProxyHandler(
+                        {'https': 'https://10.2.248.50:8080', 'http': 'http://10.2.248.50:8080'})
+                    opener = request.build_opener(proxy)
+                    request.install_opener(opener)
+                    logs('Info: Used proxy')
                 request.urlretrieve(self.fileUrl, self.fileName, self._progress)
             except error.HTTPError as e:
                 print(e)
@@ -1072,13 +764,13 @@ class Downloader(QThread):
                 logs('Info: download failed')
             else:
                 print('Загрузка завершена')
-                logs('Info: Downloading succesful')
+                logs('Info: Downloading successfully')
 
                 query_get_settings = Settings.select()
                 ver_from_tsl = get_info_xlm('current_version')
-                st = {}
-                for setings in query_get_settings:
-                    ver = setings.value
+                ver = 0
+                for settings in query_get_settings:
+                    ver = settings.value
                     break
                 if int(ver) == int(ver_from_tsl):
                     print('Info: update not need')
@@ -1086,23 +778,22 @@ class Downloader(QThread):
                     self.done.emit('Загрузка завершена, обновление не требуется')
                 else:
                     print('Info: Need update')
-                    logs('Info: Need update, new version '+ver_from_tsl+', old '+ver)
+                    logs('Info: Need update, new version ' + ver_from_tsl + ', old ' + ver)
                     self.done.emit('Загрузка завершена, требуются обновления Базы УЦ и сертификатов. Новая версия '
-                                   +ver_from_tsl+' текущая версия '+ver)
+                                   + ver_from_tsl + ' текущая версия ' + ver)
 
                 # get_info_xlm('last_update')
                 size_tls = os.path.getsize("tsl.xml")
-                self.preprogress.emit(size_tls)
+                self.pre_progress.emit(size_tls)
                 self.progress.emit(size_tls)
 
-        def _progress(self, block_num, block_size, total_size, ccc=0):
+        def _progress(self, block_num, block_size, total_size=int('15000000')):
             total_size = int('15000000')
             print(block_num, block_size, total_size)
             self.downloading.emit('Загрузка.')
             if not self._init:
-                self.preprogress.emit(total_size)
+                self.pre_progress.emit(total_size)
                 self._init = True
-                # self.button_init.setEnabled(False)
             # Расчет текущего количества данных
             downloaded = block_num * block_size
             if downloaded < total_size:
@@ -1121,7 +812,7 @@ class MainWindow(QMainWindow):
         QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowIcon(QIcon('assests/favicon.ico'))
+        self.setWindowIcon(QIcon('assists/favicon.ico'))
         self.window_uc = None
         self.init_settings()
         self.tab_info()
@@ -1145,7 +836,7 @@ class MainWindow(QMainWindow):
             certs = CERT.select()
             crls = CRL.select()
             watching_crl = WatchingCRL.select()
-            watching_cusom_crl = WatchingCustomCRL.select()
+            watching_custom_crl = WatchingCustomCRL.select()
             settings_ver = '0'
             settings_update_date = '0'
             query = Settings.select()
@@ -1162,13 +853,14 @@ class MainWindow(QMainWindow):
             self.ui.label_5.setText(" Всего CRL: " + str(crls.count()))
             self.ui.label_6.setText(" CRL будет загружено: "
                                     + str(int(watching_crl.count())
-                                          + int(watching_cusom_crl.count())))
+                                          + int(watching_custom_crl.count())))
             self.ui.pushButton.clicked.connect(self.download_xml)
             self.ui.pushButton_2.clicked.connect(self.init_xml)
             self.ui.pushButton_13.clicked.connect(self.export_crl)
             self.ui.pushButton_6.pressed.connect(self.import_crl_list)
 
-            watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(WatchingCRL.OGRN == '1047702026701')
+            watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(
+                WatchingCRL.OGRN == '1047702026701')
             self.ui.tableWidget_7.resizeColumnsToContents()
             self.ui.tableWidget_7.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             count = 0
@@ -1185,7 +877,8 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_7.resizeColumnsToContents()
             self.ui.tableWidget_7.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
-            watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(WatchingCRL.OGRN == '1020203227263')
+            watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(
+                WatchingCRL.OGRN == '1020203227263')
             self.ui.tableWidget_8.resizeColumnsToContents()
             self.ui.tableWidget_8.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             count = 0
@@ -1208,7 +901,8 @@ class MainWindow(QMainWindow):
             self.worker.moveToThread(self.thread)
 
             self.worker.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
-            self.worker.threadBefore.connect(lambda msg: self.ui.label_37.setText('Предыдущее обновление: : ' + str(msg)))
+            self.worker.threadBefore.connect(
+                lambda msg: self.ui.label_37.setText('Предыдущее обновление: : ' + str(msg)))
             self.worker.threadAfter.connect(lambda msg: self.ui.label_38.setText('Следующее обновление: ' + str(msg)))
             self.worker.threadButtonStartD.connect(lambda x: self.ui.pushButton_19.setDisabled(True))
             self.worker.threadButtonStopD.connect(lambda z: self.ui.pushButton_20.setDisabled(True))
@@ -1246,12 +940,12 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget.setItem(count, 1, QTableWidgetItem(str(row.INN)))
                 self.ui.tableWidget.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
                 self.ui.tableWidget.setItem(count, 3, QTableWidgetItem(str(row.Full_Name)))
-                buttonInfo = QPushButton()
-                buttonInfo.setFixedSize(100, 30)
-                buttonInfo.setText("Подробнее")
-                regnum = row.Registration_Number
-                buttonInfo.pressed.connect(lambda rg=regnum: self.open_sub_window_info_uc(rg))
-                self.ui.tableWidget.setCellWidget(count, 4, buttonInfo)
+                button_info = QPushButton()
+                button_info.setFixedSize(100, 30)
+                button_info.setText("Подробнее")
+                reg_num = row.Registration_Number
+                button_info.pressed.connect(lambda rg=reg_num: self.open_sub_window_info_uc(rg))
+                self.ui.tableWidget.setCellWidget(count, 4, button_info)
                 count = count + 1
             self.ui.tableWidget.resizeColumnsToContents()
             self.ui.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
@@ -1261,9 +955,6 @@ class MainWindow(QMainWindow):
 
     def tab_cert(self, text=''):
         try:
-            # self.lableFindCert.setText('Ищем: ' + text)
-            # self.lableFindCert.adjustSize()
-
             self.ui.pushButton_8.pressed.connect(lambda: self.ui.lineEdit_2.setText(''))
 
             query = CERT.select().where(CERT.Registration_Number.contains(text)
@@ -1285,19 +976,19 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget_2.setItem(count, 3, QTableWidgetItem(str(row.Stamp)))
                 self.ui.tableWidget_2.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
 
-                self.buttonSert = QPushButton()
-                self.buttonSert.setFixedSize(150, 30)
-                self.buttonSert.setText("Просмотр сертификата")
+                self.button_cert = QPushButton()
+                self.button_cert.setFixedSize(150, 30)
+                self.button_cert.setText("Просмотр сертификата")
                 ki = row.KeyId
-                self.buttonSert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
-                self.ui.tableWidget_2.setCellWidget(count, 5, self.buttonSert)
+                self.button_cert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
+                self.ui.tableWidget_2.setCellWidget(count, 5, self.button_cert)
 
-                buttonSertSave = QPushButton()
-                buttonSertSave.setFixedSize(100, 30)
-                buttonSertSave.setText("Сохранить")
+                button_cert_save = QPushButton()
+                button_cert_save.setFixedSize(100, 30)
+                button_cert_save.setText("Сохранить")
                 ki = row.KeyId
-                buttonSertSave.pressed.connect(lambda key_id=ki: save_cert(key_id))
-                self.ui.tableWidget_2.setCellWidget(count, 6, buttonSertSave)
+                button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id))
+                self.ui.tableWidget_2.setCellWidget(count, 6, button_cert_save)
                 count = count + 1
             self.ui.tableWidget_2.resizeColumnToContents(0)
             self.ui.tableWidget_2.setColumnWidth(1, 150)
@@ -1311,9 +1002,6 @@ class MainWindow(QMainWindow):
 
     def tab_crl(self, text=''):
         try:
-            # self.lableFindCRL.setText('Ищем: ' + text)
-            # self.lableFindCRL.adjustSize()
-
             self.ui.pushButton_9.pressed.connect(lambda: self.ui.lineEdit_3.setText(''))
 
             query = CRL.select().where(CRL.Registration_Number.contains(text)
@@ -1337,11 +1025,12 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget_3.setItem(count, 3, QTableWidgetItem(str(row.Stamp)))
                 self.ui.tableWidget_3.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
                 self.ui.tableWidget_3.setItem(count, 5, QTableWidgetItem(str(row.UrlCRL)))
-                buttonCRLSave = QPushButton()
-                buttonCRLSave.setFixedSize(100, 30)
-                buttonCRLSave.setText("Скачать")
-                buttonCRLSave.pressed.connect(lambda u=row.UrlCRL, s=row.Stamp: download_file(u, s+'.crl', config['Folders']['crls']))
-                self.ui.tableWidget_3.setCellWidget(count, 6, buttonCRLSave)
+                button_crl_save = QPushButton()
+                button_crl_save.setFixedSize(100, 30)
+                button_crl_save.setText("Скачать")
+                button_crl_save.pressed.connect(
+                    lambda u=row.UrlCRL, s=row.Stamp: download_file(u, s + '.crl', config['Folders']['crls']))
+                self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save)
 
                 button_add_to_watch = QPushButton()
                 button_add_to_watch.setFixedSize(100, 30)
@@ -1417,12 +1106,12 @@ class MainWindow(QMainWindow):
                 else:
                     self.ui.tableWidget_4.setItem(count, 7, QTableWidgetItem('Err'))
 
-                buttonDeleteWatch = QPushButton()
-                buttonDeleteWatch.setFixedSize(100, 30)
-                buttonDeleteWatch.setText("Убрать")
-                id = row.ID
-                buttonDeleteWatch.pressed.connect(lambda o=id: self.move_watching_to_passed(o, 'current'))
-                self.ui.tableWidget_4.setCellWidget(count, 8, buttonDeleteWatch)
+                button_delete_watch = QPushButton()
+                button_delete_watch.setFixedSize(100, 30)
+                button_delete_watch.setText("Убрать")
+                id_row = row.ID
+                button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
+                self.ui.tableWidget_4.setCellWidget(count, 8, button_delete_watch)
                 count = count + 1
             self.ui.tableWidget_4.setColumnWidth(1, 150)
             self.ui.tableWidget_4.setColumnWidth(1, 100)
@@ -1474,12 +1163,12 @@ class MainWindow(QMainWindow):
                 else:
                     self.ui.tableWidget_5.setItem(count, 7, QTableWidgetItem('Err'))
 
-                buttonDeleteWatch = QPushButton()
-                buttonDeleteWatch.setFixedSize(100, 30)
-                buttonDeleteWatch.setText("Убрать")
+                button_delete_watch = QPushButton()
+                button_delete_watch.setFixedSize(100, 30)
+                button_delete_watch.setText("Убрать")
                 # id = row.ID
-                # buttonDeleteWatch.pressed.connect(lambda i=id: self.delete_watching(i))
-                self.ui.tableWidget_5.setCellWidget(count, 8, buttonDeleteWatch)
+                # button_delete_watch.pressed.connect(lambda i=id: self.delete_watching(i))
+                self.ui.tableWidget_5.setCellWidget(count, 8, button_delete_watch)
 
                 count = count + 1
 
@@ -1566,7 +1255,7 @@ class MainWindow(QMainWindow):
                 self.ui.pushButton_13.setDisabled(True)
             if config['Sec']['allowDeleteWatchingCRL'] == 'Yes':
                 self.ui.checkBox_6.setChecked(True)
-                #self.ui.pushButton_X.setDisabled(True)
+                # self.ui.pushButton_X.setDisabled(True)
             if config['Sec']['allowDownloadButtonCRL'] == 'Yes':
                 self.ui.checkBox_7.setChecked(True)
             else:
@@ -1597,18 +1286,142 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_15.clicked.connect(lambda: self.choose_directory('tmp'))
             self.ui.pushButton_14.clicked.connect(lambda: self.choose_directory('uc'))
 
+            self.ui.lineEdit_7.setText(config['Proxy']['ip'])
+            self.ui.lineEdit_8.setText(config['Proxy']['port'])
+            self.ui.lineEdit_9.setText(config['Proxy']['login'])
+            self.ui.lineEdit_10.setText(config['Proxy']['password'])
+
+            if config['Proxy']['proxyon'] == 'No':
+                self.ui.checkBox.setChecked(False)
+                self.ui.lineEdit_7.setDisabled(True)
+                self.ui.lineEdit_8.setDisabled(True)
+                self.ui.lineEdit_9.setDisabled(True)
+                self.ui.lineEdit_10.setDisabled(True)
+            elif config['Proxy']['proxyon'] == 'Yes':
+                self.ui.checkBox.setChecked(True)
+                self.ui.lineEdit_7.setEnabled(True)
+                self.ui.lineEdit_8.setEnabled(True)
+                self.ui.lineEdit_9.setEnabled(True)
+                self.ui.lineEdit_10.setEnabled(True)
+
             # Logs
             try:
-                self.ui.textBrowser.setText(open('log_'+datetime.datetime.now().strftime('%Y%m%d')+'.log', 'r').read())
+                self.ui.textBrowser.setText(
+                    open('logs/log_' + datetime.datetime.now().strftime('%Y%m%d') + '.log', 'r').read())
             except Exception:
-                logs('Error: init_settings()::Filed_open_log::log_'+ datetime.datetime.now().strftime('%Y%m%d') + '.log', 'errors')
+                logs('Error: init_settings()::Filed_open_log::logs/log_' + datetime.datetime.now().strftime(
+                    '%Y%m%d') + '.log', 'errors')
             try:
-                self.ui.textBrowser_2.setText(open('error_' + datetime.datetime.now().strftime('%Y%m%d') + '.log', 'r').read())
+                self.ui.textBrowser_2.setText(
+                    open('logs/error_' + datetime.datetime.now().strftime('%Y%m%d') + '.log', 'r').read())
             except Exception:
-                logs('Error: init_settings()::Filed_open_log::error_'+ datetime.datetime.now().strftime('%Y%m%d') + '.log', 'errors')
+                logs('Error: init_settings()::Filed_open_log::logs/error_' + datetime.datetime.now().strftime(
+                    '%Y%m%d') + '.log', 'errors')
+
+            self.ui.pushButton_21.pressed.connect(lambda: self.save_settings_main())
+            self.ui.pushButton_22.pressed.connect(lambda: self.save_settings_interface())
+            self.ui.pushButton_23.pressed.connect(lambda: self.save_settings_downloads())
+            self.ui.pushButton_24.pressed.connect(lambda: self.save_settings_logs())
         except Exception:
             print('Error: init_settings()')
             logs('Error: init_settings()', 'errors')
+
+    def save_settings_main(self):
+        try:
+            set_value_in_property_file('settings.ini', 'Tabs', 'ucLimit', self.ui.lineEdit_13.text())
+            set_value_in_property_file('settings.ini', 'Tabs', 'certLimit', self.ui.lineEdit_18.text())
+            set_value_in_property_file('settings.ini', 'Tabs', 'crlLimit', self.ui.lineEdit_17.text())
+            set_value_in_property_file('settings.ini', 'Tabs', 'wcLimit', self.ui.lineEdit_16.text())
+            set_value_in_property_file('settings.ini', 'Tabs', 'wccLimit', self.ui.lineEdit_15.text())
+            set_value_in_property_file('settings.ini', 'Tabs', 'wcdLimit', self.ui.lineEdit_14.text())
+
+            if self.ui.checkBox_4.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'No')
+                self.ui.pushButton_6.setDisabled(True)
+            elif self.ui.checkBox_4.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'Yes')
+                self.ui.pushButton_6.setEnabled(True)
+            if self.ui.checkBox_5.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'No')
+                self.ui.pushButton_13.setDisabled(True)
+            elif self.ui.checkBox_5.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'Yes')
+                self.ui.pushButton_13.setEnabled(True)
+            if self.ui.checkBox_6.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'No')
+            elif self.ui.checkBox_6.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'Yes')
+            if self.ui.checkBox_7.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'No')
+                self.ui.pushButton_4.setDisabled(True)
+            elif self.ui.checkBox_7.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'Yes')
+                self.ui.pushButton_4.setEnabled(True)
+            if self.ui.checkBox_8.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'No')
+                self.ui.pushButton_5.setDisabled(True)
+            elif self.ui.checkBox_8.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'Yes')
+                self.ui.pushButton_5.setEnabled(True)
+
+            print('Info: save_settings_main()::Saved')
+            logs('Info: save_settings_main()::Saved')
+        except Exception:
+            print('Error: save_settings_main()')
+            logs('Error: save_settings_main()', 'errors')
+
+    def save_settings_interface(self):
+        set_value_in_property_file('settings.ini', 'MainWindow', 'width', self.ui.lineEdit_12.text())
+        set_value_in_property_file('settings.ini', 'MainWindow', 'height', self.ui.lineEdit_11.text())
+
+        if self.ui.checkBox_3.checkState() == 0:
+            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
+
+        elif self.ui.checkBox_3.checkState() == 2:
+            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
+
+        if self.ui.checkBox_2.checkState() == 0:
+            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
+
+        elif self.ui.checkBox_2.checkState() == 2:
+            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
+
+    def save_settings_downloads(self):
+        set_value_in_property_file('settings.ini', 'Folders', 'certs', self.ui.label_13.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'crls', self.ui.label_12.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'tmp', self.ui.label_11.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'logs', self.ui.label_10.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'to_uc', self.ui.label_9.text())
+
+        set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text())
+
+        if self.ui.checkBox_12.checkState() == 0:
+            set_value_in_property_file('settings.ini', 'Update', 'advancedchecking', 'No')
+        elif self.ui.checkBox_12.checkState() == 2:
+            set_value_in_property_file('settings.ini', 'Update', 'advancedchecking', 'Yes')
+        if self.ui.checkBox_13.checkState() == 0:
+            set_value_in_property_file('settings.ini', 'Update', 'viewingcrllastnextupdate', 'No')
+        elif self.ui.checkBox_13.checkState() == 2:
+            set_value_in_property_file('settings.ini', 'Update', 'viewingcrllastnextupdate', 'Yes')
+
+        if self.ui.checkBox.checkState() == 0:
+            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No')
+            self.ui.lineEdit_7.setDisabled(True)
+            self.ui.lineEdit_8.setDisabled(True)
+            self.ui.lineEdit_9.setDisabled(True)
+            self.ui.lineEdit_10.setDisabled(True)
+        elif self.ui.checkBox.checkState() == 2:
+            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes')
+            self.ui.lineEdit_7.setEnabled(True)
+            self.ui.lineEdit_8.setEnabled(True)
+            self.ui.lineEdit_9.setEnabled(True)
+            self.ui.lineEdit_10.setEnabled(True)
+
+    def save_settings_logs(self):
+        print()
 
     def init_xml(self):
         try:
@@ -1629,29 +1442,28 @@ class MainWindow(QMainWindow):
             uc_count = 0
             cert_count = 0
             crl_count = 0
-
-            uc_count_all = 505
-            cert_count_all = 2338
             crl_count_all = 3267
             current_version = 'Unknown'
             last_update = 'Unknown'
             for appt in root.getchildren():
                 QCoreApplication.processEvents()
-                AddresCode = ''
-                AddresName = ''
-                AddresIndex = ''
-                AddresAddres = ''
-                AddresStreet = ''
-                AddresTown = ''
-                Registration_Number = ''
-                INN = ''
-                OGRN = ''
-                Full_Name = ''
-                Email = ''
-                Name = ''
-                URL = ''
-                keyIdent = ''
+                address_code = ''
+                address_name = ''
+                address_index = ''
+                address_address = ''
+                address_street = ''
+                address_town = ''
+                registration_number = ''
+                inn = ''
+                ogrn = ''
+                full_name = ''
+                email = ''
+                name = ''
+                url = ''
+                key_id = ''
                 stamp = ''
+                serial_number = ''
+                data = ''
                 cert_data = []
                 if appt.text:
                     if appt.tag == 'Версия':
@@ -1670,7 +1482,7 @@ class MainWindow(QMainWindow):
                                                 if tree_elem.tag == 'Ключ':
                                                     data_cert = {}
                                                     adr_crl = []
-                                                    keyIdent = {}
+                                                    key_ident = {}
                                                     for four_elem in tree_elem.getchildren():
                                                         if not four_elem.text:
                                                             for five_elem in four_elem.getchildren():
@@ -1692,99 +1504,94 @@ class MainWindow(QMainWindow):
                                                         else:
                                                             four_text = four_elem.text
                                                             if four_elem.tag == 'ИдентификаторКлюча':
-                                                                keyIdent['keyid'] = four_text
-                                                    cert_data.append([keyIdent, data_cert, adr_crl])
+                                                                key_ident['keyid'] = four_text
+                                                    cert_data.append([key_ident, data_cert, adr_crl])
                                     else:
                                         two_text = two_elem.text
                                         if two_elem.tag == 'Код':
-                                            AddresCode = two_text
+                                            address_code = two_text
                                         if two_elem.tag == 'Название':
-                                            AddresName = two_text
+                                            address_name = two_text
                             else:
                                 sub_text = sub_elem.text
                                 if sub_elem.tag == 'Индекс':
-                                    AddresIndex = sub_text
+                                    address_index = sub_text
                                 if sub_elem.tag == 'УлицаДом':
-                                    AddresStreet = sub_text
+                                    address_street = sub_text
                                 if sub_elem.tag == 'Город':
-                                    AddresTown = sub_text
+                                    address_town = sub_text
                                 if sub_elem.tag == 'Страна':
-                                    AddresAddres = sub_text
+                                    address_address = sub_text
                     else:
                         text = elem.text
                         if elem.tag == 'Название':
-                            Full_Name = text
+                            full_name = text
                         if elem.tag == 'ЭлектроннаяПочта':
-                            Email = text
+                            email = text
                         if elem.tag == 'КраткоеНазвание':
-                            Name = text
+                            name = text
                         if elem.tag == 'АдресСИнформациейПоУЦ':
-                            URL = text
+                            url = text
                         if elem.tag == 'ИНН':
-                            INN = text
+                            inn = text
                         if elem.tag == 'ОГРН':
-                            OGRN = text
+                            ogrn = text
                         if elem.tag == 'РеестровыйНомер':
-                            Registration_Number = text
+                            registration_number = text
                             uc_count = uc_count + 1
-                if Registration_Number != '':
-                    self.ui.label_7.setText('Обрабатываем данные:\n УЦ: ' + Name)
-                    logs('Info: Procesing - UC:' + Name)
-                    uc = UC(Registration_Number=Registration_Number,
-                            INN=INN,
-                            OGRN=OGRN,
-                            Full_Name=Full_Name,
-                            Email=Email,
-                            Name=Name,
-                            URL=URL,
-                            AddresCode=AddresCode,
-                            AddresName=AddresName,
-                            AddresIndex=AddresIndex,
-                            AddresAddres=AddresAddres,
-                            AddresStreet=AddresStreet,
-                            AddresTown=AddresTown)
+                if registration_number != '':
+                    self.ui.label_7.setText('Обрабатываем данные:\n УЦ: ' + name)
+                    logs('Info: Processing - UC:' + name)
+                    uc = UC(Registration_Number=registration_number,
+                            INN=inn,
+                            OGRN=ogrn,
+                            Full_Name=full_name,
+                            Email=email,
+                            Name=name,
+                            URL=url,
+                            AddresCode=address_code,
+                            AddresName=address_name,
+                            AddresIndex=address_index,
+                            AddresAddres=address_address,
+                            AddresStreet=address_street,
+                            AddresTown=address_town)
                     uc.save()
                     for cert in cert_data:
                         if type(cert_data) == list:
                             for data in cert:
                                 if type(data) == dict:
-                                    for id, dats in data.items():
-                                        if id == 'keyid':
-                                            KeyId = dats
-                                        if id == 'stamp':
-                                            Stamp = dats
-                                        if id == 'serrial':
-                                            SerialNumber = dats
-                                        if id == 'data':
-                                            Data = dats
+                                    for var, dats in data.items():
+                                        if var == 'keyid':
+                                            key_id = dats
+                                        if var == 'stamp':
+                                            stamp = dats
+                                        if var == 'serrial':
+                                            serial_number = dats
+                                        if var == 'data':
+                                            data = dats
 
                                 if type(data) == list:
                                     for dats in data:
-                                        UrlCRL = dats
-                                        crl = CRL(Registration_Number=Registration_Number,
-                                                  Name=Name,
-                                                  KeyId=KeyId,
-                                                  Stamp=Stamp,
-                                                  SerialNumber=SerialNumber,
-                                                  UrlCRL=UrlCRL)
+                                        url_crl = dats
+                                        crl = CRL(Registration_Number=registration_number,
+                                                  Name=name,
+                                                  KeyId=key_id,
+                                                  Stamp=stamp,
+                                                  SerialNumber=serial_number,
+                                                  UrlCRL=url_crl)
                                         crl.save()
-                        cert = CERT(Registration_Number=Registration_Number,
-                                    Name=Name,
-                                    KeyId=KeyId,
-                                    Stamp=Stamp,
-                                    SerialNumber=SerialNumber,
-                                    Data=Data)
+                        cert = CERT(Registration_Number=registration_number,
+                                    Name=name,
+                                    KeyId=key_id,
+                                    Stamp=stamp,
+                                    SerialNumber=serial_number,
+                                    Data=data)
                         cert.save()
 
-                        uc_percent_step = int(math.floor(100 / (uc_count_all / uc_count)))
-                        cert_percent_step = int(math.floor(100 / (cert_count_all / cert_count)))
+                        # uc_percent_step = int(math.floor(100 / (uc_count_all / uc_count)))
+                        # cert_percent_step = int(math.floor(100 / (cert_count_all / cert_count)))
                         crl_percent_step = int(math.floor(100 / (crl_count_all / crl_count)))
                         self.ui.progressBar_2.setValue(crl_percent_step)
-            # print('Центров:' + str(uc_count))
-            # print('Сертов:' + str(cert_count))
-            # print('CRL:' + str(crl_count))
-            # current_version
-            # last_update
             self.ui.label_3.setText(" Версия базы: " + current_version)
             self.ui.label_2.setText(" Дата выпуска базы: " + last_update.replace('T', ' ').split('.')[0])
             self.ui.label.setText(" Всего УЦ: " + str(uc_count))
@@ -1798,7 +1605,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton.setEnabled(True)
             self.ui.pushButton_2.setEnabled(True)
             self.ui.label_7.setText('Готово.')
-            logs('Info: Procesing successful done')
+            logs('Info: Processing successful done')
         except Exception:
             print('Error: init_xml()')
             logs('Error: init_xml()', 'errors')
@@ -1817,7 +1624,7 @@ class MainWindow(QMainWindow):
 
     def choose_directory(self, type):
         try:
-            input_dir = QFileDialog.getExistingDirectory(None, 'Выбор директории:', expanduser("~"))
+            input_dir = QFileDialog.getExistingDirectory(None, 'Выбор директории:', os.path.expanduser("~"))
             if type == 'crl':
                 self.ui.label_13.setText(input_dir)
             if type == 'cert':
@@ -1850,7 +1657,6 @@ class MainWindow(QMainWindow):
             print('Error: check_all_crl()')
             logs('Error: check_all_crl()', 'errors')
 
-
     def add_watch_cert_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
         try:
             count = WatchingCRL.select().where(WatchingCRL.Stamp.contains(stamp)
@@ -1877,7 +1683,7 @@ class MainWindow(QMainWindow):
                     # self.counter_added = self.counter_added + 1
             else:
                 print('crl exist')
-                logs('Info: add_watch_cert_crl()::Crl_Exist:'+keyid)
+                logs('Info: add_watch_cert_crl()::Crl_Exist:' + keyid)
                 # self.counter_added_exist = self.counter_added_exist + 1
             # self.on_changed_find_watching_crl('')
         except Exception:
@@ -1889,27 +1695,27 @@ class MainWindow(QMainWindow):
             count = WatchingCustomCRL.select().where(WatchingCustomCRL.UrlCRL.contains(url_crl)).count()
             if count < 1:
                 add_to_watching_crl = WatchingCustomCRL(Name='Unknown',
-                                                  INN='0',
-                                                  OGRN='0',
-                                                  KeyId='Unknown',
-                                                  Stamp='Unknown',
-                                                  SerialNumber='Unknown',
-                                                  UrlCRL=url_crl)
+                                                        INN='0',
+                                                        OGRN='0',
+                                                        KeyId='Unknown',
+                                                        Stamp='Unknown',
+                                                        SerialNumber='Unknown',
+                                                        UrlCRL=url_crl)
                 add_to_watching_crl.save()
                 self.counter_added_custom = self.counter_added_custom + 1
             else:
                 print('crl exist')
-                logs('Info: add_watch_custom_cert_crl()::Crl_Exist:'+url_crl)
+                logs('Info: add_watch_custom_cert_crl()::Crl_Exist:' + url_crl)
                 self.counter_added_exist = self.counter_added_exist + 1
             self.on_changed_find_watching_crl('')
         except Exception:
             print('Error: add_watch_custom_cert_crl()')
             logs('Error: add_watch_custom_cert_crl()', 'errors')
 
-    def move_watching_to_passed(self, id, froms):
+    def move_watching_to_passed(self, id_var, from_var):
         try:
-            if froms == 'current':
-                from_bd = WatchingCRL.select().where(WatchingCRL.ID == id)
+            if from_var == 'current':
+                from_bd = WatchingCRL.select().where(WatchingCRL.ID == id_var)
                 for row in from_bd:
                     to_bd = WatchingDeletedCRL(Name=row.Name,
                                                INN=row.INN,
@@ -1919,11 +1725,11 @@ class MainWindow(QMainWindow):
                                                SerialNumber=row.SerialNumber,
                                                UrlCRL=row.UrlCRL)
                     to_bd.save()
-                WatchingCRL.delete_by_id(id)
+                WatchingCRL.delete_by_id(id_var)
                 self.on_changed_find_watching_crl()
                 self.on_changed_find_deleted_watching_crl()
-            elif froms == 'custom':
-                WatchingCustomCRL.delete_by_id(id)
+            elif from_var == 'custom':
+                WatchingCustomCRL.delete_by_id(id_var)
                 self.on_changed_find_deleted_watching_crl('')
             else:
                 print('Error: Ошибка перемещения')
@@ -1937,8 +1743,6 @@ class MainWindow(QMainWindow):
     #     self.on_changed_find_watching_crl('')
     #     print(id + ' id is deleted')
 
-
-
     def download_xml(self):
         try:
             self.ui.label_7.setText('Скачиваем список.')
@@ -1947,7 +1751,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_2.setEnabled(False)
             self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
             # Устанавливаем максимальный размер данных
-            self._download.preprogress.connect(lambda x: self.ui.progressBar.setMaximum(x))
+            self._download.pre_progress.connect(lambda x: self.ui.progressBar.setMaximum(x))
             # Промежуточный/скачанный размер
             self._download.progress.connect(lambda y: self.ui.progressBar.setValue(y))
             # говорим что всё скачано
@@ -1962,7 +1766,6 @@ class MainWindow(QMainWindow):
         except Exception:
             print('Error: download_xml()')
             logs('Error: download_xml()', 'errors')
-
 
     def download_all_crls(self):
         try:
@@ -1979,11 +1782,13 @@ class MainWindow(QMainWindow):
                 QCoreApplication.processEvents()
                 counter_watching_crl = counter_watching_crl + 1
                 file_url = wc.UrlCRL
-                file_name = wc.KeyId+'.crl'
+                file_name = wc.KeyId + '.crl'
                 # file_name = wc.UrlCRL.split('/')[-1]
                 # file_name = wcc.KeyId
                 folder = config['Folders']['crls']
-                self.ui.label_8.setText(str(counter_watching_crl) + ' из '+ str(counter_watching_crl_all) + ' Загружаем: ' + str(wc.Name) + ' ' + str(wc.KeyId))
+                self.ui.label_8.setText(
+                    str(counter_watching_crl) + ' из ' + str(counter_watching_crl_all) + ' Загружаем: ' + str(
+                        wc.Name) + ' ' + str(wc.KeyId))
                 download_file(file_url, file_name, folder, 'current', wc.ID)
                 # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
             print('WatchingCRL downloaded ' + str(counter_watching_crl))
@@ -1992,18 +1797,20 @@ class MainWindow(QMainWindow):
                 QCoreApplication.processEvents()
                 counter_watching_custom_crl = counter_watching_custom_crl + 1
                 file_url = wcc.UrlCRL
-                file_name = wcc.KeyId+'.crl'
+                file_name = wcc.KeyId + '.crl'
                 # file_name = wcc.UrlCRL.split('/')[-1]
                 # file_name = wcc.KeyId
                 folder = config['Folders']['crls']
-                self.ui.label_8.setText(str(counter_watching_custom_crl) + ' из '+ str(watching_custom_crl_all) + ' Загружаем: ' + str(wcc.Name) + ' ' + str(wcc.KeyId))
+                self.ui.label_8.setText(
+                    str(counter_watching_custom_crl) + ' из ' + str(watching_custom_crl_all) + ' Загружаем: ' + str(
+                        wcc.Name) + ' ' + str(wcc.KeyId))
                 download_file(file_url, file_name, folder, 'custome', wcc.ID)
                 # Downloader(str(wcc.UrlCRL), str(wcc.SerialNumber)+'.crl'
             self.ui.label_8.setText('Загрузка закончена')
-            print('WatchingCustomCRL downloaded '+ str(counter_watching_custom_crl))
+            print('WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl))
             logs('Info: WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl))
-            print('All download done, w='+str(counter_watching_crl)+', c='+str(counter_watching_custom_crl))
-            logs('Info: All download done, w='+str(counter_watching_crl)+', c='+str(counter_watching_custom_crl))
+            print('All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl))
+            logs('Info: All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl))
             self.ui.pushButton_4.setEnabled(True)
         except Exception:
             print('Error: download_all_crls()')
@@ -2025,7 +1832,8 @@ class MainWindow(QMainWindow):
                     if count > 0:
                         for row in data:
                             print(row.Registration_Number)
-                            self.add_watch_cert_crl(row.Registration_Number, row.KeyId, row.Stamp, row.SerialNumber, row.UrlCRL)
+                            self.add_watch_cert_crl(row.Registration_Number, row.KeyId, row.Stamp, row.SerialNumber,
+                                                    row.UrlCRL)
                     else:
                         print('add to custom')
                         self.add_watch_custom_cert_crl(crl_url)
@@ -2057,68 +1865,63 @@ class MainWindow(QMainWindow):
 
 
 class UcWindow(QWidget):
-    def __init__(self, RegNumber):
+    def __init__(self, reg_number):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        self.init(RegNumber)
+        self.init(reg_number)
 
-    def init(self, RegNumber):
+    def init(self, reg_number):
         try:
-            Registration_Number = 'Unknown'
-            INN = 'Unknown'
-            OGRN = 'Unknown'
-            Full_Name = 'Unknown'
-            Email = 'Unknown'
-            Name = 'Unknown'
-            URL = 'Unknown'
-            AddresCode = 'Unknown'
-            AddresName = 'Unknown'
-            AddresIndex = 'Unknown'
-            AddresAddres = 'Unknown'
-            AddresStreet = 'Unknown'
-            AddresTown = 'Unknown'
-            query = UC.select().where(UC.Registration_Number == RegNumber)
+            registration_number = 'Unknown'
+            inn = 'Unknown'
+            ogrn = 'Unknown'
+            full_name = 'Unknown'
+            email = 'Unknown'
+            name = 'Unknown'
+            url = 'Unknown'
+            address_code = 'Unknown'
+            address_name = 'Unknown'
+            address_index = 'Unknown'
+            address_address = 'Unknown'
+            address_street = 'Unknown'
+            address_town = 'Unknown'
+            query = UC.select().where(UC.Registration_Number == reg_number)
             for row in query:
-                Registration_Number = 'Регистрационный номер: '+str(row.Registration_Number)
-                INN = 'ИНН: '+str(row.INN)
-                OGRN = 'ОГРН: '+str(row.OGRN)
-                Full_Name = 'Полное название организации: '+str(row.Full_Name)
-                Email = 'Электронная почта: '+str(row.Email)
-                Name = 'Название организации: '+str(row.Name)
-                URL = 'Интернет адрес: '+str(row.URL)
-                AddresCode = 'Код региона: '+str(row.AddresCode)
-                AddresName = 'Регион: '+str(row.AddresName)
-                AddresIndex = 'Почтовый индекс: '+str(row.AddresIndex)
-                AddresAddres = 'Код страны: '+str(row.AddresAddres)
-                AddresStreet = 'Улица: '+str(row.AddresStreet)
-                AddresTown = 'Город : '+str(row.AddresTown)
+                registration_number = 'Регистрационный номер: ' + str(row.Registration_Number)
+                inn = 'ИНН: ' + str(row.INN)
+                ogrn = 'ОГРН: ' + str(row.OGRN)
+                full_name = 'Полное название организации: ' + str(row.Full_Name)
+                email = 'Электронная почта: ' + str(row.Email)
+                name = 'Название организации: ' + str(row.Name)
+                url = 'Интернет адрес: ' + str(row.URL)
+                address_code = 'Код региона: ' + str(row.AddresCode)
+                address_name = 'Регион: ' + str(row.AddresName)
+                address_index = 'Почтовый индекс: ' + str(row.AddresIndex)
+                address_address = 'Код страны: ' + str(row.AddresAddres)
+                address_street = 'Улица: ' + str(row.AddresStreet)
+                address_town = 'Город : ' + str(row.AddresTown)
 
-            self.setWindowTitle(Name)
-            self.setWindowIcon(QIcon('assests/favicon.ico'))
+            self.setWindowTitle(name)
+            self.setWindowIcon(QIcon('assists/favicon.ico'))
 
-            self.ui.label_7.setText(Registration_Number)
-            self.ui.label_6.setText(INN)
-            self.ui.label_5.setText(OGRN)
-            self.ui.label_4.setText(Full_Name)
-            self.ui.label_3.setText(Email)
-            self.ui.label_2.setText(URL)
-            self.ui.label.setText(Name)
+            self.ui.label_7.setText(registration_number)
+            self.ui.label_6.setText(inn)
+            self.ui.label_5.setText(ogrn)
+            self.ui.label_4.setText(full_name)
+            self.ui.label_3.setText(email)
+            self.ui.label_2.setText(url)
+            self.ui.label.setText(name)
 
-            self.ui.label_13.setText(AddresCode)
-            self.ui.label_12.setText(AddresName)
-            self.ui.label_11.setText(AddresIndex)
-            self.ui.label_10.setText(AddresAddres)
-            self.ui.label_8.setText(AddresStreet)
-            self.ui.label_9.setText(AddresTown)
-            Registration_Number = 'Unknown'
-            KeyId = 'Unknown'
-            Stamp = 'Unknown'
-            SerialNumber = 'Unknown'
-            UrlCRL = 'Unknown'
+            self.ui.label_13.setText(address_code)
+            self.ui.label_12.setText(address_name)
+            self.ui.label_11.setText(address_index)
+            self.ui.label_10.setText(address_address)
+            self.ui.label_8.setText(address_street)
+            self.ui.label_9.setText(address_town)
 
-            query = CRL.select().where(CRL.Registration_Number == RegNumber)
-            query_count = CRL.select().where(CRL.Registration_Number == RegNumber).count()
+            query = CRL.select().where(CRL.Registration_Number == reg_number)
+            query_count = CRL.select().where(CRL.Registration_Number == reg_number).count()
             self.ui.tableWidget.setRowCount(query_count)
             count = 0
             try:
