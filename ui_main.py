@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainXyYELL.ui'
+## Form generated from reading UI file 'mainYlutHo.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -22,7 +22,7 @@ class Ui_MainWindow(object):
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1168, 659)
         icon = QIcon()
-        iconThemeName = u"assists/favicon.ico"
+        iconThemeName = u"assests/favicon.ico"
         if QIcon.hasThemeIcon(iconThemeName):
             icon = QIcon.fromTheme(iconThemeName)
         else:
@@ -658,8 +658,8 @@ class Ui_MainWindow(object):
         self.tab_8.setObjectName(u"tab_8")
         self.verticalLayout_20 = QVBoxLayout(self.tab_8)
         self.verticalLayout_20.setObjectName(u"verticalLayout_20")
-        self.verticalLayout_26 = QVBoxLayout()
-        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
+        self.horizontalLayout_48 = QHBoxLayout()
+        self.horizontalLayout_48.setObjectName(u"horizontalLayout_48")
         self.frame_8 = QFrame(self.tab_8)
         self.frame_8.setObjectName(u"frame_8")
         self.frame_8.setFrameShape(QFrame.NoFrame)
@@ -672,12 +672,19 @@ class Ui_MainWindow(object):
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
         self.lineEdit_5 = QLineEdit(self.frame_8)
         self.lineEdit_5.setObjectName(u"lineEdit_5")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.lineEdit_5.sizePolicy().hasHeightForWidth())
+        self.lineEdit_5.setSizePolicy(sizePolicy1)
         self.lineEdit_5.setMinimumSize(QSize(200, 0))
+        self.lineEdit_5.setMaximumSize(QSize(200, 16777215))
 
         self.horizontalLayout_11.addWidget(self.lineEdit_5)
 
         self.pushButton_11 = QPushButton(self.frame_8)
         self.pushButton_11.setObjectName(u"pushButton_11")
+        self.pushButton_11.setMaximumSize(QSize(100, 16777215))
 
         self.horizontalLayout_11.addWidget(self.pushButton_11)
 
@@ -685,10 +692,26 @@ class Ui_MainWindow(object):
         self.verticalLayout_32.addLayout(self.horizontalLayout_11)
 
 
-        self.verticalLayout_26.addWidget(self.frame_8, 0, Qt.AlignLeft)
+        self.horizontalLayout_48.addWidget(self.frame_8, 0, Qt.AlignLeft)
+
+        self.frame_29 = QFrame(self.tab_8)
+        self.frame_29.setObjectName(u"frame_29")
+        self.frame_29.setFrameShape(QFrame.StyledPanel)
+        self.frame_29.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_50 = QHBoxLayout(self.frame_29)
+        self.horizontalLayout_50.setObjectName(u"horizontalLayout_50")
+        self.horizontalLayout_50.setContentsMargins(0, 0, 0, 0)
+        self.pushButton_25 = QPushButton(self.frame_29)
+        self.pushButton_25.setObjectName(u"pushButton_25")
+        self.pushButton_25.setMaximumSize(QSize(100, 16777215))
+
+        self.horizontalLayout_50.addWidget(self.pushButton_25, 0, Qt.AlignRight)
 
 
-        self.verticalLayout_20.addLayout(self.verticalLayout_26)
+        self.horizontalLayout_48.addWidget(self.frame_29, 0, Qt.AlignRight)
+
+
+        self.verticalLayout_20.addLayout(self.horizontalLayout_48)
 
         self.tableWidget_5 = QTableWidget(self.tab_8)
         if (self.tableWidget_5.columnCount() < 9):
@@ -822,11 +845,11 @@ class Ui_MainWindow(object):
 
         self.lineEdit_17 = QLineEdit(self.frame_20)
         self.lineEdit_17.setObjectName(u"lineEdit_17")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.lineEdit_17.sizePolicy().hasHeightForWidth())
-        self.lineEdit_17.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.lineEdit_17.sizePolicy().hasHeightForWidth())
+        self.lineEdit_17.setSizePolicy(sizePolicy2)
         self.lineEdit_17.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_62.addWidget(self.lineEdit_17)
@@ -843,8 +866,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_15 = QLineEdit(self.frame_20)
         self.lineEdit_15.setObjectName(u"lineEdit_15")
-        sizePolicy1.setHeightForWidth(self.lineEdit_15.sizePolicy().hasHeightForWidth())
-        self.lineEdit_15.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_15.sizePolicy().hasHeightForWidth())
+        self.lineEdit_15.setSizePolicy(sizePolicy2)
         self.lineEdit_15.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_57.addWidget(self.lineEdit_15)
@@ -861,8 +884,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_16 = QLineEdit(self.frame_20)
         self.lineEdit_16.setObjectName(u"lineEdit_16")
-        sizePolicy1.setHeightForWidth(self.lineEdit_16.sizePolicy().hasHeightForWidth())
-        self.lineEdit_16.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_16.sizePolicy().hasHeightForWidth())
+        self.lineEdit_16.setSizePolicy(sizePolicy2)
         self.lineEdit_16.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_61.addWidget(self.lineEdit_16)
@@ -879,8 +902,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_18 = QLineEdit(self.frame_20)
         self.lineEdit_18.setObjectName(u"lineEdit_18")
-        sizePolicy1.setHeightForWidth(self.lineEdit_18.sizePolicy().hasHeightForWidth())
-        self.lineEdit_18.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_18.sizePolicy().hasHeightForWidth())
+        self.lineEdit_18.setSizePolicy(sizePolicy2)
         self.lineEdit_18.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_63.addWidget(self.lineEdit_18)
@@ -897,8 +920,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_13 = QLineEdit(self.frame_20)
         self.lineEdit_13.setObjectName(u"lineEdit_13")
-        sizePolicy1.setHeightForWidth(self.lineEdit_13.sizePolicy().hasHeightForWidth())
-        self.lineEdit_13.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_13.sizePolicy().hasHeightForWidth())
+        self.lineEdit_13.setSizePolicy(sizePolicy2)
         self.lineEdit_13.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_56.addWidget(self.lineEdit_13)
@@ -917,8 +940,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_14 = QLineEdit(self.frame_20)
         self.lineEdit_14.setObjectName(u"lineEdit_14")
-        sizePolicy1.setHeightForWidth(self.lineEdit_14.sizePolicy().hasHeightForWidth())
-        self.lineEdit_14.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_14.sizePolicy().hasHeightForWidth())
+        self.lineEdit_14.setSizePolicy(sizePolicy2)
         self.lineEdit_14.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_55.addWidget(self.lineEdit_14)
@@ -1060,11 +1083,11 @@ class Ui_MainWindow(object):
 
         self.progressBar_3 = QProgressBar(self.groupBox_14)
         self.progressBar_3.setObjectName(u"progressBar_3")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.progressBar_3.sizePolicy().hasHeightForWidth())
-        self.progressBar_3.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.progressBar_3.sizePolicy().hasHeightForWidth())
+        self.progressBar_3.setSizePolicy(sizePolicy3)
         self.progressBar_3.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_82.addWidget(self.progressBar_3)
@@ -1105,8 +1128,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_19 = QLineEdit(self.frame_19)
         self.lineEdit_19.setObjectName(u"lineEdit_19")
-        sizePolicy1.setHeightForWidth(self.lineEdit_19.sizePolicy().hasHeightForWidth())
-        self.lineEdit_19.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_19.sizePolicy().hasHeightForWidth())
+        self.lineEdit_19.setSizePolicy(sizePolicy2)
         self.lineEdit_19.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_67.addWidget(self.lineEdit_19)
@@ -1125,8 +1148,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_20 = QLineEdit(self.frame_19)
         self.lineEdit_20.setObjectName(u"lineEdit_20")
-        sizePolicy1.setHeightForWidth(self.lineEdit_20.sizePolicy().hasHeightForWidth())
-        self.lineEdit_20.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_20.sizePolicy().hasHeightForWidth())
+        self.lineEdit_20.setSizePolicy(sizePolicy2)
         self.lineEdit_20.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_71.addWidget(self.lineEdit_20)
@@ -1145,8 +1168,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_21 = QLineEdit(self.frame_19)
         self.lineEdit_21.setObjectName(u"lineEdit_21")
-        sizePolicy1.setHeightForWidth(self.lineEdit_21.sizePolicy().hasHeightForWidth())
-        self.lineEdit_21.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_21.sizePolicy().hasHeightForWidth())
+        self.lineEdit_21.setSizePolicy(sizePolicy2)
         self.lineEdit_21.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_70.addWidget(self.lineEdit_21)
@@ -1165,8 +1188,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_22 = QLineEdit(self.frame_19)
         self.lineEdit_22.setObjectName(u"lineEdit_22")
-        sizePolicy1.setHeightForWidth(self.lineEdit_22.sizePolicy().hasHeightForWidth())
-        self.lineEdit_22.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_22.sizePolicy().hasHeightForWidth())
+        self.lineEdit_22.setSizePolicy(sizePolicy2)
         self.lineEdit_22.setMinimumSize(QSize(0, 25))
 
         self.horizontalLayout_68.addWidget(self.lineEdit_22)
@@ -1262,8 +1285,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_12 = QLineEdit(self.frame_16)
         self.lineEdit_12.setObjectName(u"lineEdit_12")
-        sizePolicy1.setHeightForWidth(self.lineEdit_12.sizePolicy().hasHeightForWidth())
-        self.lineEdit_12.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_12.sizePolicy().hasHeightForWidth())
+        self.lineEdit_12.setSizePolicy(sizePolicy2)
         self.lineEdit_12.setMaximumSize(QSize(100, 16777215))
 
         self.horizontalLayout_43.addWidget(self.lineEdit_12)
@@ -1291,8 +1314,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_11 = QLineEdit(self.frame_15)
         self.lineEdit_11.setObjectName(u"lineEdit_11")
-        sizePolicy1.setHeightForWidth(self.lineEdit_11.sizePolicy().hasHeightForWidth())
-        self.lineEdit_11.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_11.sizePolicy().hasHeightForWidth())
+        self.lineEdit_11.setSizePolicy(sizePolicy2)
         self.lineEdit_11.setMaximumSize(QSize(100, 16777215))
 
         self.horizontalLayout_42.addWidget(self.lineEdit_11)
@@ -1679,8 +1702,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_7 = QLineEdit(self.frame_26)
         self.lineEdit_7.setObjectName(u"lineEdit_7")
-        sizePolicy1.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
-        self.lineEdit_7.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
+        self.lineEdit_7.setSizePolicy(sizePolicy2)
         self.lineEdit_7.setMaximumSize(QSize(200, 20))
 
         self.horizontalLayout_26.addWidget(self.lineEdit_7)
@@ -1698,8 +1721,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_8 = QLineEdit(self.frame_26)
         self.lineEdit_8.setObjectName(u"lineEdit_8")
-        sizePolicy1.setHeightForWidth(self.lineEdit_8.sizePolicy().hasHeightForWidth())
-        self.lineEdit_8.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_8.sizePolicy().hasHeightForWidth())
+        self.lineEdit_8.setSizePolicy(sizePolicy2)
         self.lineEdit_8.setMaximumSize(QSize(200, 20))
 
         self.horizontalLayout_25.addWidget(self.lineEdit_8)
@@ -1717,8 +1740,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_9 = QLineEdit(self.frame_26)
         self.lineEdit_9.setObjectName(u"lineEdit_9")
-        sizePolicy1.setHeightForWidth(self.lineEdit_9.sizePolicy().hasHeightForWidth())
-        self.lineEdit_9.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_9.sizePolicy().hasHeightForWidth())
+        self.lineEdit_9.setSizePolicy(sizePolicy2)
         self.lineEdit_9.setMaximumSize(QSize(200, 20))
 
         self.horizontalLayout_24.addWidget(self.lineEdit_9)
@@ -1736,8 +1759,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_10 = QLineEdit(self.frame_26)
         self.lineEdit_10.setObjectName(u"lineEdit_10")
-        sizePolicy1.setHeightForWidth(self.lineEdit_10.sizePolicy().hasHeightForWidth())
-        self.lineEdit_10.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.lineEdit_10.sizePolicy().hasHeightForWidth())
+        self.lineEdit_10.setSizePolicy(sizePolicy2)
         self.lineEdit_10.setMaximumSize(QSize(200, 20))
 
         self.horizontalLayout_23.addWidget(self.lineEdit_10)
@@ -1870,11 +1893,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_67.setObjectName(u"verticalLayout_67")
         self.textBrowser = QTextBrowser(self.groupBox_9)
         self.textBrowser.setObjectName(u"textBrowser")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
-        self.textBrowser.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
+        self.textBrowser.setSizePolicy(sizePolicy4)
 
         self.verticalLayout_67.addWidget(self.textBrowser)
 
@@ -1897,8 +1920,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_69.setObjectName(u"verticalLayout_69")
         self.textBrowser_2 = QTextBrowser(self.groupBox_12)
         self.textBrowser_2.setObjectName(u"textBrowser_2")
-        sizePolicy3.setHeightForWidth(self.textBrowser_2.sizePolicy().hasHeightForWidth())
-        self.textBrowser_2.setSizePolicy(sizePolicy3)
+        sizePolicy4.setHeightForWidth(self.textBrowser_2.sizePolicy().hasHeightForWidth())
+        self.textBrowser_2.setSizePolicy(sizePolicy4)
 
         self.verticalLayout_69.addWidget(self.textBrowser_2)
 
@@ -2055,6 +2078,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem29.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441 CRL", None));
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_7), QCoreApplication.translate("MainWindow", u"\u041e\u0441\u043d\u043e\u0432\u043d\u044b\u0435 CRL", None))
         self.pushButton_11.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
+        self.pushButton_25.setText(QCoreApplication.translate("MainWindow", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
         ___qtablewidgetitem30 = self.tableWidget_5.horizontalHeaderItem(0)
         ___qtablewidgetitem30.setText(QCoreApplication.translate("MainWindow", u"Name", None));
         ___qtablewidgetitem31 = self.tableWidget_5.horizontalHeaderItem(1)

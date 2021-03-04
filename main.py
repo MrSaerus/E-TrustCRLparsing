@@ -3,6 +3,7 @@ from PyQt5.QtCore import pyqtSignal, QThread
 from urllib import request, error
 from ui_sub_main import *
 from lxml import etree
+from ui_sub_main_add import *
 from ui_main import *
 from peewee import *
 import OpenSSL
@@ -814,6 +815,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon('assists/favicon.ico'))
         self.window_uc = None
+        self.window_add_crl = None
         self.init_settings()
         self.tab_info()
         self.tab_uc()
@@ -927,10 +929,12 @@ class MainWindow(QMainWindow):
             query = UC.select().where(UC.Registration_Number.contains(text)
                                       | UC.INN.contains(text)
                                       | UC.OGRN.contains(text)
+                                      | UC.Name.contains(text)
                                       | UC.Full_Name.contains(text)).limit(config['Listing']['uc'])
             count_all = UC.select().where(UC.Registration_Number.contains(text)
                                           | UC.INN.contains(text)
                                           | UC.OGRN.contains(text)
+                                          | UC.Name.contains(text)
                                           | UC.Full_Name.contains(text)).limit(config['Listing']['uc']).count()
             self.ui.tableWidget.setRowCount(count_all)
             count = 0
@@ -1131,6 +1135,7 @@ class MainWindow(QMainWindow):
             self.ui.label_8.adjustSize()
 
             self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
+            self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
 
             query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
                                                      | WatchingCustomCRL.INN.contains(text)
@@ -1622,6 +1627,18 @@ class MainWindow(QMainWindow):
             print('Error: open_sub_window_info_uc()')
             logs('Error: open_sub_window_info_uc()', 'errors')
 
+    def open_sub_window_add(self):
+        try:
+            if self.window_add_crl is None:
+                self.window_add_crl = AddCRLWindow()
+                self.window_add_crl.show()
+            else:
+                self.window_add_crl.close()  # Close window.
+                self.window_add_crl = None  # Discard reference.
+        except Exception:
+            print('Error: open_sub_window_info_uc()')
+            logs('Error: open_sub_window_info_uc()', 'errors')
+
     def choose_directory(self, type):
         try:
             input_dir = QFileDialog.getExistingDirectory(None, 'Выбор директории:', os.path.expanduser("~"))
@@ -1869,6 +1886,7 @@ class UcWindow(QWidget):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon('assists/favicon.ico'))
         self.init(reg_number)
 
     def init(self, reg_number):
@@ -1945,6 +1963,67 @@ class UcWindow(QWidget):
         except Exception:
             print('Error: UcWindow()::init()')
             logs('Error: UcWindow()::init()', 'errors')
+
+
+class AddCRLWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.ui_add = Ui_Form_add()
+        self.ui_add.setupUi(self)
+        self.setWindowIcon(QIcon('assists/favicon.ico'))
+        self.ui_add.lineEdit.textChanged[str].connect(self.init)
+        self.ui_add.pushButton.pressed.connect(self.set_fields)
+        self.ui_add.pushButton_2.pressed.connect(self.query_fields)
+        self.init()
+
+    def init(self, text=''):
+        self.ui_add.comboBox.clear()
+        query = CERT.select().where(CERT.Registration_Number.contains(text)
+                                    | CERT.Name.contains(text)
+                                    | CERT.KeyId.contains(text)
+                                    | CERT.Stamp.contains(text)
+                                    | CERT.SerialNumber.contains(text)).limit(config['Listing']['cert'])
+        for row in query:
+            self.ui_add.comboBox.addItem(row.Name, row.ID)
+
+    def set_fields(self):
+        id_cert = self.ui_add.comboBox.currentIndex()
+        query = CERT.select().where(CERT.ID == id_cert)
+        registration_number = 0
+        for row_cert in query:
+            registration_number = row_cert.Registration_Number
+            self.ui_add.lineEdit_6.setText(str(row_cert.Name))
+            self.ui_add.lineEdit_3.setText(str(row_cert.KeyId))
+            self.ui_add.lineEdit_8.setText(str(row_cert.Stamp))
+            self.ui_add.lineEdit_4.setText(str(row_cert.SerialNumber))
+        query_2 = UC.select().where(UC.Registration_Number == registration_number)
+        for row_uc in query_2:
+            self.ui_add.lineEdit_7.setText(str(row_uc.INN))
+            self.ui_add.lineEdit_2.setText(str(row_uc.OGRN))
+
+    def query_fields(self):
+        if WatchingCRL.select().where(WatchingCRL.UrlCRL == self.ui_add.lineEdit_9.text()).count() > 0:
+            name = self.ui_add.lineEdit_6.text()
+            inn = self.ui_add.lineEdit_7.text()
+            ogrn = self.ui_add.lineEdit_2.text()
+            key_id = self.ui_add.lineEdit_3.text()
+            stamp = self.ui_add.lineEdit_8.text()
+            serial_number = self.ui_add.lineEdit_4.text()
+            url_crl = self.ui_add.lineEdit_9.text()
+
+            query = WatchingCustomCRL(Name=name,
+                                      INN=inn,
+                                      OGRN=ogrn,
+                                      KeyId=key_id,
+                                      Stamp=stamp,
+                                      SerialNumber=serial_number,
+                                      UrlCRL=url_crl,
+                                      status='Unknown',
+                                      download_status='Unknown',
+                                      download_count='0',
+                                      last_download='1970-01-01 00:00:00',
+                                      last_update='1970-01-01 00:00:00',
+                                      next_update='1970-01-01 00:00:00')
 
 
 if __name__ == "__main__":
