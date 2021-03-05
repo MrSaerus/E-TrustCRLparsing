@@ -2020,20 +2020,14 @@ class AddCRLWindow(QWidget):
 
     def query_fields(self):
         try:
-            if WatchingCRL.select().where(WatchingCRL.Name == self.ui_add.lineEdit_6.text()
-                                          or WatchingCRL.INN == self.ui_add.lineEdit_7.text()
-                                          or WatchingCRL.OGRN == self.ui_add.lineEdit_2.text()
-                                          or WatchingCRL.KeyId == self.ui_add.lineEdit_3.text()
+            if WatchingCRL.select().where(WatchingCRL.KeyId == self.ui_add.lineEdit_3.text()
                                           or WatchingCRL.Stamp == self.ui_add.lineEdit_8.text()
                                           or WatchingCRL.SerialNumber == self.ui_add.lineEdit_4.text()
                                           or WatchingCRL.UrlCRL == self.ui_add.lineEdit_9.text()).count() > 0:
                 print('Info: CRL is exists in WatchingCRL')
                 logs('Info: CRL is exists in WatchingCRL')
                 self.ui_add.label_10.setText('CRL уже есть в основном списке отслеживания')
-            elif WatchingCustomCRL.select().where(WatchingCustomCRL.Name == self.ui_add.lineEdit_6.text()
-                                                  or WatchingCustomCRL.INN == self.ui_add.lineEdit_7.text()
-                                                  or WatchingCustomCRL.OGRN == self.ui_add.lineEdit_2.text()
-                                                  or WatchingCustomCRL.KeyId == self.ui_add.lineEdit_3.text()
+            elif WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == self.ui_add.lineEdit_3.text()
                                                   or WatchingCustomCRL.Stamp == self.ui_add.lineEdit_8.text()
                                                   or WatchingCustomCRL.SerialNumber == self.ui_add.lineEdit_4.text()
                                                   or WatchingCustomCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
@@ -2041,10 +2035,7 @@ class AddCRLWindow(QWidget):
                 print('Info: CRL is exist in WatchingCustomCRL')
                 logs('Info: CRL is exist in WatchingCustomCRL')
                 self.ui_add.label_10.setText('CRL уже есть в своем списке отслеживания')
-            elif WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name == self.ui_add.lineEdit_6.text()
-                                                   or WatchingDeletedCRL.INN == self.ui_add.lineEdit_7.text()
-                                                   or WatchingDeletedCRL.OGRN == self.ui_add.lineEdit_2.text()
-                                                   or WatchingDeletedCRL.KeyId == self.ui_add.lineEdit_3.text()
+            elif WatchingDeletedCRL.select().where(WatchingDeletedCRL.KeyId == self.ui_add.lineEdit_3.text()
                                                    or WatchingDeletedCRL.Stamp == self.ui_add.lineEdit_8.text()
                                                    or WatchingDeletedCRL.SerialNumber == self.ui_add.lineEdit_4.text()
                                                    or WatchingDeletedCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
