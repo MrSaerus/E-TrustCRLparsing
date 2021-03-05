@@ -309,10 +309,13 @@ def get_info_xlm(type_data, xml_file='tsl.xml'):
 
 
 def save_cert(key_id):
-    for certs in CERT.select().where(CERT.KeyId == key_id):
-        with open(config['Folders']['certs'] + "/" + certs.KeyId + ".cer", "wb") as file:
-            file.write(base64.decodebytes(certs.Data.encode()))
-    os.startfile(os.path.realpath(config['Folders']['certs'] + "/"))
+    try:
+        for certs in CERT.select().where(CERT.KeyId == key_id):
+            with open(config['Folders']['certs'] + "/" + certs.KeyId + ".cer", "wb") as file:
+                file.write(base64.decodebytes(certs.Data.encode()))
+        os.startfile(os.path.realpath(config['Folders']['certs'] + "/"))
+    except Exception:
+        print('Error: save_cert(key_id)')
 
 
 def open_file(file_name, file_type, url='None'):
@@ -703,8 +706,9 @@ class Worker(QObject):
                     self.threadTimerSender.emit(timer)
                     if self._step == int(sec_to_get) - 1:
                         check_for_import_in_uc()
-                        timer_b = str(datetime.datetime.now())
-                        timer_a = str(datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get))
+                        timer_b = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        timer_a = datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get)
+                        timer_a = datetime.datetime.strftime(timer_a, '%Y-%m-%d %H:%M:%S')
                         self.threadBefore.emit(timer_b)
                         self.threadAfter.emit(timer_a)
                         self._step = 0
@@ -1468,7 +1472,7 @@ class MainWindow(QMainWindow):
                 key_id = ''
                 stamp = ''
                 serial_number = ''
-                data = ''
+                cert_base64 = ''
                 cert_data = []
                 if appt.text:
                     if appt.tag == 'Версия':
@@ -1573,7 +1577,7 @@ class MainWindow(QMainWindow):
                                         if var == 'serrial':
                                             serial_number = dats
                                         if var == 'data':
-                                            data = dats
+                                            cert_base64 = dats
 
                                 if type(data) == list:
                                     for dats in data:
@@ -1590,7 +1594,7 @@ class MainWindow(QMainWindow):
                                     KeyId=key_id,
                                     Stamp=stamp,
                                     SerialNumber=serial_number,
-                                    Data=data)
+                                    Data=cert_base64)
                         cert.save()
 
                         # uc_percent_step = int(math.floor(100 / (uc_count_all / uc_count)))
