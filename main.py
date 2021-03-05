@@ -502,11 +502,13 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                 if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Error: Download failed',
                                                       last_download=datetime.datetime.now()
+                                                      .strftime('%Y-%m-%d %H:%M:%S')
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
                 elif type_download == 'custome':
                     query_update = WatchingCustomCRL.update(download_status='Error: Download failed',
                                                             last_download=datetime.datetime.now()
+                                                            .strftime('%Y-%m-%d %H:%M:%S')
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
             else:
@@ -525,11 +527,13 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                 if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Info: Download successfully',
                                                       last_download=datetime.datetime.now()
+                                                      .strftime('%Y-%m-%d %H:%M:%S')
                                                       ).where(WatchingCRL.ID == w_id)
                     query_update.execute()
                 elif type_download == 'custome':
                     query_update = WatchingCustomCRL.update(download_status='Info: Download successfully',
                                                             last_download=datetime.datetime.now()
+                                                            .strftime('%Y-%m-%d %H:%M:%S')
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
                 # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
@@ -944,19 +948,23 @@ class MainWindow(QMainWindow):
             count = 0
 
             for row in query:
-                self.ui.tableWidget.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
+                self.ui.tableWidget.setItem(count, 0, QTableWidgetItem(str(row.Full_Name)))
                 self.ui.tableWidget.setItem(count, 1, QTableWidgetItem(str(row.INN)))
                 self.ui.tableWidget.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
-                self.ui.tableWidget.setItem(count, 3, QTableWidgetItem(str(row.Full_Name)))
                 button_info = QPushButton()
-                button_info.setFixedSize(100, 30)
-                button_info.setText("Подробнее")
+                button_info.setFixedSize(30, 30)
+                #button_info.setText("Подробнее")
+                icon3 = QIcon()
+                icon3.addFile(u"assists/72/help.png", QSize(), QIcon.Normal, QIcon.Off)
+                button_info.setIcon(icon3)
+                button_info.setFlat(True)
                 reg_num = row.Registration_Number
                 button_info.pressed.connect(lambda rg=reg_num: self.open_sub_window_info_uc(rg))
-                self.ui.tableWidget.setCellWidget(count, 4, button_info)
+                self.ui.tableWidget.setCellWidget(count, 3, button_info)
                 count = count + 1
             self.ui.tableWidget.resizeColumnsToContents()
-            self.ui.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
+            self.ui.tableWidget.setColumnWidth(3, 30)
+            self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_uc()')
             logs('Error: tab_uc()', 'errors')
@@ -978,32 +986,39 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_2.setRowCount(count_all)
             count = 0
             for row in query:
-                self.ui.tableWidget_2.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
-                self.ui.tableWidget_2.setItem(count, 1, QTableWidgetItem(str(row.Name)))
-                self.ui.tableWidget_2.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
-                self.ui.tableWidget_2.setItem(count, 3, QTableWidgetItem(str(row.Stamp)))
-                self.ui.tableWidget_2.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
+                self.ui.tableWidget_2.setItem(count, 0, QTableWidgetItem(str(row.Name)))
+                self.ui.tableWidget_2.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
+                self.ui.tableWidget_2.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
+                self.ui.tableWidget_2.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
 
                 self.button_cert = QPushButton()
-                self.button_cert.setFixedSize(150, 30)
-                self.button_cert.setText("Просмотр сертификата")
+                self.button_cert.setFixedSize(30, 30)
+                #self.button_cert.setText("Просмотр сертификата")
+                icon2 = QIcon()
+                icon2.addFile(u"assists/72/diskette.png", QSize(), QIcon.Normal, QIcon.Off)
+                self.button_cert.setIcon(icon2)
+                self.button_cert.setFlat(True)
                 ki = row.KeyId
                 self.button_cert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
-                self.ui.tableWidget_2.setCellWidget(count, 5, self.button_cert)
+                self.ui.tableWidget_2.setCellWidget(count, 4, self.button_cert)
 
                 button_cert_save = QPushButton()
-                button_cert_save.setFixedSize(100, 30)
-                button_cert_save.setText("Сохранить")
+                button_cert_save.setFixedSize(30, 30)
+                #button_cert_save.setText("Сохранить")
+                icon1 = QIcon()
+                icon1.addFile(u"assists/72/file.png", QSize(), QIcon.Normal, QIcon.Off)
+                button_cert_save.setIcon(icon1)
+                button_cert_save.setFlat(True)
                 ki = row.KeyId
                 button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id))
-                self.ui.tableWidget_2.setCellWidget(count, 6, button_cert_save)
+                self.ui.tableWidget_2.setCellWidget(count, 5, button_cert_save)
                 count = count + 1
-            self.ui.tableWidget_2.resizeColumnToContents(0)
             self.ui.tableWidget_2.setColumnWidth(1, 150)
             self.ui.tableWidget_2.setColumnWidth(2, 150)
             self.ui.tableWidget_2.setColumnWidth(3, 150)
-            self.ui.tableWidget_2.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
-            self.ui.tableWidget_2.resizeColumnToContents(5)
+            self.ui.tableWidget_2.setColumnWidth(4, 30)
+            self.ui.tableWidget_2.setColumnWidth(5, 30)
+            self.ui.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_cert()')
             logs('Error: tab_cert()', 'errors')
@@ -1027,22 +1042,29 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_3.setRowCount(count_all)
             count = 0
             for row in query:
-                self.ui.tableWidget_3.setItem(count, 0, QTableWidgetItem(str(row.Registration_Number)))
-                self.ui.tableWidget_3.setItem(count, 1, QTableWidgetItem(str(row.Name)))
-                self.ui.tableWidget_3.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
-                self.ui.tableWidget_3.setItem(count, 3, QTableWidgetItem(str(row.Stamp)))
-                self.ui.tableWidget_3.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
-                self.ui.tableWidget_3.setItem(count, 5, QTableWidgetItem(str(row.UrlCRL)))
+                self.ui.tableWidget_3.setItem(count, 0, QTableWidgetItem(str(row.Name)))
+                self.ui.tableWidget_3.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
+                self.ui.tableWidget_3.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
+                self.ui.tableWidget_3.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
+                self.ui.tableWidget_3.setItem(count, 4, QTableWidgetItem(str(row.UrlCRL)))
                 button_crl_save = QPushButton()
-                button_crl_save.setFixedSize(100, 30)
-                button_crl_save.setText("Скачать")
+                button_crl_save.setFixedSize(30, 30)
+                # button_crl_save.setText("Скачать")
+                icon4 = QIcon()
+                icon4.addFile(u"assists/72/diskette.png", QSize(), QIcon.Normal, QIcon.Off)
+                button_crl_save.setIcon(icon4)
+                button_crl_save.setFlat(True)
                 button_crl_save.pressed.connect(
                     lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['crls']))
-                self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save)
+                self.ui.tableWidget_3.setCellWidget(count, 5, button_crl_save)
 
                 button_add_to_watch = QPushButton()
-                button_add_to_watch.setFixedSize(100, 30)
-                button_add_to_watch.setText("Отслеживать")
+                button_add_to_watch.setFixedSize(30, 30)
+                # button_add_to_watch.setText("Отслеживать")
+                icon5 = QIcon()
+                icon5.addFile(u"assists/72/export.png", QSize(), QIcon.Normal, QIcon.Off)
+                button_add_to_watch.setIcon(icon5)
+                button_add_to_watch.setFlat(True)
                 rb = row.Registration_Number
                 ki = row.KeyId
                 st = row.Stamp
@@ -1057,7 +1079,7 @@ class MainWindow(QMainWindow):
                                                                                                stamp,
                                                                                                serial_number,
                                                                                                url_crl))
-                self.ui.tableWidget_3.setCellWidget(count, 7, button_add_to_watch)
+                self.ui.tableWidget_3.setCellWidget(count, 6, button_add_to_watch)
 
                 count = count + 1
             self.ui.tableWidget_3.resizeColumnToContents(0)
@@ -1065,7 +1087,9 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_3.setColumnWidth(2, 150)
             self.ui.tableWidget_3.setColumnWidth(3, 150)
             self.ui.tableWidget_3.setColumnWidth(4, 150)
-            self.ui.tableWidget_3.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
+            self.ui.tableWidget_3.setColumnWidth(5, 30)
+            self.ui.tableWidget_3.setColumnWidth(6, 30)
+            self.ui.tableWidget_3.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_crl()')
             logs('Error: tab_crl()', 'errors')
@@ -1103,32 +1127,46 @@ class MainWindow(QMainWindow):
             brush.setStyle(Qt.SolidPattern)
             for row in query:
                 self.ui.tableWidget_4.setItem(count, 0, QTableWidgetItem(str(row.Name)))
-                self.ui.tableWidget_4.setItem(count, 1, QTableWidgetItem(str(row.INN)))
-                self.ui.tableWidget_4.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
-                self.ui.tableWidget_4.setItem(count, 3, QTableWidgetItem(str(row.KeyId)))
-                self.ui.tableWidget_4.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
-                self.ui.tableWidget_4.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
-                self.ui.tableWidget_4.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+                self.ui.tableWidget_4.setItem(count, 1, QTableWidgetItem(str(row.OGRN)))
+                self.ui.tableWidget_4.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
+                self.ui.tableWidget_4.setItem(count, 3, QTableWidgetItem(str(row.UrlCRL)))
+                self.ui.tableWidget_4.setItem(count, 4, QTableWidgetItem(str(row.last_download)))
+                self.ui.tableWidget_4.setItem(count, 5, QTableWidgetItem(str(row.last_update)))
+
                 if row.status == 'Info: Filetype good':
-                    self.ui.tableWidget_4.setItem(count, 7, QTableWidgetItem('Dwn'))
+                    icon_file = 'assists/72/white_list.png'
+                    status_item = QTableWidgetItem()
+                    status_icon = QIcon()
+                    status_icon.addPixmap(QPixmap(icon_file), QIcon.Normal, QIcon.Off)
+                    status_item.setIcon(status_icon)
+                    self.ui.tableWidget_4.setItem(count, 6, status_item)
                 else:
-                    self.ui.tableWidget_4.setItem(count, 7, QTableWidgetItem('Err'))
+                    icon_file_2 = 'assists/72/black_list.png'
+                    status_item_2 = QTableWidgetItem()
+                    status_icon_2 = QIcon()
+                    status_icon_2.addPixmap(QPixmap(icon_file_2), QIcon.Normal, QIcon.Off)
+                    status_item_2.setIcon(status_icon_2)
+                    self.ui.tableWidget_4.setItem(count, 6, status_item_2)
 
                 button_delete_watch = QPushButton()
-                button_delete_watch.setFixedSize(100, 30)
-                button_delete_watch.setText("Убрать")
+                button_delete_watch.setFixedSize(30, 30)
+                # button_delete_watch.setText("Убрать")
+                icon6 = QIcon()
+                icon6.addFile(u"assists/72/import.png", QSize(), QIcon.Normal, QIcon.Off)
+                button_delete_watch.setIcon(icon6)
+                button_delete_watch.setFlat(True)
                 id_row = row.ID
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
-                self.ui.tableWidget_4.setCellWidget(count, 8, button_delete_watch)
+                self.ui.tableWidget_4.setCellWidget(count, 7, button_delete_watch)
                 count = count + 1
-            self.ui.tableWidget_4.setColumnWidth(1, 150)
+            self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.tableWidget_4.setColumnWidth(1, 100)
-            self.ui.tableWidget_4.setColumnWidth(2, 100)
+            self.ui.tableWidget_4.setColumnWidth(2, 150)
             self.ui.tableWidget_4.setColumnWidth(3, 150)
             self.ui.tableWidget_4.setColumnWidth(4, 150)
             self.ui.tableWidget_4.setColumnWidth(5, 150)
-            self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
-            self.ui.tableWidget_4.setColumnWidth(7, 20)
+            self.ui.tableWidget_4.setColumnWidth(6, 30)
+            self.ui.tableWidget_4.setColumnWidth(7, 30)
         except Exception:
             print('Error: sub_tab_watching_crl()')
             logs('Error: sub_tab_watching_crl()', 'errors')
@@ -1161,33 +1199,48 @@ class MainWindow(QMainWindow):
             count = 0
             for row in query:
                 self.ui.tableWidget_5.setItem(count, 0, QTableWidgetItem(str(row.Name)))
-                self.ui.tableWidget_5.setItem(count, 1, QTableWidgetItem(str(row.INN)))
-                self.ui.tableWidget_5.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
-                self.ui.tableWidget_5.setItem(count, 3, QTableWidgetItem(str(row.KeyId)))
-                self.ui.tableWidget_5.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
-                self.ui.tableWidget_5.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
-                self.ui.tableWidget_5.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+                self.ui.tableWidget_5.setItem(count, 1, QTableWidgetItem(str(row.OGRN)))
+                self.ui.tableWidget_5.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
+                self.ui.tableWidget_5.setItem(count, 3, QTableWidgetItem(str(row.UrlCRL)))
+                self.ui.tableWidget_5.setItem(count, 4, QTableWidgetItem(str(row.last_download)))
+                self.ui.tableWidget_5.setItem(count, 5, QTableWidgetItem(str(row.next_update)))
+
                 if row.status == 'Info: Filetype good':
-                    self.ui.tableWidget_5.setItem(count, 7, QTableWidgetItem('Dwn'))
+                    icon_file = 'assists/72/white_list.png'
+                    status_item = QTableWidgetItem()
+                    status_icon = QIcon()
+                    status_icon.addPixmap(QPixmap(icon_file), QIcon.Normal, QIcon.Off)
+                    status_item.setIcon(status_icon)
+                    self.ui.tableWidget_5.setItem(count, 6, status_item)
                 else:
-                    self.ui.tableWidget_5.setItem(count, 7, QTableWidgetItem('Err'))
+                    icon_file_2 = 'assists/72/black_list.png'
+                    status_item_2 = QTableWidgetItem()
+                    status_icon_2 = QIcon()
+                    status_icon_2.addPixmap(QPixmap(icon_file_2), QIcon.Normal, QIcon.Off)
+                    status_item_2.setIcon(status_icon_2)
+                    self.ui.tableWidget_5.setItem(count, 6, status_item_2)
 
                 button_delete_watch = QPushButton()
-                button_delete_watch.setFixedSize(100, 30)
-                button_delete_watch.setText("Убрать")
+                button_delete_watch.setFixedSize(30, 30)
+                # button_delete_watch.setText("Убрать")
+                icon7 = QIcon()
+                icon7.addFile(u"assists/72/import.png", QSize(), QIcon.Normal, QIcon.Off)
+                button_delete_watch.setIcon(icon7)
+                button_delete_watch.setFlat(True)
                 # id = row.ID
                 # button_delete_watch.pressed.connect(lambda i=id: self.delete_watching(i))
-                self.ui.tableWidget_5.setCellWidget(count, 8, button_delete_watch)
+                self.ui.tableWidget_5.setCellWidget(count, 7, button_delete_watch)
 
                 count = count + 1
 
-            self.ui.tableWidget_5.setColumnWidth(1, 150)
+            self.ui.tableWidget_5.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.tableWidget_5.setColumnWidth(1, 100)
-            self.ui.tableWidget_5.setColumnWidth(2, 100)
+            self.ui.tableWidget_5.setColumnWidth(2, 150)
             self.ui.tableWidget_5.setColumnWidth(3, 150)
             self.ui.tableWidget_5.setColumnWidth(4, 150)
-            self.ui.tableWidget_5.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
-            self.ui.tableWidget_5.setColumnWidth(7, 20)
+            self.ui.tableWidget_5.setColumnWidth(4, 150)
+            self.ui.tableWidget_5.setColumnWidth(6, 30)
+            self.ui.tableWidget_5.setColumnWidth(7, 30)
         except Exception:
             print('Error: sub_tab_watching_custom_crl()')
             logs('Error: sub_tab_watching_custom_crl()', 'errors')

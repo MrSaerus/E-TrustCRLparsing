@@ -610,8 +610,8 @@ border-color: rgb(0, 0, 0);</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_18">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <item alignment="Qt::AlignLeft|Qt::AlignTop">
+         <layout class="QHBoxLayout" name="horizontalLayout_74">
+          <item alignment="Qt::AlignLeft">
            <widget class="QFrame" name="frame_4">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -639,6 +639,12 @@ border-color: rgb(0, 0, 0);</string>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <widget class="QLineEdit" name="lineEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
@@ -665,6 +671,37 @@ border-color: rgb(0, 0, 0);</string>
             </layout>
            </widget>
           </item>
+          <item>
+           <widget class="QFrame" name="frame_30">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item alignment="Qt::AlignRight">
+              <widget class="QLabel" name="label_20">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -674,7 +711,7 @@ border-color: rgb(0, 0, 0);</string>
           </property>
           <column>
            <property name="text">
-            <string>Р/Н</string>
+            <string>Название</string>
            </property>
           </column>
           <column>
@@ -685,11 +722,6 @@ border-color: rgb(0, 0, 0);</string>
           <column>
            <property name="text">
             <string>ОГРН</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Название</string>
            </property>
           </column>
           <column>
@@ -707,8 +739,8 @@ border-color: rgb(0, 0, 0);</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_23">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_9">
-          <item alignment="Qt::AlignLeft|Qt::AlignTop">
+         <layout class="QHBoxLayout" name="horizontalLayout_75">
+          <item alignment="Qt::AlignLeft">
            <widget class="QFrame" name="frame_5">
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -736,6 +768,12 @@ border-color: rgb(0, 0, 0);</string>
               <layout class="QHBoxLayout" name="horizontalLayout_8">
                <item>
                 <widget class="QLineEdit" name="lineEdit_2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
@@ -756,6 +794,37 @@ border-color: rgb(0, 0, 0);</string>
             </layout>
            </widget>
           </item>
+          <item alignment="Qt::AlignRight">
+           <widget class="QFrame" name="frame_31">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_76">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item alignment="Qt::AlignLeft">
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -763,11 +832,6 @@ border-color: rgb(0, 0, 0);</string>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
-          <column>
-           <property name="text">
-            <string>Р/Н</string>
-           </property>
-          </column>
           <column>
            <property name="text">
             <string>Название</string>
@@ -808,7 +872,7 @@ border-color: rgb(0, 0, 0);</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_22">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_24">
+         <layout class="QHBoxLayout" name="horizontalLayout_77">
           <item alignment="Qt::AlignLeft">
            <widget class="QFrame" name="frame_6">
             <property name="frameShape">
@@ -837,6 +901,12 @@ border-color: rgb(0, 0, 0);</string>
               <layout class="QHBoxLayout" name="horizontalLayout_9">
                <item>
                 <widget class="QLineEdit" name="lineEdit_3">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
@@ -857,6 +927,37 @@ border-color: rgb(0, 0, 0);</string>
             </layout>
            </widget>
           </item>
+          <item alignment="Qt::AlignRight">
+           <widget class="QFrame" name="frame_32">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_78">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_24">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -864,11 +965,6 @@ border-color: rgb(0, 0, 0);</string>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
-          <column>
-           <property name="text">
-            <string>Р/Н</string>
-           </property>
-          </column>
           <column>
            <property name="text">
             <string>Название</string>
@@ -1032,12 +1128,7 @@ border-color: rgb(0, 0, 0);</string>
               </property>
               <column>
                <property name="text">
-                <string>Name</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>ИНН</string>
+                <string>Название</string>
                </property>
               </column>
               <column>
@@ -1052,17 +1143,17 @@ border-color: rgb(0, 0, 0);</string>
               </column>
               <column>
                <property name="text">
-                <string>Отпечаток</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Серийный номер</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
                 <string>Адрес CRL</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Последнее скачивание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Cледующее обновление</string>
                </property>
               </column>
               <column>
@@ -1198,12 +1289,7 @@ border-color: rgb(0, 0, 0);</string>
               </property>
               <column>
                <property name="text">
-                <string>Name</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>ИНН</string>
+                <string>Название</string>
                </property>
               </column>
               <column>
@@ -1218,17 +1304,17 @@ border-color: rgb(0, 0, 0);</string>
               </column>
               <column>
                <property name="text">
-                <string>Отпечаток</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Серийный номер</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
                 <string>Адрес CRL</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Последнее скачивание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Cледующее обновление</string>
                </property>
               </column>
               <column>
@@ -1309,12 +1395,7 @@ border-color: rgb(0, 0, 0);</string>
               </property>
               <column>
                <property name="text">
-                <string>Name</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>ИНН</string>
+                <string>Название</string>
                </property>
               </column>
               <column>
