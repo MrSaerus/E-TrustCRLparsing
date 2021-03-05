@@ -2020,67 +2020,74 @@ class AddCRLWindow(QWidget):
 
     def query_fields(self):
         try:
-            if WatchingCRL.select().where(WatchingCRL.KeyId == self.ui_add.lineEdit_3.text()
-                                          or WatchingCRL.Stamp == self.ui_add.lineEdit_8.text()
-                                          or WatchingCRL.SerialNumber == self.ui_add.lineEdit_4.text()
-                                          or WatchingCRL.UrlCRL == self.ui_add.lineEdit_9.text()).count() > 0:
-                print('Info: CRL is exists in WatchingCRL')
-                logs('Info: CRL is exists in WatchingCRL')
-                self.ui_add.label_10.setText('CRL уже есть в основном списке отслеживания')
-            elif WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == self.ui_add.lineEdit_3.text()
-                                                  or WatchingCustomCRL.Stamp == self.ui_add.lineEdit_8.text()
-                                                  or WatchingCustomCRL.SerialNumber == self.ui_add.lineEdit_4.text()
-                                                  or WatchingCustomCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
-                    .count() > 0:
-                print('Info: CRL is exist in WatchingCustomCRL')
-                logs('Info: CRL is exist in WatchingCustomCRL')
-                self.ui_add.label_10.setText('CRL уже есть в своем списке отслеживания')
-            elif WatchingDeletedCRL.select().where(WatchingDeletedCRL.KeyId == self.ui_add.lineEdit_3.text()
-                                                   or WatchingDeletedCRL.Stamp == self.ui_add.lineEdit_8.text()
-                                                   or WatchingDeletedCRL.SerialNumber == self.ui_add.lineEdit_4.text()
-                                                   or WatchingDeletedCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
-                    .count() > 0:
-                print('Info: CRL is exist in WatchingDeletedCRL')
-                logs('Info: CRL is exist in WatchingDeletedCRL')
-                self.ui_add.label_10.setText('CRL уже есть в удаленных, или удалите полностью или верните обратно')
-            else:
-                name = self.ui_add.lineEdit_6.text()
-                inn = self.ui_add.lineEdit_7.text()
-                ogrn = self.ui_add.lineEdit_2.text()
-                key_id = self.ui_add.lineEdit_3.text()
-                stamp = self.ui_add.lineEdit_8.text()
-                serial_number = self.ui_add.lineEdit_4.text()
-                url_crl = self.ui_add.lineEdit_9.text()
-                if name == '' or inn == '' or ogrn == '' or key_id == '' or stamp == '' or serial_number == '' or url_crl == '':
-                    print('Заполните все поля')
-                    print('Info: The fields should not be empty')
-                    logs('Info: The fields should not be empty')
-                    self.ui_add.label_10.setText('Заполните все поля')
+            if CERT.select().where(CERT.KeyId == self.ui_add.lineEdit_3.text()
+                                   or CERT.Stamp == self.ui_add.lineEdit_8.text()
+                                   or CERT.SerialNumber == self.ui_add.lineEdit_4.text()).count() > 0:
+                if WatchingCRL.select().where(WatchingCRL.KeyId == self.ui_add.lineEdit_3.text()
+                                              or WatchingCRL.Stamp == self.ui_add.lineEdit_8.text()
+                                              or WatchingCRL.SerialNumber == self.ui_add.lineEdit_4.text()
+                                              or WatchingCRL.UrlCRL == self.ui_add.lineEdit_9.text()).count() > 0:
+                    print('Info: CRL is exists in WatchingCRL')
+                    logs('Info: CRL is exists in WatchingCRL')
+                    self.ui_add.label_10.setText('CRL уже есть в основном списке отслеживания')
+                elif WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == self.ui_add.lineEdit_3.text()
+                                                      or WatchingCustomCRL.Stamp == self.ui_add.lineEdit_8.text()
+                                                      or WatchingCustomCRL.SerialNumber == self.ui_add.lineEdit_4.text()
+                                                      or WatchingCustomCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
+                        .count() > 0:
+                    print('Info: CRL is exist in WatchingCustomCRL')
+                    logs('Info: CRL is exist in WatchingCustomCRL')
+                    self.ui_add.label_10.setText('CRL уже есть в своем списке отслеживания')
+                elif WatchingDeletedCRL.select().where(WatchingDeletedCRL.KeyId == self.ui_add.lineEdit_3.text()
+                                                       or WatchingDeletedCRL.Stamp == self.ui_add.lineEdit_8.text()
+                                                       or WatchingDeletedCRL.SerialNumber == self.ui_add.lineEdit_4.text()
+                                                       or WatchingDeletedCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
+                        .count() > 0:
+                    print('Info: CRL is exist in WatchingDeletedCRL')
+                    logs('Info: CRL is exist in WatchingDeletedCRL')
+                    self.ui_add.label_10.setText('CRL уже есть в удаленных, или удалите полностью или верните обратно')
                 else:
-                    query = WatchingCustomCRL(Name=name,
-                                              INN=inn,
-                                              OGRN=ogrn,
-                                              KeyId=key_id,
-                                              Stamp=stamp,
-                                              SerialNumber=serial_number,
-                                              UrlCRL=url_crl,
-                                              status='Unknown',
-                                              download_status='Unknown',
-                                              download_count='0',
-                                              last_download='1970-01-01 00:00:00',
-                                              last_update='1970-01-01 00:00:00',
-                                              next_update='1970-01-01 00:00:00')
-                    query.save()
-                    download_file(url_crl,
-                                  key_id + '.crl',
-                                  config['Folders']['crls'],
-                                  'custome',
-                                  str(query.ID),
-                                  set_dd='Yes')
-                    check_custom_crl(query.ID, name, key_id)
-                    print('Info: CRL added in WatchingCustomCRL')
-                    logs('Info: CRL added in WatchingCustomCRL')
-                    self.ui_add.label_10.setText('CRL "' + name + '" добавлен в список отслеживания')
+                    name = self.ui_add.lineEdit_6.text()
+                    inn = self.ui_add.lineEdit_7.text()
+                    ogrn = self.ui_add.lineEdit_2.text()
+                    key_id = self.ui_add.lineEdit_3.text()
+                    stamp = self.ui_add.lineEdit_8.text()
+                    serial_number = self.ui_add.lineEdit_4.text()
+                    url_crl = self.ui_add.lineEdit_9.text()
+                    if name == '' or inn == '' or ogrn == '' or key_id == '' or stamp == '' or serial_number == '' or url_crl == '':
+                        print('Заполните все поля')
+                        print('Info: The fields should not be empty')
+                        logs('Info: The fields should not be empty')
+                        self.ui_add.label_10.setText('Заполните все поля')
+                    else:
+                        query = WatchingCustomCRL(Name=name,
+                                                  INN=inn,
+                                                  OGRN=ogrn,
+                                                  KeyId=key_id,
+                                                  Stamp=stamp,
+                                                  SerialNumber=serial_number,
+                                                  UrlCRL=url_crl,
+                                                  status='Unknown',
+                                                  download_status='Unknown',
+                                                  download_count='0',
+                                                  last_download='1970-01-01 00:00:00',
+                                                  last_update='1970-01-01 00:00:00',
+                                                  next_update='1970-01-01 00:00:00')
+                        query.save()
+                        download_file(url_crl,
+                                      key_id + '.crl',
+                                      config['Folders']['crls'],
+                                      'custome',
+                                      str(query.ID),
+                                      set_dd='Yes')
+                        check_custom_crl(query.ID, name, key_id)
+                        print('Info: CRL added in WatchingCustomCRL')
+                        logs('Info: CRL added in WatchingCustomCRL')
+                        self.ui_add.label_10.setText('CRL "' + name + '" добавлен в список отслеживания')
+            else:
+                print('Info: Cert not found')
+                logs('Info: Cert not found')
+                self.ui_add.label_10.setText('Не найден квалифицированный сертификат УЦ')
         except Exception:
             print('Error: AddCRLWindow()::query_fields()', 'errors')
             logs('Error: AddCRLWindow()::query_fields()', 'errors')
