@@ -5,6 +5,14 @@
   <property name="enabled">
    <bool>true</bool>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>850</width>
+    <height>270</height>
+   </rect>
+  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
@@ -13,26 +21,26 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>800</width>
-    <height>300</height>
+    <width>850</width>
+    <height>270</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
-    <height>300</height>
+    <width>850</width>
+    <height>270</height>
    </size>
   </property>
   <property name="sizeIncrement">
    <size>
-    <width>800</width>
-    <height>300</height>
+    <width>850</width>
+    <height>270</height>
    </size>
   </property>
   <property name="baseSize">
    <size>
-    <width>800</width>
-    <height>300</height>
+    <width>850</width>
+    <height>270</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -93,7 +101,7 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>385</width>
+                <width>410</width>
                 <height>0</height>
                </size>
               </property>
@@ -148,13 +156,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -181,13 +189,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -218,13 +226,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -251,13 +259,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -292,13 +300,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -325,13 +333,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -362,13 +370,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -381,7 +389,7 @@
            <item>
             <widget class="QLabel" name="label_9">
              <property name="text">
-              <string>TextLabel</string>
+              <string>Рег номер:</string>
              </property>
             </widget>
            </item>
@@ -395,13 +403,13 @@
              </property>
              <property name="minimumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>250</width>
+               <width>270</width>
                <height>16777215</height>
               </size>
              </property>
@@ -415,12 +423,71 @@
      </item>
     </layout>
    </item>
-   <item alignment="Qt::AlignRight">
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="text">
-      <string>Добавить</string>
-     </property>
-    </widget>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <item alignment="Qt::AlignBottom">
+      <widget class="QFrame" name="frame_3">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_12">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item alignment="Qt::AlignLeft">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>:</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignRight|Qt::AlignBottom">
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'sub_main_addBrUchA.ui'
+## Form generated from reading UI file 'sub_main_addtowsql.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -21,15 +21,16 @@ class Ui_Form_add(object):
         if Form_add.objectName():
             Form_add.setObjectName(u"Form_add")
         Form_add.setEnabled(True)
+        Form_add.resize(850, 270)
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form_add.sizePolicy().hasHeightForWidth())
         Form_add.setSizePolicy(sizePolicy)
-        Form_add.setMinimumSize(QSize(800, 300))
-        Form_add.setMaximumSize(QSize(800, 300))
-        Form_add.setSizeIncrement(QSize(800, 300))
-        Form_add.setBaseSize(QSize(800, 300))
+        Form_add.setMinimumSize(QSize(850, 270))
+        Form_add.setMaximumSize(QSize(850, 270))
+        Form_add.setSizeIncrement(QSize(850, 270))
+        Form_add.setBaseSize(QSize(850, 270))
         self.verticalLayout_2 = QVBoxLayout(Form_add)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
@@ -73,7 +74,7 @@ class Ui_Form_add(object):
         self.comboBox.setObjectName(u"comboBox")
         sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
         self.comboBox.setSizePolicy(sizePolicy)
-        self.comboBox.setMinimumSize(QSize(385, 0))
+        self.comboBox.setMinimumSize(QSize(410, 0))
 
         self.horizontalLayout.addWidget(self.comboBox)
 
@@ -112,8 +113,8 @@ class Ui_Form_add(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.lineEdit_6.sizePolicy().hasHeightForWidth())
         self.lineEdit_6.setSizePolicy(sizePolicy1)
-        self.lineEdit_6.setMinimumSize(QSize(250, 0))
-        self.lineEdit_6.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_6.setMinimumSize(QSize(270, 0))
+        self.lineEdit_6.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_5.addWidget(self.lineEdit_6)
 
@@ -131,8 +132,8 @@ class Ui_Form_add(object):
         self.lineEdit_7.setObjectName(u"lineEdit_7")
         sizePolicy1.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
         self.lineEdit_7.setSizePolicy(sizePolicy1)
-        self.lineEdit_7.setMinimumSize(QSize(250, 0))
-        self.lineEdit_7.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_7.setMinimumSize(QSize(270, 0))
+        self.lineEdit_7.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_6.addWidget(self.lineEdit_7)
 
@@ -155,8 +156,8 @@ class Ui_Form_add(object):
         self.lineEdit_2.setObjectName(u"lineEdit_2")
         sizePolicy1.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
         self.lineEdit_2.setSizePolicy(sizePolicy1)
-        self.lineEdit_2.setMinimumSize(QSize(250, 0))
-        self.lineEdit_2.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_2.setMinimumSize(QSize(270, 0))
+        self.lineEdit_2.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_13.addWidget(self.lineEdit_2)
 
@@ -174,8 +175,8 @@ class Ui_Form_add(object):
         self.lineEdit_3.setObjectName(u"lineEdit_3")
         sizePolicy1.setHeightForWidth(self.lineEdit_3.sizePolicy().hasHeightForWidth())
         self.lineEdit_3.setSizePolicy(sizePolicy1)
-        self.lineEdit_3.setMinimumSize(QSize(250, 0))
-        self.lineEdit_3.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_3.setMinimumSize(QSize(270, 0))
+        self.lineEdit_3.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_7.addWidget(self.lineEdit_3)
 
@@ -203,8 +204,8 @@ class Ui_Form_add(object):
         self.lineEdit_8.setObjectName(u"lineEdit_8")
         sizePolicy1.setHeightForWidth(self.lineEdit_8.sizePolicy().hasHeightForWidth())
         self.lineEdit_8.setSizePolicy(sizePolicy1)
-        self.lineEdit_8.setMinimumSize(QSize(250, 0))
-        self.lineEdit_8.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_8.setMinimumSize(QSize(270, 0))
+        self.lineEdit_8.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_9.addWidget(self.lineEdit_8)
 
@@ -222,8 +223,8 @@ class Ui_Form_add(object):
         self.lineEdit_9.setObjectName(u"lineEdit_9")
         sizePolicy1.setHeightForWidth(self.lineEdit_9.sizePolicy().hasHeightForWidth())
         self.lineEdit_9.setSizePolicy(sizePolicy1)
-        self.lineEdit_9.setMinimumSize(QSize(250, 0))
-        self.lineEdit_9.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_9.setMinimumSize(QSize(270, 0))
+        self.lineEdit_9.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_14.addWidget(self.lineEdit_9)
 
@@ -246,8 +247,8 @@ class Ui_Form_add(object):
         self.lineEdit_4.setObjectName(u"lineEdit_4")
         sizePolicy1.setHeightForWidth(self.lineEdit_4.sizePolicy().hasHeightForWidth())
         self.lineEdit_4.setSizePolicy(sizePolicy1)
-        self.lineEdit_4.setMinimumSize(QSize(250, 0))
-        self.lineEdit_4.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_4.setMinimumSize(QSize(270, 0))
+        self.lineEdit_4.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_10.addWidget(self.lineEdit_4)
 
@@ -265,8 +266,8 @@ class Ui_Form_add(object):
         self.lineEdit_5.setObjectName(u"lineEdit_5")
         sizePolicy1.setHeightForWidth(self.lineEdit_5.sizePolicy().hasHeightForWidth())
         self.lineEdit_5.setSizePolicy(sizePolicy1)
-        self.lineEdit_5.setMinimumSize(QSize(250, 0))
-        self.lineEdit_5.setMaximumSize(QSize(250, 16777215))
+        self.lineEdit_5.setMinimumSize(QSize(270, 0))
+        self.lineEdit_5.setMaximumSize(QSize(270, 16777215))
 
         self.horizontalLayout_11.addWidget(self.lineEdit_5)
 
@@ -282,10 +283,40 @@ class Ui_Form_add(object):
 
         self.verticalLayout_2.addLayout(self.verticalLayout)
 
-        self.pushButton_2 = QPushButton(Form_add)
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.frame_3 = QFrame(Form_add)
+        self.frame_3.setObjectName(u"frame_3")
+        self.frame_3.setFrameShape(QFrame.NoFrame)
+        self.frame_3.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_12 = QHBoxLayout(self.frame_3)
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.horizontalLayout_12.setContentsMargins(0, 0, 0, 0)
+        self.label_10 = QLabel(self.frame_3)
+        self.label_10.setObjectName(u"label_10")
+
+        self.horizontalLayout_12.addWidget(self.label_10, 0, Qt.AlignLeft)
+
+
+        self.horizontalLayout_8.addWidget(self.frame_3, 0, Qt.AlignBottom)
+
+        self.frame_2 = QFrame(Form_add)
+        self.frame_2.setObjectName(u"frame_2")
+        self.frame_2.setFrameShape(QFrame.NoFrame)
+        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_8 = QVBoxLayout(self.frame_2)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.pushButton_2 = QPushButton(self.frame_2)
         self.pushButton_2.setObjectName(u"pushButton_2")
 
-        self.verticalLayout_2.addWidget(self.pushButton_2, 0, Qt.AlignRight)
+        self.verticalLayout_8.addWidget(self.pushButton_2)
+
+
+        self.horizontalLayout_8.addWidget(self.frame_2, 0, Qt.AlignRight|Qt.AlignBottom)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_8)
 
 
         self.retranslateUi(Form_add)
@@ -304,7 +335,8 @@ class Ui_Form_add(object):
         self.label_4.setText(QCoreApplication.translate("Form_add", u"\u041e\u0442\u043f\u0435\u0447\u0430\u0442\u043e\u043a: ", None))
         self.label_5.setText(QCoreApplication.translate("Form_add", u"\u0410\u0434\u0440\u0435\u0441 CRL: ", None))
         self.label_8.setText(QCoreApplication.translate("Form_add", u"\u0421\u0435\u0440\u0438\u0439\u043d\u044b\u0439 \u043d\u043e\u043c\u0435\u0440: ", None))
-        self.label_9.setText(QCoreApplication.translate("Form_add", u"TextLabel", None))
+        self.label_9.setText(QCoreApplication.translate("Form_add", u"\u0420\u0435\u0433 \u043d\u043e\u043c\u0435\u0440:", None))
+        self.label_10.setText(QCoreApplication.translate("Form_add", u":", None))
         self.pushButton_2.setText(QCoreApplication.translate("Form_add", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
     # retranslateUi
 
