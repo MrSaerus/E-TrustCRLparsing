@@ -1428,11 +1428,6 @@ border-color: rgb(0, 0, 0);</string>
                 <string/>
                </property>
               </column>
-              <column>
-               <property name="text">
-                <string/>
-               </property>
-              </column>
              </widget>
             </item>
            </layout>

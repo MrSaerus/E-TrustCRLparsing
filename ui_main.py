@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainnKfpPJ.ui'
+## Form generated from reading UI file 'mainAohRrh.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -818,8 +818,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_19.addLayout(self.verticalLayout_27)
 
         self.tableWidget_6 = QTableWidget(self.tab_9)
-        if (self.tableWidget_6.columnCount() < 8):
-            self.tableWidget_6.setColumnCount(8)
+        if (self.tableWidget_6.columnCount() < 7):
+            self.tableWidget_6.setColumnCount(7)
         __qtablewidgetitem41 = QTableWidgetItem()
         self.tableWidget_6.setHorizontalHeaderItem(0, __qtablewidgetitem41)
         __qtablewidgetitem42 = QTableWidgetItem()
@@ -834,8 +834,6 @@ class Ui_MainWindow(object):
         self.tableWidget_6.setHorizontalHeaderItem(5, __qtablewidgetitem46)
         __qtablewidgetitem47 = QTableWidgetItem()
         self.tableWidget_6.setHorizontalHeaderItem(6, __qtablewidgetitem47)
-        __qtablewidgetitem48 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(7, __qtablewidgetitem48)
         self.tableWidget_6.setObjectName(u"tableWidget_6")
         self.tableWidget_6.setSortingEnabled(True)
 

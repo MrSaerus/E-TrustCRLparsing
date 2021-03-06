@@ -881,8 +881,8 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_4.textChanged[str].connect(self.sub_tab_watching_crl)
         self.sub_tab_watching_custom_crl()
         self.ui.lineEdit_5.textChanged[str].connect(self.sub_tab_watching_custom_crl)
-        self.sub_tab_watching_off_crl()
-        self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_off_crl)
+        self.sub_tab_watching_disabled_crl()
+        self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_disabled_crl)
 
     def tab_info(self):
         try:
@@ -1103,7 +1103,7 @@ class MainWindow(QMainWindow):
                 button_add_to_watch.setFixedSize(30, 30)
                 # button_add_to_watch.setText("Отслеживать")
                 icon5 = QIcon()
-                icon5.addFile(u"assists/72/export.png", QSize(), QIcon.Normal, QIcon.Off)
+                icon5.addFile(u"assists/72/import.png", QSize(), QIcon.Normal, QIcon.Off)
                 button_add_to_watch.setIcon(icon5)
                 button_add_to_watch.setFlat(True)
                 rb = row.Registration_Number
@@ -1193,7 +1193,7 @@ class MainWindow(QMainWindow):
                 button_delete_watch.setFixedSize(30, 30)
                 # button_delete_watch.setText("Убрать")
                 icon6 = QIcon()
-                icon6.addFile(u"assists/72/import.png", QSize(), QIcon.Normal, QIcon.Off)
+                icon6.addFile(u"assists/72/export.png", QSize(), QIcon.Normal, QIcon.Off)
                 button_delete_watch.setIcon(icon6)
                 button_delete_watch.setFlat(True)
                 id_row = row.ID
@@ -1265,11 +1265,11 @@ class MainWindow(QMainWindow):
                 button_delete_watch.setFixedSize(30, 30)
                 # button_delete_watch.setText("Убрать")
                 icon7 = QIcon()
-                icon7.addFile(u"assists/72/import.png", QSize(), QIcon.Normal, QIcon.Off)
+                icon7.addFile(u"assists/72/export.png", QSize(), QIcon.Normal, QIcon.Off)
                 button_delete_watch.setIcon(icon7)
                 button_delete_watch.setFlat(True)
-                # id = row.ID
-                # button_delete_watch.pressed.connect(lambda i=id: self.delete_watching(i))
+                id_row = row.ID
+                button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'custom'))
                 self.ui.tableWidget_5.setCellWidget(count, 7, button_delete_watch)
 
                 count = count + 1
@@ -1280,13 +1280,14 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_5.setColumnWidth(3, 150)
             self.ui.tableWidget_5.setColumnWidth(4, 150)
             self.ui.tableWidget_5.setColumnWidth(4, 150)
+            self.ui.tableWidget_5.setColumnWidth(5, 150)
             self.ui.tableWidget_5.setColumnWidth(6, 30)
             self.ui.tableWidget_5.setColumnWidth(7, 30)
         except Exception:
             print('Error: sub_tab_watching_custom_crl()')
             logs('Error: sub_tab_watching_custom_crl()', 'errors')
 
-    def sub_tab_watching_off_crl(self, text=''):
+    def sub_tab_watching_disabled_crl(self, text=''):
         try:
             self.ui.label_8.setText('Ищем: ' + text)
             self.ui.label_8.adjustSize()
@@ -1313,27 +1314,28 @@ class MainWindow(QMainWindow):
             count = 0
             for row in query:
                 self.ui.tableWidget_6.setItem(count, 0, QTableWidgetItem(str(row.Name)))
-                self.ui.tableWidget_6.setItem(count, 1, QTableWidgetItem(str(row.INN)))
-                self.ui.tableWidget_6.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
-                self.ui.tableWidget_6.setItem(count, 3, QTableWidgetItem(str(row.KeyId)))
-                self.ui.tableWidget_6.setItem(count, 4, QTableWidgetItem(str(row.Stamp)))
-                self.ui.tableWidget_6.setItem(count, 5, QTableWidgetItem(str(row.SerialNumber)))
-                self.ui.tableWidget_6.setItem(count, 6, QTableWidgetItem(str(row.UrlCRL)))
+                self.ui.tableWidget_6.setItem(count, 1, QTableWidgetItem(str(row.OGRN)))
+                self.ui.tableWidget_6.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
+                self.ui.tableWidget_6.setItem(count, 3, QTableWidgetItem(str(row.Stamp)))
+                self.ui.tableWidget_6.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
+                self.ui.tableWidget_6.setItem(count, 5, QTableWidgetItem(str(row.UrlCRL)))
 
-                # buttonDeleteWatch = QPushButton()
-                # buttonDeleteWatch.setFixedSize(100, 30)
-                # buttonDeleteWatch.setText("Удалить")
-                # self.tableWidgetDeletedWatchingCRL.setCellWidget(count, 7, buttonDeleteWatch)
-                #
+                buttonReturnWatch = QPushButton()
+                buttonReturnWatch.setFixedSize(30, 30)
+                icon8 = QIcon()
+                icon8.addFile(u"assists/72/import.png", QSize(), QIcon.Normal, QIcon.Off)
+                buttonReturnWatch.setIcon(icon8)
+                buttonReturnWatch.setFlat(True)
+                self.ui.tableWidget_6.setCellWidget(count, 6, buttonReturnWatch)
                 count = count + 1
 
-            self.ui.tableWidget_6.setColumnWidth(1, 150)
             self.ui.tableWidget_6.setColumnWidth(1, 100)
-            self.ui.tableWidget_6.setColumnWidth(2, 100)
+            self.ui.tableWidget_6.setColumnWidth(2, 150)
             self.ui.tableWidget_6.setColumnWidth(3, 150)
             self.ui.tableWidget_6.setColumnWidth(4, 150)
             self.ui.tableWidget_6.setColumnWidth(5, 150)
-            self.ui.tableWidget_6.horizontalHeader().setSectionResizeMode(6, QHeaderView.Stretch)
+            self.ui.tableWidget_6.setColumnWidth(6, 30)
+            self.ui.tableWidget_6.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: sub_tab_watching_off_crl()')
             logs('Error: sub_tab_watching_off_crl()', 'errors')
@@ -1852,17 +1854,42 @@ class MainWindow(QMainWindow):
                                                KeyId=row.KeyId,
                                                Stamp=row.Stamp,
                                                SerialNumber=row.SerialNumber,
-                                               UrlCRL=row.UrlCRL)
+                                               UrlCRL=row.UrlCRL,
+                                               status=row.status,
+                                               download_status=row.download_status,
+                                               download_count=row.download_count,
+                                               last_download=row.last_download,
+                                               last_update=row.last_update,
+                                               next_update=row.next_update)
                     to_bd.save()
                 WatchingCRL.delete_by_id(id_var)
-                self.on_changed_find_watching_crl()
-                self.on_changed_find_deleted_watching_crl()
+                self.sub_tab_watching_crl()
+                print('Info: move_watching_to_passed()::moving_success_current:')
+                logs('Info: move_watching_to_passed()::moving_success_current:')
             elif from_var == 'custom':
+                from_bd = WatchingCustomCRL.select().where(WatchingCustomCRL.ID == id_var)
+                for row in from_bd:
+                    to_bd = WatchingDeletedCRL(Name=row.Name,
+                                               INN=row.INN,
+                                               OGRN=row.OGRN,
+                                               KeyId=row.KeyId,
+                                               Stamp=row.Stamp,
+                                               SerialNumber=row.SerialNumber,
+                                               UrlCRL=row.UrlCRL,
+                                               status=row.status,
+                                               download_status=row.download_status,
+                                               download_count=row.download_count,
+                                               last_download=row.last_download,
+                                               last_update=row.last_update,
+                                               next_update=row.next_update)
+                    to_bd.save()
                 WatchingCustomCRL.delete_by_id(id_var)
-                self.on_changed_find_deleted_watching_crl('')
+                self.sub_tab_watching_custom_crl()
+                print('Info: move_watching_to_passed()::moving_success_custom:')
+                logs('Info: move_watching_to_passed()::moving_success_custom:')
             else:
-                print('Error: Ошибка перемещения')
-                logs('Error: add_watch_custom_cert_crl()::Error_Moving', 'errors')
+                print('Error: move_watching_to_passed()::Error_Moving')
+                logs('Error: move_watching_to_passed()::Error_Moving', 'errors')
         except Exception:
             print('Error: move_watching_to_delete()')
             logs('Error: move_watching_to_delete()', 'errors')
