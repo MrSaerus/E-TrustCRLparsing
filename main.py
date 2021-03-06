@@ -271,7 +271,7 @@ def progressbar(cur, total=100):
     percent = '{:.2%}'.format(cur / total)
     sys.stdout.write('\r')
     # sys.stdout.write("[%-50s] %s" % ('=' * int(math.floor(cur * 50 / total)),percent))
-    sys.stdout.write("[%-100s] %s" % ('=' * int(cur), percent))
+    sys.stdout.write("[%-100s] %s\n" % ('=' * int(cur), percent))
     sys.stdout.flush()
 
 
@@ -366,12 +366,22 @@ def open_file(file_name, file_type, url='None'):
         os.system(open_crl)
 
 
-def check_custom_crl(id_custom_crl, name, id_key):
+def check_custom_crl(id_custom_crl, name, id_key, url_crl=''):
+    QCoreApplication.processEvents()
     try:
         QCoreApplication.processEvents()
         issuer = {}
-        print('----------------------------------------------------')
         try:
+            if not os.path.isfile(config['Folders']['crls'] + '/' + str(id_key) + '.crl'):
+                if not download_file(url_crl,
+                                     id_key + '.crl',
+                                     config['Folders']['crls'],
+                                     'custome',
+                                     str(id_custom_crl),
+                                     'Yes') == 'down_success':
+                    print('Info: check_custom_crl()::down_error ' + name)
+                    logs('Info: check_custom_crl()::down_error ' + name)
+                    return 'down_error'
             crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
                                           open('crls/' + str(id_key) + '.crl', 'rb').read())
             crl_crypto = crl.get_issuer()
@@ -380,7 +390,7 @@ def check_custom_crl(id_custom_crl, name, id_key):
                 for var, data in crl_crypto.get_components():
                     issuer[var.decode("utf-8")] = data.decode("utf-8")
             except Exception:
-                print('Error: get_components()')
+                print('Error: check_custom_crl()::get_components()')
                 logs('Error: check_custom_crl()::get_components()', 'errors')
             query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
             for uc_data in query_uc:
@@ -394,9 +404,12 @@ def check_custom_crl(id_custom_crl, name, id_key):
                                                                 datetime.timedelta(hours=5)). \
                 where(WatchingCustomCRL.ID == id_custom_crl)
             query_update.execute()
-            print(id_custom_crl, name, cryptography.last_update, cryptography.next_update)
             issuer['INN'] = 'Unknown'
             issuer['OGRN'] = 'Unknown'
+            print('Info: check_custom_crl()::success ' + name)
+            logs('Info: check_custom_crl()::success ' + name)
+            return 'check_success'
+
         except Exception:
             query_update = WatchingCustomCRL.update(status='Warning: FILETYPE ERROR',
                                                     last_update='1970-01-01',
@@ -410,26 +423,54 @@ def check_custom_crl(id_custom_crl, name, id_key):
         logs('Error: check_custom_crl()', 'errors')
 
 
-def check_crl(id_wc, name_wc, key_id_wc):
+def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
     try:
-        print('----------------------------------------------------')
         try:
-            crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                                          open('crls/' + str(key_id_wc) + '.crl', 'rb').read())
-            cryptography = crl.to_cryptography()
-            print(cryptography.next_update)
-            query_update = WatchingCRL.update(status='Info: Filetype good',
-                                              last_update=cryptography.last_update + datetime.timedelta(hours=5),
-                                              next_update=cryptography.next_update + datetime.timedelta(hours=5)).where(
-                WatchingCRL.ID == id_wc)
-            query_update.execute()
-            print(id_wc, name_wc, cryptography.last_update, cryptography.next_update)
+            if not os.path.isfile(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl'):
+                if download_file(url_crl,
+                                     key_id_wc + '.crl',
+                                     config['Folders']['crls'],
+                                     'current',
+                                     str(id_wc),
+                                     'Yes') == 'down_success':
+                    crl = OpenSSL.crypto.load_crl(
+                        OpenSSL.crypto.FILETYPE_ASN1,
+                        open(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl', 'rb').read())
+                    cryptography = crl.to_cryptography()
+                    query_update = WatchingCRL. \
+                        update(status='Info: Filetype good',
+                               last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                               next_update=cryptography.next_update + datetime.timedelta(hours=5)).where(
+                        WatchingCRL.ID == id_wc)
+                    query_update.execute()
+                    print('Info: check_crl()::success ' + name_wc)
+                    logs('Info: check_crl()::success ' + name_wc)
+                    return 'check_success'
+                else:
+                    print('Info: check_crl()::down_error ' + name_wc)
+                    logs('Info: check_crl()::down_error ' + name_wc)
+                    return 'down_error'
+            else:
+                crl = OpenSSL.crypto.load_crl(
+                    OpenSSL.crypto.FILETYPE_ASN1,
+                    open(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl', 'rb').read())
+                cryptography = crl.to_cryptography()
+                query_update = WatchingCRL. \
+                    update(status='Info: Filetype good',
+                           last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                           next_update=cryptography.next_update + datetime.timedelta(hours=5)).where(
+                    WatchingCRL.ID == id_wc)
+                print(id_wc)
+                query_update.execute()
+                print('Info: check_crl()::success ' + name_wc)
+                logs('Info: check_crl()::success ' + name_wc)
+                return 'check_success'
         except Exception:
             query_update = WatchingCRL.update(status='Warning: FILETYPE ERROR',
                                               last_update='1970-01-01',
                                               next_update='1970-01-01').where(WatchingCRL.ID == id_wc)
             query_update.execute()
-            print('Warning: FILETYPE ERROR')
+            print('Warning: check_crl()::FILETYPE_ERROR')
             logs('Warning: check_crl()::FILETYPE_ERROR')
     except Exception:
         print('Error: check_crl()')
@@ -496,8 +537,6 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                 logs('Info: Used proxy')
             request.urlretrieve(file_url, path, schedule)
         except Exception:
-            print('\r\n' + file_url + ' download failed!' + '\r\n')
-            logs('Info: ' + file_url + ' download failed!')
             if set_dd == 'Yes':
                 if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Error: Download failed',
@@ -520,9 +559,10 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                     query_update = WatchingCustomCRL.update(download_status='Error: Download failed'
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
+            print('Info: Download failed ' + file_url)
+            logs('Info: Download failed ' + file_url)
+            return 'down_error'
         else:
-            print('\r\n' + file_url + ' download successfully!')
-            logs('Info: ' + file_url + ' download successfully!')
             if set_dd == 'Yes':
                 if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Info: Download successfully',
@@ -536,6 +576,7 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                                                             .strftime('%Y-%m-%d %H:%M:%S')
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
+                    print('Info: Download successfully', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
                 # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
             else:
                 if type_download == 'current':
@@ -546,6 +587,9 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                     query_update = WatchingCustomCRL.update(download_status='Info: Download successfully'
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
+            print('Info: Download successfully ' + file_url)
+            logs('Info: Download successfully ' + file_url)
+            return 'down_success'
     except Exception:
         print('Error: download_file()')
         logs('Error: download_file()', 'errors')
@@ -580,7 +624,7 @@ def set_value_in_property_file(file_path, section, key, value):
     configfile.close()
 
 
-class Worker(QObject):
+class MainWorker(QObject):
     try:
         threadTimerSender = pyqtSignal(str)
         threadButtonStartE = pyqtSignal(str)
@@ -593,7 +637,7 @@ class Worker(QObject):
 
         def __init__(self):
             try:
-                super(Worker, self).__init__()
+                super(MainWorker, self).__init__()
                 self._step = 0
                 self._seconds = 0
                 self._minutes = 0
@@ -907,7 +951,7 @@ class MainWindow(QMainWindow):
 
             self.thread = QThread()
             self.thread.start()
-            self.worker = Worker()
+            self.worker = MainWorker()
             self.worker.moveToThread(self.thread)
 
             self.worker.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
@@ -929,9 +973,6 @@ class MainWindow(QMainWindow):
 
     def tab_uc(self, text=''):
         try:
-            # self.ui.label_8.setText('Ищем: ' + text)
-            # self.ui.label_8.adjustSize()
-
             self.ui.pushButton_7.pressed.connect(lambda: self.ui.lineEdit.setText(''))
 
             query = UC.select().where(UC.Registration_Number.contains(text)
@@ -1074,11 +1115,11 @@ class MainWindow(QMainWindow):
                                                            keyid=ki,
                                                            stamp=st,
                                                            serial_number=sn,
-                                                           url_crl=uc: self.add_watch_cert_crl(registration_number,
-                                                                                               keyid,
-                                                                                               stamp,
-                                                                                               serial_number,
-                                                                                               url_crl))
+                                                           url_crl=uc: self.add_watch_current_crl(registration_number,
+                                                                                                  keyid,
+                                                                                                  stamp,
+                                                                                                  serial_number,
+                                                                                                  url_crl))
                 self.ui.tableWidget_3.setCellWidget(count, 6, button_add_to_watch)
 
                 count = count + 1
@@ -1369,14 +1410,20 @@ class MainWindow(QMainWindow):
             # Logs
             try:
                 self.ui.textBrowser.setText(
-                    open('logs/log_' + datetime.datetime.now().strftime('%Y%m%d') + '.log', 'r').read())
+                    open(config['Folders']['logs'] + '/log_' + datetime.datetime.now().strftime('%Y%m%d')
+                         + '.log', 'r').read())
             except Exception:
+                print('Error: init_settings()::Filed_open_log::logs/log_' + datetime.datetime.now().strftime(
+                    '%Y%m%d') + '.log')
                 logs('Error: init_settings()::Filed_open_log::logs/log_' + datetime.datetime.now().strftime(
                     '%Y%m%d') + '.log', 'errors')
             try:
                 self.ui.textBrowser_2.setText(
-                    open('logs/error_' + datetime.datetime.now().strftime('%Y%m%d') + '.log', 'r').read())
+                    open(config['Folders']['logs'] + '/error_' + datetime.datetime.now().strftime('%Y%m%d')
+                         + '.log', 'r').read())
             except Exception:
+                print('Error: init_settings()::Filed_open_log::logs/error_' + datetime.datetime.now().strftime(
+                    '%Y%m%d') + '.log')
                 logs('Error: init_settings()::Filed_open_log::logs/error_' + datetime.datetime.now().strftime(
                     '%Y%m%d') + '.log', 'errors')
 
@@ -1720,10 +1767,10 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_5.setEnabled(False)
             self.ui.label_8.setText('Проверяем основной список CRL')
             for wc in query_1:
-                check_crl(wc.ID, wc.Name, wc.KeyId)
+                check_crl(wc.ID, wc.Name, wc.KeyId, wc.UrlCRL)
             self.ui.label_8.setText('Проверяем свой список CRL')
             for wcc in query_2:
-                check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+                check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId, wcc.UrlCRL)
             self.ui.label_8.setText('Готово')
             self.ui.pushButton_5.setEnabled(True)
             # self.textBrowser.setText(open('main.log', 'rb').read().decode())
@@ -1731,11 +1778,10 @@ class MainWindow(QMainWindow):
             print('Error: check_all_crl()')
             logs('Error: check_all_crl()', 'errors')
 
-    def add_watch_cert_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
+    def add_watch_current_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
         try:
             count = WatchingCRL.select().where(WatchingCRL.Stamp.contains(stamp)
                                                | WatchingCRL.SerialNumber.contains(serial_number)).count()
-            print(count)
             if count < 1:
                 select_uc = UC.select().where(UC.Registration_Number == registration_number)
                 for row in select_uc:
@@ -1754,17 +1800,24 @@ class MainWindow(QMainWindow):
                                                       next_update='1970-01-01 00:00:00'
                                                       )
                     add_to_watching_crl.save()
-                    # self.counter_added = self.counter_added + 1
+                    self.ui.label_24.setText('Проводится проверка')
+                    if check_crl(add_to_watching_crl.ID, row.Name, keyid, url_crl) == 'down_error':
+                        print('Warning: add_watch_current_crl()::crl_added_error:down_error:' + keyid)
+                        logs('Warning: add_watch_current_crl()::crl_added_error:down_error:' + keyid)
+                        self.ui.label_24.setText('Ошибка добавления, невозможно скачать файл, проверьте источник')
+                    else:
+                        print('Info: add_watch_current_crl()::crl_added:' + keyid)
+                        logs('Info: add_watch_current_crl()::crl_added:' + keyid)
+                        self.ui.label_24.setText('CRL ' + keyid + ' добавлен в список отлеживания')
             else:
-                print('crl exist')
-                logs('Info: add_watch_cert_crl()::Crl_Exist:' + keyid)
-                # self.counter_added_exist = self.counter_added_exist + 1
-            # self.on_changed_find_watching_crl('')
+                print('Info: add_watch_current_crl()::crl_exist:' + keyid)
+                logs('Info: add_watch_current_crl()::crl_exist:' + keyid)
+                self.ui.label_24.setText('CRL ' + keyid + ' уже находится в списке отслеживания')
         except Exception:
-            print('Error: add_watch_cert_crl()')
-            logs('Error: add_watch_cert_crl()', 'errors')
+            print('Error: add_watch_current_crl()')
+            logs('Error: add_watch_current_crl()', 'errors')
 
-    def add_watch_custom_cert_crl(self, url_crl):
+    def add_watch_custom_crl(self, url_crl):
         try:
             count = WatchingCustomCRL.select().where(WatchingCustomCRL.UrlCRL.contains(url_crl)).count()
             if count < 1:
@@ -1777,14 +1830,16 @@ class MainWindow(QMainWindow):
                                                         UrlCRL=url_crl)
                 add_to_watching_crl.save()
                 self.counter_added_custom = self.counter_added_custom + 1
+                print('Info: add_watch_custom_crl()::crl_added:' + url_crl)
+                logs('Info: add_watch_custom_crl()::crl_added:' + url_crl)
             else:
-                print('crl exist')
-                logs('Info: add_watch_custom_cert_crl()::Crl_Exist:' + url_crl)
+                print('Info: add_watch_custom_crl()::crl_exist:' + url_crl)
+                logs('Info: add_watch_custom_crl()::crl_exist:' + url_crl)
                 self.counter_added_exist = self.counter_added_exist + 1
             self.on_changed_find_watching_crl('')
         except Exception:
-            print('Error: add_watch_custom_cert_crl()')
-            logs('Error: add_watch_custom_cert_crl()', 'errors')
+            print('Error: add_watch_custom_crl()')
+            logs('Error: add_watch_custom_crl()', 'errors')
 
     def move_watching_to_passed(self, id_var, from_var):
         try:
@@ -1906,11 +1961,11 @@ class MainWindow(QMainWindow):
                     if count > 0:
                         for row in data:
                             print(row.Registration_Number)
-                            self.add_watch_cert_crl(row.Registration_Number, row.KeyId, row.Stamp, row.SerialNumber,
-                                                    row.UrlCRL)
+                            self.add_watch_current_crl(row.Registration_Number, row.KeyId, row.Stamp, row.SerialNumber,
+                                                       row.UrlCRL)
                     else:
                         print('add to custom')
-                        self.add_watch_custom_cert_crl(crl_url)
+                        self.add_watch_custom_crl(crl_url)
                     # self.on_changed_find_watching_crl('')
                 print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
             else:
@@ -2127,12 +2182,12 @@ class AddCRLWindow(QWidget):
                                                   last_update='1970-01-01 00:00:00',
                                                   next_update='1970-01-01 00:00:00')
                         query.save()
-                        download_file(url_crl,
-                                      key_id + '.crl',
-                                      config['Folders']['crls'],
-                                      'custome',
-                                      str(query.ID),
-                                      set_dd='Yes')
+                        # download_file(url_crl,
+                        #               key_id + '.crl',
+                        #               config['Folders']['crls'],
+                        #               'custome',
+                        #               str(query.ID),
+                        #               set_dd='Yes')
                         check_custom_crl(query.ID, name, key_id)
                         print('Info: CRL added in WatchingCustomCRL')
                         logs('Info: CRL added in WatchingCustomCRL')
