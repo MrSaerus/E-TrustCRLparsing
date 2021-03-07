@@ -27,10 +27,11 @@ else:
                          'crls': 'crls/',
                          'tmp': 'temp/',
                          'logs': 'logs/',
-                         'to_uc': 'uc/'}
+                         'to_uc': 'to_uc/',
+                         'uc': 'uc/'}
 
-    config['MainWindow'] = {'width ': '1200',
-                            'height ': '600',
+    config['MainWindow'] = {'width ': '1100',
+                            'height ': '650',
                             'saveWidth': 'No',
                             'AllowResize': 'Yes'}
     config['Bd'] = {'type': 'sqlite3',
@@ -93,6 +94,10 @@ except OSError:
     pass
 try:
     os.makedirs(config['Folders']['to_uc'])
+except OSError:
+    pass
+try:
+    os.makedirs(config['Folders']['uc'])
 except OSError:
     pass
 try:
@@ -460,7 +465,6 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
                            last_update=cryptography.last_update + datetime.timedelta(hours=5),
                            next_update=cryptography.next_update + datetime.timedelta(hours=5)).where(
                     WatchingCRL.ID == id_wc)
-                print(id_wc)
                 query_update.execute()
                 print('Info: check_crl()::success ' + name_wc)
                 logs('Info: check_crl()::success ' + name_wc)
@@ -531,7 +535,9 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
         path = folder + '/' + file_name  # + '.' + type_file
         try:
             if config['Proxy']['proxyon'] == 'Yes':
-                proxy = request.ProxyHandler({'https': 'https://10.2.248.50:8080', 'http': 'http://10.2.248.50:8080'})
+                proxy = request.ProxyHandler(
+                    {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
+                     'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                 opener = request.build_opener(proxy)
                 request.install_opener(opener)
                 logs('Info: Used proxy')
@@ -803,7 +809,8 @@ class Downloader(QThread):
                 logs('Info: Downloading TSL')
                 if config['Proxy']['proxyon'] == 'Yes':
                     proxy = request.ProxyHandler(
-                        {'https': 'https://10.2.248.50:8080', 'http': 'http://10.2.248.50:8080'})
+                        {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
+                         'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                     opener = request.build_opener(proxy)
                     request.install_opener(opener)
                     logs('Info: Used proxy')
@@ -992,6 +999,7 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget.setItem(count, 0, QTableWidgetItem(str(row.Full_Name)))
                 self.ui.tableWidget.setItem(count, 1, QTableWidgetItem(str(row.INN)))
                 self.ui.tableWidget.setItem(count, 2, QTableWidgetItem(str(row.OGRN)))
+
                 button_info = QPushButton()
                 button_info.setFixedSize(30, 30)
                 #button_info.setText("Подробнее")
@@ -1373,23 +1381,26 @@ class MainWindow(QMainWindow):
             # Interface  config
             self.ui.lineEdit_12.setText(config['MainWindow']['height'])
             self.ui.lineEdit_11.setText(config['MainWindow']['width'])
-            if config['MainWindow']['saveWidth'] == 'Yes':
+            self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
+            if config['MainWindow']['saveWidth'] == 'No':
                 self.ui.checkBox_3.setChecked(True)
-            if config['MainWindow']['AllowResize'] == 'Yes':
+            if config['MainWindow']['AllowResize'] == 'No':
                 self.ui.checkBox_2.setChecked(True)
+                self.setMinimumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
+                self.setMaximumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
 
             # download config
             self.ui.label_13.setText(config['Folders']['crls'])
             self.ui.label_12.setText(config['Folders']['certs'])
-            self.ui.label_11.setText(config['Folders']['to_uc'])
+            self.ui.label_11.setText(config['Folders']['uc'])
             self.ui.label_10.setText(config['Folders']['tmp'])
             self.ui.label_9.setText(config['Folders']['to_uc'])
 
             self.ui.pushButton_18.clicked.connect(lambda: self.choose_directory('crl'))
             self.ui.pushButton_17.clicked.connect(lambda: self.choose_directory('cert'))
-            self.ui.pushButton_16.clicked.connect(lambda: self.choose_directory('to_uc'))
+            self.ui.pushButton_16.clicked.connect(lambda: self.choose_directory('uc'))
             self.ui.pushButton_15.clicked.connect(lambda: self.choose_directory('tmp'))
-            self.ui.pushButton_14.clicked.connect(lambda: self.choose_directory('uc'))
+            self.ui.pushButton_14.clicked.connect(lambda: self.choose_directory('to_uc'))
 
             self.ui.lineEdit_7.setText(config['Proxy']['ip'])
             self.ui.lineEdit_8.setText(config['Proxy']['port'])
@@ -1430,8 +1441,7 @@ class MainWindow(QMainWindow):
                     '%Y%m%d') + '.log', 'errors')
 
             self.ui.pushButton_21.pressed.connect(lambda: self.save_settings_main())
-            self.ui.pushButton_22.pressed.connect(lambda: self.save_settings_interface())
-            self.ui.pushButton_23.pressed.connect(lambda: self.save_settings_downloads())
+            self.ui.pushButton_23.pressed.connect(lambda: self.save_settings_sub())
             self.ui.pushButton_24.pressed.connect(lambda: self.save_settings_logs())
         except Exception:
             print('Error: init_settings()')
@@ -1445,6 +1455,26 @@ class MainWindow(QMainWindow):
             set_value_in_property_file('settings.ini', 'Tabs', 'wcLimit', self.ui.lineEdit_16.text())
             set_value_in_property_file('settings.ini', 'Tabs', 'wccLimit', self.ui.lineEdit_15.text())
             set_value_in_property_file('settings.ini', 'Tabs', 'wcdLimit', self.ui.lineEdit_14.text())
+            set_value_in_property_file('settings.ini', 'MainWindow', 'height', self.ui.lineEdit_12.text())
+            set_value_in_property_file('settings.ini', 'MainWindow', 'width', self.ui.lineEdit_11.text())
+
+            if self.ui.checkBox_3.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
+                self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
+                self.setMinimumSize(0, 0)
+                self.setMaximumSize(16777215, 16777215)
+
+            elif self.ui.checkBox_3.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
+                self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
+                self.setMinimumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
+                self.setMaximumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
+
+            if self.ui.checkBox_2.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
+
+            elif self.ui.checkBox_2.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
 
             if self.ui.checkBox_4.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'No')
@@ -1481,23 +1511,8 @@ class MainWindow(QMainWindow):
             print('Error: save_settings_main()')
             logs('Error: save_settings_main()', 'errors')
 
-    def save_settings_interface(self):
-        set_value_in_property_file('settings.ini', 'MainWindow', 'width', self.ui.lineEdit_12.text())
-        set_value_in_property_file('settings.ini', 'MainWindow', 'height', self.ui.lineEdit_11.text())
 
-        if self.ui.checkBox_3.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
-
-        elif self.ui.checkBox_3.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
-
-        if self.ui.checkBox_2.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
-
-        elif self.ui.checkBox_2.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
-
-    def save_settings_downloads(self):
+    def save_settings_sub(self):
         set_value_in_property_file('settings.ini', 'Folders', 'certs', self.ui.label_13.text())
         set_value_in_property_file('settings.ini', 'Folders', 'crls', self.ui.label_12.text())
         set_value_in_property_file('settings.ini', 'Folders', 'tmp', self.ui.label_11.text())

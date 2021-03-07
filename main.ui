@@ -185,6 +185,16 @@
                   </layout>
                  </widget>
                 </item>
+                <item>
+                 <widget class="QListWidget" name="listWidget">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
                 <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
                  <widget class="QFrame" name="frame_11">
                   <property name="frameShape">
@@ -1506,7 +1516,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>25</height>
+                                <height>20</height>
                                </size>
                               </property>
                              </widget>
@@ -1533,7 +1543,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>25</height>
+                                <height>20</height>
                                </size>
                               </property>
                              </widget>
@@ -1560,7 +1570,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>25</height>
+                                <height>20</height>
                                </size>
                               </property>
                              </widget>
@@ -1587,7 +1597,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>25</height>
+                                <height>20</height>
                                </size>
                               </property>
                              </widget>
@@ -1614,7 +1624,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>25</height>
+                                <height>20</height>
                                </size>
                               </property>
                              </widget>
@@ -1643,7 +1653,7 @@ border-color: rgb(0, 0, 0);</string>
                                 <property name="minimumSize">
                                  <size>
                                   <width>0</width>
-                                  <height>25</height>
+                                  <height>20</height>
                                  </size>
                                 </property>
                                </widget>
@@ -1697,6 +1707,12 @@ border-color: rgb(0, 0, 0);</string>
                            <layout class="QHBoxLayout" name="horizontalLayout_59">
                             <item>
                              <widget class="QCheckBox" name="checkBox_4">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
                               <property name="text">
                                <string>Разрешить импорт CRL</string>
                               </property>
@@ -1708,6 +1724,12 @@ border-color: rgb(0, 0, 0);</string>
                            <layout class="QHBoxLayout" name="horizontalLayout_60">
                             <item>
                              <widget class="QCheckBox" name="checkBox_5">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
                               <property name="text">
                                <string>Разрешить экспорт CRL</string>
                               </property>
@@ -1719,6 +1741,12 @@ border-color: rgb(0, 0, 0);</string>
                            <layout class="QHBoxLayout" name="horizontalLayout_58">
                             <item>
                              <widget class="QCheckBox" name="checkBox_6">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
                               <property name="text">
                                <string>Разрешить удалять CRL из списка скачиваемых</string>
                               </property>
@@ -1730,6 +1758,12 @@ border-color: rgb(0, 0, 0);</string>
                            <layout class="QHBoxLayout" name="horizontalLayout_64">
                             <item>
                              <widget class="QCheckBox" name="checkBox_7">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
                               <property name="text">
                                <string>Включить кнопку &quot;Скачать все CRL&quot;</string>
                               </property>
@@ -1741,6 +1775,12 @@ border-color: rgb(0, 0, 0);</string>
                            <layout class="QHBoxLayout" name="horizontalLayout_65">
                             <item>
                              <widget class="QCheckBox" name="checkBox_8">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
                               <property name="text">
                                <string>Включить кнопку &quot;Проверить все CRL&quot;</string>
                               </property>
@@ -1765,6 +1805,248 @@ border-color: rgb(0, 0, 0);</string>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_79">
                   <item>
+                   <widget class="QGroupBox" name="groupBox_21">
+                    <property name="title">
+                     <string>Настройки основного окна</string>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_80">
+                     <item alignment="Qt::AlignLeft">
+                      <widget class="QFrame" name="frame_23">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_79">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_57">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_38">
+                            <item alignment="Qt::AlignLeft">
+                             <widget class="QFrame" name="frame_16">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
+                              </property>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_43">
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
+                               <item>
+                                <widget class="QLabel" name="label_22">
+                                 <property name="minimumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>0</height>
+                                  </size>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>16777215</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                 <property name="text">
+                                  <string>Высота окна:</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item>
+                                <widget class="QLineEdit" name="lineEdit_12">
+                                 <property name="sizePolicy">
+                                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                   <horstretch>0</horstretch>
+                                   <verstretch>0</verstretch>
+                                  </sizepolicy>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_41">
+                            <item alignment="Qt::AlignLeft">
+                             <widget class="QFrame" name="frame_15">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
+                              </property>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_42">
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
+                               <item>
+                                <widget class="QLabel" name="label_23">
+                                 <property name="minimumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>0</height>
+                                  </size>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>16777215</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                 <property name="text">
+                                  <string>Ширина окна:</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item>
+                                <widget class="QLineEdit" name="lineEdit_11">
+                                 <property name="sizePolicy">
+                                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                   <horstretch>0</horstretch>
+                                   <verstretch>0</verstretch>
+                                  </sizepolicy>
+                                 </property>
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>100</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_40">
+                            <item>
+                             <widget class="QFrame" name="frame_18">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
+                              </property>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_44">
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
+                               <item>
+                                <widget class="QCheckBox" name="checkBox_3">
+                                 <property name="layoutDirection">
+                                  <enum>Qt::LeftToRight</enum>
+                                 </property>
+                                 <property name="text">
+                                  <string>Заблокировать изменение размера окна</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_39">
+                            <item alignment="Qt::AlignLeft">
+                             <widget class="QFrame" name="frame_17">
+                              <property name="frameShape">
+                               <enum>QFrame::NoFrame</enum>
+                              </property>
+                              <property name="frameShadow">
+                               <enum>QFrame::Raised</enum>
+                              </property>
+                              <layout class="QHBoxLayout" name="horizontalLayout_45">
+                               <property name="leftMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="topMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="rightMargin">
+                                <number>0</number>
+                               </property>
+                               <property name="bottomMargin">
+                                <number>0</number>
+                               </property>
+                               <item>
+                                <widget class="QCheckBox" name="checkBox_2">
+                                 <property name="layoutDirection">
+                                  <enum>Qt::LeftToRight</enum>
+                                 </property>
+                                 <property name="text">
+                                  <string>Сохранять размер окна при выходе</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_37"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
                    <widget class="QGroupBox" name="groupBox_14">
                     <property name="title">
                      <string>Импорт / Экспорт CRL'ов</string>
@@ -1781,6 +2063,18 @@ border-color: rgb(0, 0, 0);</string>
                           <enum>QFrame::Raised</enum>
                          </property>
                          <layout class="QVBoxLayout" name="verticalLayout_92">
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
                           <item>
                            <layout class="QHBoxLayout" name="horizontalLayout_72">
                             <item>
@@ -1844,6 +2138,9 @@ border-color: rgb(0, 0, 0);</string>
                  <layout class="QVBoxLayout" name="verticalLayout_78">
                   <item>
                    <widget class="QGroupBox" name="groupBox_15">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="title">
                      <string>Оповещение по XMPP</string>
                     </property>
@@ -2081,254 +2378,9 @@ border-color: rgb(0, 0, 0);</string>
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_11">
-           <attribute name="title">
-            <string>Интерфейс</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_54">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_53">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_34">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_56">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_8">
-                    <property name="title">
-                     <string>Настройки основного окна</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_58">
-                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
-                      <widget class="QFrame" name="frame_23">
-                       <property name="frameShape">
-                        <enum>QFrame::NoFrame</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
-                       </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_95">
-                        <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_57">
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_38">
-                            <item alignment="Qt::AlignLeft">
-                             <widget class="QFrame" name="frame_16">
-                              <property name="frameShape">
-                               <enum>QFrame::NoFrame</enum>
-                              </property>
-                              <property name="frameShadow">
-                               <enum>QFrame::Raised</enum>
-                              </property>
-                              <layout class="QHBoxLayout" name="horizontalLayout_43">
-                               <item>
-                                <widget class="QLabel" name="label_22">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>100</width>
-                                   <height>0</height>
-                                  </size>
-                                 </property>
-                                 <property name="maximumSize">
-                                  <size>
-                                   <width>16777215</width>
-                                   <height>16777215</height>
-                                  </size>
-                                 </property>
-                                 <property name="text">
-                                  <string>Высота окна:</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <widget class="QLineEdit" name="lineEdit_12">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
-                                 <property name="maximumSize">
-                                  <size>
-                                   <width>100</width>
-                                   <height>16777215</height>
-                                  </size>
-                                 </property>
-                                </widget>
-                               </item>
-                              </layout>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_41">
-                            <item alignment="Qt::AlignLeft">
-                             <widget class="QFrame" name="frame_15">
-                              <property name="frameShape">
-                               <enum>QFrame::NoFrame</enum>
-                              </property>
-                              <property name="frameShadow">
-                               <enum>QFrame::Raised</enum>
-                              </property>
-                              <layout class="QHBoxLayout" name="horizontalLayout_42">
-                               <item>
-                                <widget class="QLabel" name="label_23">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>100</width>
-                                   <height>0</height>
-                                  </size>
-                                 </property>
-                                 <property name="maximumSize">
-                                  <size>
-                                   <width>16777215</width>
-                                   <height>16777215</height>
-                                  </size>
-                                 </property>
-                                 <property name="text">
-                                  <string>Ширина окна:</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item>
-                                <widget class="QLineEdit" name="lineEdit_11">
-                                 <property name="sizePolicy">
-                                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                   <horstretch>0</horstretch>
-                                   <verstretch>0</verstretch>
-                                  </sizepolicy>
-                                 </property>
-                                 <property name="maximumSize">
-                                  <size>
-                                   <width>100</width>
-                                   <height>16777215</height>
-                                  </size>
-                                 </property>
-                                </widget>
-                               </item>
-                              </layout>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_40">
-                            <item>
-                             <widget class="QFrame" name="frame_18">
-                              <property name="frameShape">
-                               <enum>QFrame::NoFrame</enum>
-                              </property>
-                              <property name="frameShadow">
-                               <enum>QFrame::Raised</enum>
-                              </property>
-                              <layout class="QHBoxLayout" name="horizontalLayout_44">
-                               <item>
-                                <widget class="QCheckBox" name="checkBox_3">
-                                 <property name="layoutDirection">
-                                  <enum>Qt::RightToLeft</enum>
-                                 </property>
-                                 <property name="text">
-                                  <string>Заблокировать изменение размера окна</string>
-                                 </property>
-                                </widget>
-                               </item>
-                              </layout>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_39">
-                            <item alignment="Qt::AlignLeft">
-                             <widget class="QFrame" name="frame_17">
-                              <property name="frameShape">
-                               <enum>QFrame::NoFrame</enum>
-                              </property>
-                              <property name="frameShadow">
-                               <enum>QFrame::Raised</enum>
-                              </property>
-                              <layout class="QHBoxLayout" name="horizontalLayout_45">
-                               <item>
-                                <widget class="QCheckBox" name="checkBox_2">
-                                 <property name="layoutDirection">
-                                  <enum>Qt::RightToLeft</enum>
-                                 </property>
-                                 <property name="text">
-                                  <string>Сохранять размер окна при выходе</string>
-                                 </property>
-                                </widget>
-                               </item>
-                              </layout>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_37"/>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_55">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_19">
-                    <property name="title">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_33">
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_36">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_18">
-                    <property name="title">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_35">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_20">
-                    <property name="title">
-                     <string/>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item alignment="Qt::AlignRight">
-             <widget class="QPushButton" name="pushButton_22">
-              <property name="text">
-               <string>Сохранить</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
           <widget class="QWidget" name="tab_12">
            <attribute name="title">
-            <string>Скачивание</string>
+            <string>Дополнительное</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_40">
             <item>
@@ -2547,130 +2599,6 @@ border-color: rgb(0, 0, 0);</string>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_41">
                   <item>
-                   <widget class="QGroupBox" name="groupBox_6">
-                    <property name="title">
-                     <string>Приоритеты CRL</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_48">
-                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
-                      <widget class="QFrame" name="frame_27">
-                       <property name="minimumSize">
-                        <size>
-                         <width>400</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="frameShape">
-                        <enum>QFrame::NoFrame</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
-                       </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_98">
-                        <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_47">
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_22">
-                            <item alignment="Qt::AlignHCenter">
-                             <widget class="QLabel" name="label_14">
-                              <property name="text">
-                               <string>Приоритет загрузки CRL в УЦ</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item alignment="Qt::AlignHCenter">
-                             <widget class="QRadioButton" name="radioButton_2">
-                              <property name="text">
-                               <string>Основные</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item alignment="Qt::AlignHCenter">
-                             <widget class="QRadioButton" name="radioButton">
-                              <property name="text">
-                               <string>Свои</string>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_16">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_44">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_5">
-                    <property name="title">
-                     <string>Тестирование CRL</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_50">
-                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
-                      <widget class="QFrame" name="frame_25">
-                       <property name="frameShape">
-                        <enum>QFrame::NoFrame</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
-                       </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_97">
-                        <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_49">
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_32">
-                            <item>
-                             <widget class="QCheckBox" name="checkBox_12">
-                              <property name="text">
-                               <string>Тестировать на корректность CRL</string>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_31">
-                            <item>
-                             <widget class="QCheckBox" name="checkBox_13">
-                              <property name="text">
-                               <string>Проверять на актуальность</string>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_30"/>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_29"/>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_28"/>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_43">
-                  <item>
                    <widget class="QGroupBox" name="groupBox_7">
                     <property name="title">
                      <string>Настройка прокси</string>
@@ -2685,6 +2613,18 @@ border-color: rgb(0, 0, 0);</string>
                         <enum>QFrame::Raised</enum>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_99">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
                         <item>
                          <layout class="QVBoxLayout" name="verticalLayout_51">
                           <item>
@@ -2848,32 +2788,181 @@ border-color: rgb(0, 0, 0);</string>
                 </item>
                </layout>
               </item>
-             </layout>
-            </item>
-            <item alignment="Qt::AlignRight">
-             <widget class="QPushButton" name="pushButton_23">
-              <property name="text">
-               <string>Сохранить</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_13">
-           <attribute name="title">
-            <string>Логирование</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_61">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_60">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_47">
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_63">
+                 <layout class="QVBoxLayout" name="verticalLayout_44">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_5">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Тестирование CRL</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_50">
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_25">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_97">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_49">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_32">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_12">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Тестировать на корректность CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_31">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_13">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Проверять на актуальность</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_30"/>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_29"/>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_28"/>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_6">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Приоритеты CRL</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_48">
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_27">
+                       <property name="minimumSize">
+                        <size>
+                         <width>400</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_98">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_47">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_22">
+                            <item alignment="Qt::AlignHCenter">
+                             <widget class="QLabel" name="label_14">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Приоритет загрузки CRL в УЦ</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                             <widget class="QRadioButton" name="radioButton_2">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Основные</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
+                             <widget class="QRadioButton" name="radioButton">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Свои</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_43">
                   <item>
                    <widget class="QGroupBox" name="groupBox_10">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
                     <property name="title">
-                     <string>Настройки</string>
+                     <string>Настройка логов</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_70">
                      <item alignment="Qt::AlignLeft|Qt::AlignTop">
@@ -2891,9 +2980,64 @@ border-color: rgb(0, 0, 0);</string>
                            <layout class="QHBoxLayout" name="horizontalLayout_51">
                             <item>
                              <widget class="QLabel" name="label_26">
+                              <property name="minimumSize">
+                               <size>
+                                <width>150</width>
+                                <height>0</height>
+                               </size>
+                              </property>
                               <property name="text">
                                <string>Уровень логирования</string>
                               </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QComboBox" name="comboBox">
+                              <item>
+                               <property name="text">
+                                <string>1</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>2</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>3</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>4</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>5</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>6</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>7</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>8</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>9</string>
+                               </property>
+                              </item>
                              </widget>
                             </item>
                            </layout>
@@ -2902,26 +3046,44 @@ border-color: rgb(0, 0, 0);</string>
                            <layout class="QHBoxLayout" name="horizontalLayout_52">
                             <item>
                              <widget class="QLabel" name="label_29">
+                              <property name="minimumSize">
+                               <size>
+                                <width>150</width>
+                                <height>0</height>
+                               </size>
+                              </property>
                               <property name="text">
                                <string>Размер логов</string>
                               </property>
                              </widget>
                             </item>
                             <item>
-                             <widget class="QLabel" name="label_27">
-                              <property name="text">
-                               <string/>
-                              </property>
-                             </widget>
+                             <widget class="QSpinBox" name="spinBox"/>
                             </item>
                            </layout>
                           </item>
                           <item>
                            <layout class="QHBoxLayout" name="horizontalLayout_49">
                             <item>
-                             <widget class="QLabel" name="label_28">
+                             <widget class="QLabel" name="label_25">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>20</height>
+                               </size>
+                              </property>
                               <property name="text">
-                               <string>Логировать ошибки отдельно</string>
+                               <string>Делить логи по дням</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_14">
+                              <property name="layoutDirection">
+                               <enum>Qt::RightToLeft</enum>
+                              </property>
+                              <property name="text">
+                               <string/>
                               </property>
                              </widget>
                             </item>
@@ -2937,24 +3099,26 @@ border-color: rgb(0, 0, 0);</string>
                   </item>
                  </layout>
                 </item>
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_62">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_11">
-                    <property name="title">
-                     <string>Поведение</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_72">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_68"/>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
                </layout>
               </item>
+             </layout>
+            </item>
+            <item alignment="Qt::AlignRight">
+             <widget class="QPushButton" name="pushButton_23">
+              <property name="text">
+               <string>Сохранить</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_13">
+           <attribute name="title">
+            <string>Логи</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_61">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_60">
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_46">
                 <item>
@@ -3030,7 +3194,7 @@ border-color: rgb(0, 0, 0);</string>
       </widget>
       <widget class="QWidget" name="tab_14">
        <attribute name="title">
-        <string>ПомощЪ</string>
+        <string>Помощь</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_59">
         <item>
@@ -3043,15 +3207,19 @@ border-color: rgb(0, 0, 0);</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Параметры запуска в консольном режие:&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    \nogui - без интерфейса&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    \check - проверять обновления TSL при запуске&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    \downcrl - проверять наличие новых CRL  при запуске&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;    \schedule - после запуска начинает работать по заданному расписанию&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;GitHub:&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/MrSaerus/E-TrustCRLparsing&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MrSaerus/E-TrustCRLparsing&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Уровни логирования:&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1 Ошибки&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2 Предупреждения&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3 Информация&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4 &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5 &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6 &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;7 &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;8 &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;9 Всё&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
