@@ -249,6 +249,7 @@ class WatchingDeletedCRL(Model):
     last_download = DateTimeField()
     last_update = DateField()
     next_update = DateField()
+    moved_from = CharField()
 
     class Meta:
         database = db
@@ -994,12 +995,12 @@ class MainWindow(QMainWindow):
     def tab_uc(self, text=''):
         try:
             self.ui.pushButton_7.pressed.connect(lambda: self.ui.lineEdit.setText(''))
-
-            query = UC.select().where(UC.Registration_Number.contains(text)
-                                      | UC.INN.contains(text)
-                                      | UC.OGRN.contains(text)
-                                      | UC.Name.contains(text)
-                                      | UC.Full_Name.contains(text)).limit(config['Listing']['uc'])
+            # .order_by(MyModel.something.desc(nulls='LAST'))
+            query = UC.select().order_by(UC.Name).where(UC.Registration_Number.contains(text)
+                                                        | UC.INN.contains(text)
+                                                        | UC.OGRN.contains(text)
+                                                        | UC.Name.contains(text)
+                                                        | UC.Full_Name.contains(text)).limit(config['Listing']['uc'])
             count_all = UC.select().where(UC.Registration_Number.contains(text)
                                           | UC.INN.contains(text)
                                           | UC.OGRN.contains(text)
@@ -1172,13 +1173,14 @@ class MainWindow(QMainWindow):
 
             self.ui.pushButton_10.pressed.connect(lambda: self.ui.lineEdit_4.setText(''))
 
-            query = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
-                                               | WatchingCRL.INN.contains(text)
-                                               | WatchingCRL.OGRN.contains(text)
-                                               | WatchingCRL.KeyId.contains(text)
-                                               | WatchingCRL.Stamp.contains(text)
-                                               | WatchingCRL.SerialNumber.contains(text)
-                                               | WatchingCRL.UrlCRL.contains(text)).limit(config['Listing']['watch'])
+            query = WatchingCRL.select().order_by(WatchingCRL.Name).where(WatchingCRL.Name.contains(text)
+                                                                          | WatchingCRL.INN.contains(text)
+                                                                          | WatchingCRL.OGRN.contains(text)
+                                                                          | WatchingCRL.KeyId.contains(text)
+                                                                          | WatchingCRL.Stamp.contains(text)
+                                                                          | WatchingCRL.SerialNumber.contains(text)
+                                                                          | WatchingCRL.UrlCRL.contains(text)).\
+                limit(config['Listing']['watch'])
             count_all = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
                                                    | WatchingCRL.INN.contains(text)
                                                    | WatchingCRL.OGRN.contains(text)
@@ -1248,13 +1250,14 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
             self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
 
-            query = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
-                                                     | WatchingCustomCRL.INN.contains(text)
-                                                     | WatchingCustomCRL.OGRN.contains(text)
-                                                     | WatchingCustomCRL.KeyId.contains(text)
-                                                     | WatchingCustomCRL.Stamp.contains(text)
-                                                     | WatchingCustomCRL.SerialNumber.contains(text)
-                                                     | WatchingCustomCRL.UrlCRL.contains(text)). \
+            query = WatchingCustomCRL.select().order_by(WatchingCustomCRL.Name)\
+                .where(WatchingCustomCRL.Name.contains(text)
+                       | WatchingCustomCRL.INN.contains(text)
+                       | WatchingCustomCRL.OGRN.contains(text)
+                       | WatchingCustomCRL.KeyId.contains(text)
+                       | WatchingCustomCRL.Stamp.contains(text)
+                       | WatchingCustomCRL.SerialNumber.contains(text)
+                       | WatchingCustomCRL.UrlCRL.contains(text)). \
                 limit(config['Listing']['watch'])
             count_all = WatchingCustomCRL.select().where(WatchingCustomCRL.Name.contains(text)
                                                          | WatchingCustomCRL.INN.contains(text)
@@ -1325,13 +1328,14 @@ class MainWindow(QMainWindow):
 
             self.ui.pushButton_12.pressed.connect(lambda: self.ui.lineEdit_6.setText(''))
 
-            query = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
-                                                      | WatchingDeletedCRL.INN.contains(text)
-                                                      | WatchingDeletedCRL.OGRN.contains(text)
-                                                      | WatchingDeletedCRL.KeyId.contains(text)
-                                                      | WatchingDeletedCRL.Stamp.contains(text)
-                                                      | WatchingDeletedCRL.SerialNumber.contains(text)
-                                                      | WatchingDeletedCRL.UrlCRL.contains(text)). \
+            query = WatchingDeletedCRL.select().order_by(WatchingDeletedCRL.Name).\
+                where(WatchingDeletedCRL.Name.contains(text)
+                      | WatchingDeletedCRL.INN.contains(text)
+                      | WatchingDeletedCRL.OGRN.contains(text)
+                      | WatchingDeletedCRL.KeyId.contains(text)
+                      | WatchingDeletedCRL.Stamp.contains(text)
+                      | WatchingDeletedCRL.SerialNumber.contains(text)
+                      | WatchingDeletedCRL.UrlCRL.contains(text)). \
                 limit(config['Listing']['watch'])
             count_all = WatchingDeletedCRL.select().where(WatchingDeletedCRL.Name.contains(text)
                                                           | WatchingDeletedCRL.INN.contains(text)
@@ -1359,6 +1363,8 @@ class MainWindow(QMainWindow):
                 icon8.addPixmap(pm)
                 buttonReturnWatch.setIcon(icon8)
                 buttonReturnWatch.setFlat(True)
+                id_row = row.ID
+                buttonReturnWatch.pressed.connect(lambda o=id_row: self.move_passed_to_watching(o))
                 self.ui.tableWidget_6.setCellWidget(count, 6, buttonReturnWatch)
                 count = count + 1
 
@@ -1900,10 +1906,12 @@ class MainWindow(QMainWindow):
                                                download_count=row.download_count,
                                                last_download=row.last_download,
                                                last_update=row.last_update,
-                                               next_update=row.next_update)
+                                               next_update=row.next_update,
+                                               moved_from='current')
                     to_bd.save()
                 WatchingCRL.delete_by_id(id_var)
                 self.sub_tab_watching_crl()
+                self.sub_tab_watching_disabled_crl()
                 print('Info: move_watching_to_passed()::moving_success_current:')
                 logs('Info: move_watching_to_passed()::moving_success_current:')
             elif from_var == 'custom':
@@ -1921,18 +1929,71 @@ class MainWindow(QMainWindow):
                                                download_count=row.download_count,
                                                last_download=row.last_download,
                                                last_update=row.last_update,
-                                               next_update=row.next_update)
+                                               next_update=row.next_update,
+                                               moved_from='custom')
                     to_bd.save()
                 WatchingCustomCRL.delete_by_id(id_var)
                 self.sub_tab_watching_custom_crl()
+                self.sub_tab_watching_disabled_crl()
                 print('Info: move_watching_to_passed()::moving_success_custom:')
                 logs('Info: move_watching_to_passed()::moving_success_custom:')
             else:
                 print('Error: move_watching_to_passed()::Error_Moving')
                 logs('Error: move_watching_to_passed()::Error_Moving', 'errors')
         except Exception:
-            print('Error: move_watching_to_delete()')
-            logs('Error: move_watching_to_delete()', 'errors')
+            print('Error: move_watching_to_passed()')
+            logs('Error: move_watching_to_passed()', 'errors')
+
+    def move_passed_to_watching(self, id_var):
+        try:
+            from_bd = WatchingDeletedCRL.select().where(WatchingDeletedCRL.ID == id_var)
+            for row in from_bd:
+                if row.moved_from == 'current':
+                    to_current = WatchingCRL(Name=row.Name,
+                                             INN=row.INN,
+                                             OGRN=row.OGRN,
+                                             KeyId=row.KeyId,
+                                             Stamp=row.Stamp,
+                                             SerialNumber=row.SerialNumber,
+                                             UrlCRL=row.UrlCRL,
+                                             status=row.status,
+                                             download_status=row.download_status,
+                                             download_count=row.download_count,
+                                             last_download=row.last_download,
+                                             last_update=row.last_update,
+                                             next_update=row.next_update)
+                    to_current.save()
+                    WatchingDeletedCRL.delete_by_id(id_var)
+                    self.sub_tab_watching_disabled_crl()
+                    self.sub_tab_watching_crl()
+                    print('Info: move_passed_to_watching()::moving_success_current:')
+                    logs('Info: move_passed_to_watching()::moving_success_current:')
+                elif row.moved_from == 'custom':
+                    to_custom = WatchingCustomCRL(Name=row.Name,
+                                                  INN=row.INN,
+                                                  OGRN=row.OGRN,
+                                                  KeyId=row.KeyId,
+                                                  Stamp=row.Stamp,
+                                                  SerialNumber=row.SerialNumber,
+                                                  UrlCRL=row.UrlCRL,
+                                                  status=row.status,
+                                                  download_status=row.download_status,
+                                                  download_count=row.download_count,
+                                                  last_download=row.last_download,
+                                                  last_update=row.last_update,
+                                                  next_update=row.next_update)
+                    to_custom.save()
+                    WatchingDeletedCRL.delete_by_id(id_var)
+                    self.sub_tab_watching_disabled_crl()
+                    self.sub_tab_watching_custom_crl()
+                    print('Info: move_passed_to_watching()::moving_success_custom:')
+                    logs('Info: move_passed_to_watching()::moving_success_custom:')
+                else:
+                    print('Error: move_passed_to_watching()::error_moving')
+                    logs('Error: move_passed_to_watching()::error_moving', 'errors')
+        except Exception:
+            print('Error: move_passed_to_watching()')
+            logs('Error: move_passed_to_watching()', 'errors')
 
     # def delete_watching(self, id):
     #     WatchingCRL.delete_by_id(id)
