@@ -1225,7 +1225,7 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget_4.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
                 self.ui.tableWidget_4.setItem(count, 3, QTableWidgetItem(str(row.UrlCRL)))
                 self.ui.tableWidget_4.setItem(count, 4, QTableWidgetItem(str(row.last_download)))
-                self.ui.tableWidget_4.setItem(count, 5, QTableWidgetItem(str(row.last_update)))
+                self.ui.tableWidget_4.setItem(count, 5, QTableWidgetItem(str(row.next_update)))
 
                 if row.status == 'Info: Filetype good':
                     status_item = QTableWidgetItem()
