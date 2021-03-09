@@ -12,11 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>E-Trust CRL Parsing</string>
-  </property>
-  <property name="windowIcon">
-   <iconset theme="assests/favicon.ico">
-    <normaloff>.</normaloff>.</iconset>
+   <string>E-Trust CRL Parsing v1.0.0-beta.10</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -2369,12 +2365,29 @@ border-color: rgb(0, 0, 0);</string>
               </item>
              </layout>
             </item>
-            <item alignment="Qt::AlignRight">
-             <widget class="QPushButton" name="pushButton_21">
-              <property name="text">
-               <string>Сохранить</string>
-              </property>
-             </widget>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_33">
+              <item>
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_21">
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Сохранить</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -2795,10 +2808,10 @@ border-color: rgb(0, 0, 0);</string>
                   <item>
                    <widget class="QGroupBox" name="groupBox_5">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="title">
-                     <string>Тестирование CRL</string>
+                     <string>При запуске программы (может замедлить запуск программы)</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_50">
                      <item alignment="Qt::AlignLeft|Qt::AlignTop">
@@ -2823,7 +2836,7 @@ border-color: rgb(0, 0, 0);</string>
                                </size>
                               </property>
                               <property name="text">
-                               <string>Тестировать на корректность CRL</string>
+                               <string>Проверять CRL на актуальность и корректность</string>
                               </property>
                              </widget>
                             </item>
@@ -2840,7 +2853,7 @@ border-color: rgb(0, 0, 0);</string>
                                </size>
                               </property>
                               <property name="text">
-                               <string>Проверять на актуальность</string>
+                               <string>Проверять TSL на актуальность</string>
                               </property>
                              </widget>
                             </item>
@@ -2869,7 +2882,7 @@ border-color: rgb(0, 0, 0);</string>
                      <bool>false</bool>
                     </property>
                     <property name="title">
-                     <string>Приоритеты CRL</string>
+                     <string>Приоритет загрузки CRL</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_48">
                      <item alignment="Qt::AlignLeft|Qt::AlignTop">
@@ -2959,7 +2972,7 @@ border-color: rgb(0, 0, 0);</string>
                   <item>
                    <widget class="QGroupBox" name="groupBox_10">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="title">
                      <string>Настройка логов</string>
@@ -2967,6 +2980,9 @@ border-color: rgb(0, 0, 0);</string>
                     <layout class="QVBoxLayout" name="verticalLayout_70">
                      <item alignment="Qt::AlignLeft|Qt::AlignTop">
                       <widget class="QFrame" name="frame_28">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="frameShape">
                         <enum>QFrame::StyledPanel</enum>
                        </property>
@@ -3053,12 +3069,22 @@ border-color: rgb(0, 0, 0);</string>
                                </size>
                               </property>
                               <property name="text">
-                               <string>Размер логов</string>
+                               <string>Размер логов (КБ)</string>
                               </property>
                              </widget>
                             </item>
                             <item>
-                             <widget class="QSpinBox" name="spinBox"/>
+                             <widget class="QSpinBox" name="spinBox">
+                              <property name="minimum">
+                               <number>1024</number>
+                              </property>
+                              <property name="maximum">
+                               <number>8196</number>
+                              </property>
+                              <property name="singleStep">
+                               <number>128</number>
+                              </property>
+                             </widget>
                             </item>
                            </layout>
                           </item>
@@ -3103,12 +3129,29 @@ border-color: rgb(0, 0, 0);</string>
               </item>
              </layout>
             </item>
-            <item alignment="Qt::AlignRight">
-             <widget class="QPushButton" name="pushButton_23">
-              <property name="text">
-               <string>Сохранить</string>
-              </property>
-             </widget>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_34">
+              <item>
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_23">
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Сохранить</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -3211,15 +3254,15 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/MrSaerus/E-TrustCRLparsing&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/MrSaerus/E-TrustCRLparsing&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Уровни логирования:&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1 Ошибки&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2 Предупреждения&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3 Информация&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4 &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5 &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6 &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;7 &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;8 &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;9 Всё&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  1 Критические ошибки&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  2 Ошибки работы&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  3 Предупреждения работы модулей&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  4 Предупреждения скачивания и преворок&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  5 Информация о скачивании и проверок&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  6 Информация о работе модулей&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  7 Информация прочая&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  8 Резерв&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;  9 Всё&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>

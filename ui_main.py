@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainzHiRMF.ui'
+## Form generated from reading UI file 'mainqPnBnl.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -20,15 +20,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1100, 650)
-        icon = QIcon()
-        iconThemeName = u"assests/favicon.ico"
-        if QIcon.hasThemeIcon(iconThemeName):
-            icon = QIcon.fromTheme(iconThemeName)
-        else:
-            icon.addFile(u".", QSize(), QIcon.Normal, QIcon.Off)
-        
-        MainWindow.setWindowIcon(icon)
+        MainWindow.resize(1168, 659)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayout_12 = QVBoxLayout(self.centralwidget)
@@ -1423,10 +1415,21 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_75.addLayout(self.verticalLayout_74)
 
+        self.horizontalLayout_33 = QHBoxLayout()
+        self.horizontalLayout_33.setObjectName(u"horizontalLayout_33")
+        self.label_27 = QLabel(self.tab_10)
+        self.label_27.setObjectName(u"label_27")
+
+        self.horizontalLayout_33.addWidget(self.label_27)
+
         self.pushButton_21 = QPushButton(self.tab_10)
         self.pushButton_21.setObjectName(u"pushButton_21")
+        self.pushButton_21.setMaximumSize(QSize(75, 16777215))
 
-        self.verticalLayout_75.addWidget(self.pushButton_21, 0, Qt.AlignRight)
+        self.horizontalLayout_33.addWidget(self.pushButton_21)
+
+
+        self.verticalLayout_75.addLayout(self.horizontalLayout_33)
 
         self.tabWidget_3.addTab(self.tab_10, "")
         self.tab_12 = QWidget()
@@ -1676,7 +1679,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_44.setObjectName(u"verticalLayout_44")
         self.groupBox_5 = QGroupBox(self.tab_12)
         self.groupBox_5.setObjectName(u"groupBox_5")
-        self.groupBox_5.setEnabled(False)
+        self.groupBox_5.setEnabled(True)
         self.verticalLayout_50 = QVBoxLayout(self.groupBox_5)
         self.verticalLayout_50.setObjectName(u"verticalLayout_50")
         self.frame_25 = QFrame(self.groupBox_5)
@@ -1787,11 +1790,12 @@ class Ui_MainWindow(object):
         self.verticalLayout_43.setObjectName(u"verticalLayout_43")
         self.groupBox_10 = QGroupBox(self.tab_12)
         self.groupBox_10.setObjectName(u"groupBox_10")
-        self.groupBox_10.setEnabled(False)
+        self.groupBox_10.setEnabled(True)
         self.verticalLayout_70 = QVBoxLayout(self.groupBox_10)
         self.verticalLayout_70.setObjectName(u"verticalLayout_70")
         self.frame_28 = QFrame(self.groupBox_10)
         self.frame_28.setObjectName(u"frame_28")
+        self.frame_28.setEnabled(True)
         self.frame_28.setFrameShape(QFrame.StyledPanel)
         self.frame_28.setFrameShadow(QFrame.Raised)
         self.verticalLayout_100 = QVBoxLayout(self.frame_28)
@@ -1833,6 +1837,9 @@ class Ui_MainWindow(object):
 
         self.spinBox = QSpinBox(self.frame_28)
         self.spinBox.setObjectName(u"spinBox")
+        self.spinBox.setMinimum(1024)
+        self.spinBox.setMaximum(8196)
+        self.spinBox.setSingleStep(128)
 
         self.horizontalLayout_52.addWidget(self.spinBox)
 
@@ -1874,10 +1881,21 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_40.addLayout(self.verticalLayout_39)
 
+        self.horizontalLayout_34 = QHBoxLayout()
+        self.horizontalLayout_34.setObjectName(u"horizontalLayout_34")
+        self.label_28 = QLabel(self.tab_12)
+        self.label_28.setObjectName(u"label_28")
+
+        self.horizontalLayout_34.addWidget(self.label_28)
+
         self.pushButton_23 = QPushButton(self.tab_12)
         self.pushButton_23.setObjectName(u"pushButton_23")
+        self.pushButton_23.setMaximumSize(QSize(75, 16777215))
 
-        self.verticalLayout_40.addWidget(self.pushButton_23, 0, Qt.AlignRight)
+        self.horizontalLayout_34.addWidget(self.pushButton_23)
+
+
+        self.verticalLayout_40.addLayout(self.horizontalLayout_34)
 
         self.tabWidget_3.addTab(self.tab_12, "")
         self.tab_13 = QWidget()
@@ -1989,7 +2007,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.7", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.10", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u" \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u0430\u044f \u0438\u043d\u0438\u0446\u0438\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0432 \u0438 \u0441\u043f\u0438\u0441\u043a\u0430 \u043e\u0442\u0437\u044b\u0432\u043e\u0432", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0435\u0440\u0441\u0438\u044f \u0431\u0430\u0437\u044b:", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0430 \u0432\u044b\u043f\u0443\u0441\u043a\u0430 \u0431\u0430\u0437\u044b:", None))
@@ -2136,6 +2154,7 @@ class Ui_MainWindow(object):
         self.checkBox_10.setText(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u043e\u0432\u0435\u0449\u0430\u0442\u044c \u043e\u0431 \u043e\u0448\u0438\u0431\u043a\u0430\u0445", None))
         self.checkBox_9.setText(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u043e\u0432\u0435\u0449\u0430\u0442\u044c \u043e \u043d\u043e\u0432\u044b\u0445 CRL", None))
         self.checkBox_11.setText(QCoreApplication.translate("MainWindow", u"\u041e\u043f\u043e\u0432\u0435\u0449\u0430\u0442\u044c \u043e \u043d\u043e\u0432\u043e\u043c TSL", None))
+        self.label_27.setText("")
         self.pushButton_21.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_10), QCoreApplication.translate("MainWindow", u"\u041e\u0441\u043d\u043e\u0432\u043d\u043e\u0435", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u0430\u043f\u043a\u0438 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u044f", None))
@@ -2155,10 +2174,10 @@ class Ui_MainWindow(object):
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0440\u0442:", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438\u043d:", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0430\u0440\u043e\u043b\u044c:", None))
-        self.groupBox_5.setTitle(QCoreApplication.translate("MainWindow", u"\u0422\u0435\u0441\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 CRL", None))
-        self.checkBox_12.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0435\u0441\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043d\u0430 \u043a\u043e\u0440\u0440\u0435\u043a\u0442\u043d\u043e\u0441\u0442\u044c CRL", None))
-        self.checkBox_13.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0442\u044c \u043d\u0430 \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c", None))
-        self.groupBox_6.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442\u044b CRL", None))
+        self.groupBox_5.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u0438 \u0437\u0430\u043f\u0443\u0441\u043a\u0435 \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u044b (\u043c\u043e\u0436\u0435\u0442 \u0437\u0430\u043c\u0435\u0434\u043b\u0438\u0442\u044c \u0437\u0430\u043f\u0443\u0441\u043a \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u044b)", None))
+        self.checkBox_12.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0442\u044c CRL \u043d\u0430 \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u0438 \u043a\u043e\u0440\u0440\u0435\u043a\u0442\u043d\u043e\u0441\u0442\u044c", None))
+        self.checkBox_13.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0442\u044c TSL \u043d\u0430 \u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 CRL", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442 \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0438 CRL \u0432 \u0423\u0426", None))
         self.radioButton_2.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0441\u043d\u043e\u0432\u043d\u044b\u0435", None))
         self.radioButton.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0432\u043e\u0438", None))
@@ -2174,9 +2193,10 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(7, QCoreApplication.translate("MainWindow", u"8", None))
         self.comboBox.setItemText(8, QCoreApplication.translate("MainWindow", u"9", None))
 
-        self.label_29.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0437\u043c\u0435\u0440 \u043b\u043e\u0433\u043e\u0432", None))
+        self.label_29.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0437\u043c\u0435\u0440 \u043b\u043e\u0433\u043e\u0432 (\u041a\u0411)", None))
         self.label_25.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0435\u043b\u0438\u0442\u044c \u043b\u043e\u0433\u0438 \u043f\u043e \u0434\u043d\u044f\u043c", None))
         self.checkBox_14.setText("")
+        self.label_28.setText("")
         self.pushButton_23.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_12), QCoreApplication.translate("MainWindow", u"\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0435", None))
         self.groupBox_9.setTitle(QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438", None))
@@ -2193,16 +2213,17 @@ class Ui_MainWindow(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; "
                         "margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\u0423\u0440\u043e\u0432\u043d\u0438 \u043b\u043e\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f:</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">1 \u041e\u0448\u0438\u0431\u043a\u0438</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">2 \u041f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u044f</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">3 \u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">4 </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">5 </p>\n"
-"<p style=\" mar"
-                        "gin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">6 </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">7 </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">8 </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">9 \u0412\u0441\u0451</p></body></html>", None))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  1 \u041a\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u043e\u0448\u0438\u0431\u043a\u0438</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  2 \u041e\u0448\u0438\u0431\u043a\u0438 \u0440\u0430\u0431\u043e\u0442\u044b</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  3 \u041f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u044f \u0440\u0430\u0431\u043e\u0442\u044b \u043c\u043e\u0434\u0443\u043b\u0435\u0439</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent"
+                        ":0px;\">  4 \u041f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u044f \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u044f \u0438 \u043f\u0440\u0435\u0432\u043e\u0440\u043e\u043a</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  5 \u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f \u043e \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u0438 \u0438 \u043f\u0440\u043e\u0432\u0435\u0440\u043e\u043a</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  6 \u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f \u043e \u0440\u0430\u0431\u043e\u0442\u0435 \u043c\u043e\u0434\u0443\u043b\u0435\u0439</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  7 \u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f \u043f\u0440\u043e"
+                        "\u0447\u0430\u044f</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  8 \u0420\u0435\u0437\u0435\u0440\u0432</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">  9 \u0412\u0441\u0451</p></body></html>", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_14), QCoreApplication.translate("MainWindow", u"\u041f\u043e\u043c\u043e\u0449\u044c", None))
     # retranslateUi
 

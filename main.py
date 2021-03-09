@@ -18,7 +18,7 @@ import sqlite3
 import sys
 import time
 
-base64_icon = '''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'''
+base64_icon = '''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'''
 base64_info = '''iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjczNzI1OUQ2OTk2MTExRTdCNjU2ODA5MjgwQTNGNEVBIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjczNzI1OUQ3OTk2MTExRTdCNjU2ODA5MjgwQTNGNEVBIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NzM3MjU5RDQ5OTYxMTFFN0I2NTY4MDkyODBBM0Y0RUEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NzM3MjU5RDU5OTYxMTFFN0I2NTY4MDkyODBBM0Y0RUEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4vUyHzAAAOeUlEQVR42uxcCXAUVRp+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'''
 base64_diskette = '''iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjQ0OUNBRTk4OTk2MTExRTdBNjA1REY3OEVGNEFERThCIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjQ0OUNBRTk5OTk2MTExRTdBNjA1REY3OEVGNEFERThCIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDQ5Q0FFOTY5OTYxMTFFN0E2MDVERjc4RUY0QURFOEIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NDQ5Q0FFOTc5OTYxMTFFN0E2MDVERjc4RUY0QURFOEIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5NfXAoAAAGBklEQVR42uybW09cVRTH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'''
 base64_file = '''iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjUwODRBNTk5OTk2MTExRTc5QjM5RDUwNDQzM0VFQTlFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjUwODRBNTlBOTk2MTExRTc5QjM5RDUwNDQzM0VFQTlFIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NTA4NEE1OTc5OTYxMTFFNzlCMzlENTA0NDMzRUVBOUUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NTA4NEE1OTg5OTYxMTFFNzlCMzlENTA0NDMzRUVBOUUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7hsQiwAAAEmklEQVR42uycXWxTZRjH/+/5KN1cN3C6aXQbCGQL6xjRhGVCSSCRDWcoAW+8QAmaaFB00wuNH4lc+BFi4GpJb0xELxYMiUoIIXphME5JNCQgikZNHdgF3QfaduvX6Xt8XtpIXNrZsq70bM8/OTk7O133vr/3ed7n/+wsFbZtg5VfGiNgQAyIATEgBsSAGBADYjGgG5CR74aU8trZolM8BdRW0UWpuhIBJC060VkXlQFC0GDUURCgUCgEn89Hk5CorwZ2d+GBFzbBT8zWZF8yJ1SaAfOHEE4/cgSvRRI0iAqI476+PgwODhYGyLJSCAaD2NiE6sAuBNobsNuaKN1g0oR3nQe+tzaiZud7GKiEdnl0dLTwPciSAo0eDW/68U773QSH0gF6CQ9DLQKwowv9J5/CYZd+8wGZplk4oKvTwL4N6PJ14Elrev4GZU0BvWvRf/wJHKoyHVTFGjzA+mY8ZMfnv8qpBehZi4GP9uJQtekQQM23Quv1oj2dKM8grBhB6sTAscdx2G04ocxLmLRPN6KMJVhF0jYv+oefRdcfUUTm+ddN6wZOBIZx/OT3GEtYyDvV2dZLlnu1rDhwbwu6y2JfBXZs9SJ46hye3/kuPrZk8YBuiihyy6kVvfdhaN932H4ujs+41ciVJlG4n96AA6tug2v+IqiSH4z8zz6qOqqmpeh+qQNtdHm+dIAUFCv7tXJ6ml5ZYNTjrBTlazo7S212hi316CgdIJl5V7FyC8TyHoi6FeSQl2QGVRmdJ42FyERDsK98A/vXE7Ajk2SX8691Oo0avSQppuC4PNA3H4RYvYvegbpZaV2nVhnhkxkLdcVizaOw1+2HHH4F9i+fzjZjiVIB0rtfhmjfAyTCQDJc4duwgFi2GvqD7yP9ycOwf/sybyTNvYopQ3VnJ8F5jMBEMmFc8bIzLpQiXV//IkV/cTFRdJkX92wDltRl08pBUv3M7bS4DR3Xi0vJAdEuJuq9tKMlnWd4VAExqoDa5UXZkuKNouFeVEZSu6GVYEAsBsSASiMjr3dQXdxMc6y2H83MVAOnSVAsiGwzkc5U5H+lrvPYltyACIBo3pKzfbAvfw57nHo6WzowHlT74YJYtfm/00rFyR91FgFI0Lc9TbkBRUeB8KVMQ+gsI5T1cmRTaptmmMgpwF1fbIqlcjeg1ABeO5wsOePPliq98rRNvElzFWNADIgBMSAGxIAYEIsBMSAGxIAYEANyrkSxgMSiihRNpAsHpImk7tLHsUgegalHfZHp1M8FA7oyEbPP/jT+re42FkFeCcST8veDxy5eKBzQ1RjoBz6QwJgQCzvTNJeGHy//fSQ0EZssGNDSW1z48IuRkfMXx/dry9wx3Vh4e7lGC69Xm5DS/rrn9a/e/vOveM7XGblzUkJ9ZMX9z506uqf3ruAz/tZXWxtrNtGdugVCB+G4NTF8ZmzojaELByajVlSmYrlTMNdnd4TDYQQCASRSaViWRMsdNdi7dWWrLW0v3Vb/3iEdjcfUpoKhyNmjp0cuReMpeKpMtLW1we/3FwaIxUaRATEgBsSAGBADYkAsBsSA5qZ/BBgAJe9tb9K2+5EAAAAASUVORK5CYII='''
@@ -86,6 +86,16 @@ else:
                      'allowDeleteWatchingCRL': 'No',
                      'allowDownloadButtonCRL': 'Yes',
                      'allowCheckButtonCRL': 'Yes'}
+    config['Logs'] = {'dividelogsbyday': 'Yes',
+                      'dividelogsbysize': '1024',
+                      'loglevel': '9'}
+    config['XMPP'] = {'server': '',
+                      'login': '',
+                      'password': '',
+                      'tosend': '',
+                      'sendinfoerr': 'No',
+                      'sendinfonewcrl': 'No',
+                      'sendinfonewtsl': 'No'}
     with open('settings.ini', 'w') as configfile:
         config.write(configfile)
 
@@ -114,38 +124,45 @@ try:
 except OSError:
     pass
 
+if config['Logs']['dividelogsbyday'] == 'Yes':
+    datetime_day = '_' + datetime.datetime.now().strftime('%Y%m%d')
+else:
+    datetime_day = ''
 
-def logs(body, t=''):
-    if t == 'errors':
-        with open(config['Folders']['logs'] + "/error_" + datetime.datetime.now().strftime('%Y%m%d') + ".log",
-                  "a") as file:
-            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
-        file.close()
-    else:
-        with open(config['Folders']['logs'] + "/log_" + datetime.datetime.now().strftime('%Y%m%d') + ".log",
-                  "a") as file:
-            file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
-        file.close()
+open(config['Folders']['logs'] + "/error" + datetime_day + ".log", "a").write('')
+open(config['Folders']['logs'] + "/log" + datetime_day + ".log", "a").write('')
+
+
+def logs(body, kind='', log_level=''):
+    if int(log_level) <= int(config['Logs']['loglevel']):
+        if kind == 'errors':
+            with open(config['Folders']['logs'] + "/error" + datetime_day + ".log", "a") as file:
+                file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
+            file.close()
+        else:
+            with open(config['Folders']['logs'] + "/log" + datetime_day + ".log", "a") as file:
+                file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
+            file.close()
 
 
 bd_backup_name = str('cert_crl.db_') + datetime.datetime.now().strftime('%Y%m%d') + '.bkp'
 if os.path.isfile(bd_backup_name):
     print('Info: ' + bd_backup_name + ' exist')
-    logs('Info: ' + bd_backup_name + ' exist')
+    logs('Info: ' + bd_backup_name + ' exist', 'info', '7')
 else:
     try:
         shutil.copy2('cert_crl.db', bd_backup_name)
         print('Info: ' + bd_backup_name + ' created')
-        logs('Info: ' + bd_backup_name + ' created')
+        logs('Info: ' + bd_backup_name + ' created', 'info', '6')
     except Exception:
         print('Error: cert_crl.db NOT FOUND')
-        logs('Error: cert_crl.db NOT FOUND', 'errors')
+        logs('Error: cert_crl.db NOT FOUND', 'errors', '2')
 try:
     connect = sqlite3.connect(config['Bd']['name'])
     db = SqliteDatabase(config['Bd']['name'])
 except Exception:
     print('Error: Connect to BD failed')
-    logs('Error: Connect to BD failed', 'errors')
+    logs('Error: Connect to BD failed', 'errors', '2')
 
 
 class UC(Model):
@@ -395,7 +412,7 @@ def check_custom_crl(id_custom_crl, name, id_key, url_crl=''):
                                      str(id_custom_crl),
                                      'Yes') == 'down_success':
                     print('Warning: check_custom_crl()::down_error ' + name)
-                    logs('Warning: check_custom_crl()::down_error ' + name)
+                    logs('Warning: check_custom_crl()::down_error ' + name, 'warn', '4')
                     return 'down_error'
             crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
                                           open('crls/' + str(id_key) + '.crl', 'rb').read())
@@ -406,7 +423,7 @@ def check_custom_crl(id_custom_crl, name, id_key, url_crl=''):
                     issuer[var.decode("utf-8")] = data.decode("utf-8")
             except Exception:
                 print('Error: check_custom_crl()::get_components()')
-                logs('Error: check_custom_crl()::get_components()', 'errors')
+                logs('Error: check_custom_crl()::get_components()', 'errors', '2')
             query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
             for uc_data in query_uc:
                 name = uc_data.Name
@@ -422,7 +439,7 @@ def check_custom_crl(id_custom_crl, name, id_key, url_crl=''):
             issuer['INN'] = 'Unknown'
             issuer['OGRN'] = 'Unknown'
             print('Info: check_custom_crl()::success ' + name)
-            logs('Info: check_custom_crl()::success ' + name)
+            logs('Info: check_custom_crl()::success ' + name, 'info', '5')
             return 'check_success'
 
         except Exception:
@@ -432,10 +449,10 @@ def check_custom_crl(id_custom_crl, name, id_key, url_crl=''):
                 WatchingCustomCRL.ID == id_custom_crl)
             query_update.execute()
             print('Warning: check_custom_crl()::FILETYPE_ERROR')
-            logs('Warning: check_custom_crl()::FILETYPE_ERROR')
+            logs('Warning: check_custom_crl()::FILETYPE_ERROR', 'warn', '4')
     except Exception:
         print('Error: check_custom_crl()')
-        logs('Error: check_custom_crl()', 'errors')
+        logs('Error: check_custom_crl()', 'errors', '1')
 
 
 def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
@@ -459,11 +476,11 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
                         WatchingCRL.ID == id_wc)
                     query_update.execute()
                     print('Info: check_crl()::success ' + name_wc)
-                    logs('Info: check_crl()::success ' + name_wc)
+                    logs('Info: check_crl()::success ' + name_wc, 'info', '5')
                     return 'check_success'
                 else:
                     print('Warning: check_crl()::down_error ' + name_wc)
-                    logs('Warning: check_crl()::down_error ' + name_wc)
+                    logs('Warning: check_crl()::down_error ' + name_wc, 'warn', '4')
                     return 'down_error'
             else:
                 crl = OpenSSL.crypto.load_crl(
@@ -477,7 +494,7 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
                     WatchingCRL.ID == id_wc)
                 query_update.execute()
                 print('Info: check_crl()::success ' + name_wc)
-                logs('Info: check_crl()::success ' + name_wc)
+                logs('Info: check_crl()::success ' + name_wc, 'info', '5')
                 return 'check_success'
         except Exception:
             query_update = WatchingCRL.update(status='Warning: FILETYPE ERROR',
@@ -485,10 +502,10 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
                                               next_update='1970-01-01').where(WatchingCRL.ID == id_wc)
             query_update.execute()
             print('Warning: check_crl()::FILETYPE_ERROR')
-            logs('Warning: check_crl()::FILETYPE_ERROR')
+            logs('Warning: check_crl()::FILETYPE_ERROR', 'warn', '4')
     except Exception:
         print('Error: check_crl()')
-        logs('Error: check_crl()', 'errors')
+        logs('Error: check_crl()', 'errors', '1')
 
 
 def check_for_import_in_uc():
@@ -509,12 +526,12 @@ def check_for_import_in_uc():
                 print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
                 download_file(wc.UrlCRL, wc.KeyId + '.crl', folder, 'current', wc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/' + wc.KeyId + '.crl',
+                    shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
                                  config['Folders']['to_uc'] + 'current_' + wc.KeyId + '.crl')
                     check_crl(wc.ID, wc.Name, wc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_current')
-                    logs('Error: check_for_import_in_uc()::error_copy_current', 'errors')
+                    logs('Error: check_for_import_in_uc()::error_copy_current', 'errors', '2')
                 count = count + 1
         for wcc in query_2:
             if current_datetime > wcc.next_update:
@@ -522,22 +539,22 @@ def check_for_import_in_uc():
                       wcc.next_update)
                 download_file(wcc.UrlCRL, wcc.KeyId + '.crl', folder, 'custome', wcc.ID, 'Yes')
                 try:
-                    shutil.copy2('crls/' + wcc.KeyId + '.crl',
+                    shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
                                  config['Folders']['to_uc'] + 'custom_' + wcc.KeyId + '.crl')
                     check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_custom')
-                    logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors')
+                    logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors', '2')
                 count = count + 1
         if count > 0:
             print('Info: Copied ' + str(count) + ' count\'s CRL')
-            logs('Info: Copied ' + str(count) + ' count\'s CRL')
+            logs('Info: Copied ' + str(count) + ' count\'s CRL', 'info', '5')
         else:
             print('Info: Needed CRL not found')
-            logs('Info: Needed CRL not found')
+            logs('Info: Needed CRL not found', 'info', '5')
     except Exception:
         print('Error: check_for_import_in_uc()')
-        logs('Error: check_for_import_in_uc()', 'errors')
+        logs('Error: check_for_import_in_uc()', 'errors', '1')
 
 
 def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd='No'):
@@ -550,7 +567,7 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                      'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                 opener = request.build_opener(proxy)
                 request.install_opener(opener)
-                logs('Info: Used proxy')
+                logs('Info: Used proxy', 'info', '6')
             request.urlretrieve(file_url, path, schedule)
         except Exception:
             if set_dd == 'Yes':
@@ -576,7 +593,7 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
             print('Info: Download failed ' + file_url)
-            logs('Info: Download failed ' + file_url)
+            logs('Info: Download failed ' + file_url, 'info', '4')
             return 'down_error'
         else:
             if set_dd == 'Yes':
@@ -604,11 +621,11 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
             print('Info: Download successfully ' + file_url)
-            logs('Info: Download successfully ' + file_url)
+            logs('Info: Download successfully ' + file_url, 'info', '5')
             return 'down_success'
     except Exception:
         print('Error: download_file()')
-        logs('Error: download_file()', 'errors')
+        logs('Error: download_file()', 'errors', '1')
 
 
 def export_all_watching_crl():
@@ -662,7 +679,7 @@ class MainWorker(QObject):
                 self._isRunning = True
             except Exception:
                 print('Error: Worker(QObject)::__init__')
-                logs('Error: Worker(QObject)::__init__', 'errors')
+                logs('Error: Worker(QObject)::__init__', 'errors', '1')
 
         def task(self):
             try:
@@ -706,7 +723,7 @@ class MainWorker(QObject):
                                 print('error')
 
                 print('Info: Start monitoring CRL')
-                logs('Info: Start monitoring CRL')
+                logs('Info: Start monitoring CRL', 'info', '6')
                 self.threadInfoMessage.emit('Info: Start monitoring CRL')
                 self.threadButtonStartD.emit('True')
                 self.threadButtonStopE.emit('True')
@@ -779,23 +796,23 @@ class MainWorker(QObject):
                     sec_start -= 1
                     time.sleep(1)
                 print('Info: Monitoring is stopped')
-                logs('Info: Monitoring is stopped')
+                logs('Info: Monitoring is stopped', 'info', '6')
                 self.threadInfoMessage.emit('Info: Monitoring is stopped')
                 self.threadButtonStartE.emit('True')
                 self.threadButtonStopD.emit('True')
             except Exception:
-                print('Error: Worker(QObject)::task(self)')
-                logs('Error: Worker(QObject)::task(self)', 'errors')
+                print('Error: Worker(QObject)::task()')
+                logs('Error: Worker(QObject)::task()', 'errors', '2')
 
         def stop(self):
             try:
                 self._isRunning = False
             except Exception:
-                print('Error: Worker(QObject)::top(self)')
-                logs('Error: Worker(QObject)::top(self)', 'errors')
+                print('Error: Worker()::top()')
+                logs('Error: Worker()::top()', 'errors', '2')
     except Exception:
-        print('Error: Worker(QObject)')
-        logs('Error: Worker(QObject)', 'errors')
+        print('Error: Worker()')
+        logs('Error: Worker()', 'errors', '1')
 
 
 class Downloader(QThread):
@@ -816,25 +833,25 @@ class Downloader(QThread):
 
         def run(self):
             try:
-                logs('Info: Downloading TSL')
+                logs('Info: Downloading TSL', 'info', '5')
                 if config['Proxy']['proxyon'] == 'Yes':
                     proxy = request.ProxyHandler(
                         {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
                          'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                     opener = request.build_opener(proxy)
                     request.install_opener(opener)
-                    logs('Info: Used proxy')
+                    logs('Info: Used proxy', 'info', '7')
                 request.urlretrieve(self.fileUrl, self.fileName, self._progress)
             except error.HTTPError as e:
                 print(e)
                 self.done.emit('Ошибка загрузки')
-                logs('Info: download failed')
+                logs('Warning: download failed', 'warn', '4')
             except Exception:
                 self.done.emit('Ошибка загрузки')
-                logs('Info: download failed')
+                logs('Warning: download failed', 'warn', '4')
             else:
                 print('Загрузка завершена')
-                logs('Info: Downloading successfully')
+                logs('Info: Downloading successfully', 'info', '5')
 
                 query_get_settings = Settings.select()
                 ver_from_tsl = get_info_xlm('current_version')
@@ -844,11 +861,11 @@ class Downloader(QThread):
                     break
                 if int(ver) == int(ver_from_tsl):
                     print('Info: update not need')
-                    logs('Info: update not need')
+                    logs('Info: update not need', 'info', '6')
                     self.done.emit('Загрузка завершена, обновление не требуется')
                 else:
                     print('Info: Need update')
-                    logs('Info: Need update, new version ' + ver_from_tsl + ', old ' + ver)
+                    logs('Info: Need update, new version ' + ver_from_tsl + ', old ' + ver, 'info', '6')
                     self.done.emit('Загрузка завершена, требуются обновления Базы УЦ и сертификатов. Новая версия '
                                    + ver_from_tsl + ' текущая версия ' + ver)
 
@@ -873,8 +890,8 @@ class Downloader(QThread):
                 # Чтобы было 100%
                 self.progress.emit(total_size)
     except Exception:
-        print('Error: Downloader(QThread)')
-        logs('Error: Downloader(QThread)', 'errors')
+        print('Error: Downloader()')
+        logs('Error: Downloader()', 'errors', '1')
 
 
 class MainWindow(QMainWindow):
@@ -904,6 +921,15 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_5.textChanged[str].connect(self.sub_tab_watching_custom_crl)
         self.sub_tab_watching_disabled_crl()
         self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_disabled_crl)
+        self.init_schedule()
+
+    def init_schedule(self):
+        if config['Schedule']['allowupdatetslbystart'] == 'Yes':
+            self.download_xml()
+        if config['Schedule']['allowupdatecrlbystart'] == 'Yes':
+            self.check_all_crl()
+        #if config['Schedule']['allowschedule'] == 'Yes':
+        #    self.worker.task()
 
     def tab_info(self):
         try:
@@ -935,7 +961,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_6.pressed.connect(self.import_crl_list)
 
             watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(
-                WatchingCRL.OGRN == '1047702026701')
+                WatchingCRL.OGRN == config['Custom']['main_uc_ogrn'])
             self.ui.tableWidget_7.resizeColumnsToContents()
             self.ui.tableWidget_7.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             count = 0
@@ -953,7 +979,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_7.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
             watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(
-                WatchingCRL.OGRN == '1020203227263')
+                WatchingCRL.OGRN == config['Custom']['self_uc_ogrn'])
             self.ui.tableWidget_8.resizeColumnsToContents()
             self.ui.tableWidget_8.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             count = 0
@@ -990,7 +1016,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_19.clicked.connect(self.worker.task)
         except Exception:
             print('Error: tab_info()')
-            logs('Error: tab_info()', 'errors')
+            logs('Error: tab_info()', 'errors', '1')
 
     def tab_uc(self, text=''):
         try:
@@ -1031,7 +1057,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_uc()')
-            logs('Error: tab_uc()', 'errors')
+            logs('Error: tab_uc()', 'errors', '1')
 
     def tab_cert(self, text=''):
         try:
@@ -1087,7 +1113,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_cert()')
-            logs('Error: tab_cert()', 'errors')
+            logs('Error: tab_cert()', 'errors', '1')
 
     def tab_crl(self, text=''):
         try:
@@ -1159,7 +1185,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_3.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_crl()')
-            logs('Error: tab_crl()', 'errors')
+            logs('Error: tab_crl()', 'errors', '1')
 
     def tab_watching_crl(self):
         self.ui.pushButton_4.pressed.connect(self.download_all_crls)
@@ -1240,7 +1266,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_4.setColumnWidth(7, 30)
         except Exception:
             print('Error: sub_tab_watching_crl()')
-            logs('Error: sub_tab_watching_crl()', 'errors')
+            logs('Error: sub_tab_watching_crl()', 'errors', '1')
 
     def sub_tab_watching_custom_crl(self, text=''):
         try:
@@ -1319,7 +1345,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_5.setColumnWidth(7, 30)
         except Exception:
             print('Error: sub_tab_watching_custom_crl()')
-            logs('Error: sub_tab_watching_custom_crl()', 'errors')
+            logs('Error: sub_tab_watching_custom_crl()', 'errors', '1')
 
     def sub_tab_watching_disabled_crl(self, text=''):
         try:
@@ -1377,7 +1403,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_6.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: sub_tab_watching_off_crl()')
-            logs('Error: sub_tab_watching_off_crl()', 'errors')
+            logs('Error: sub_tab_watching_off_crl()', 'errors', '1')
 
     def init_settings(self):
         try:
@@ -1388,6 +1414,17 @@ class MainWindow(QMainWindow):
             self.ui.lineEdit_16.setText(config['Tabs']['wcLimit'])
             self.ui.lineEdit_15.setText(config['Tabs']['wccLimit'])
             self.ui.lineEdit_14.setText(config['Tabs']['wcdLimit'])
+            self.ui.lineEdit_19.setText(config['XMPP']['server'])
+            self.ui.lineEdit_20.setText(config['XMPP']['login'])
+            self.ui.lineEdit_21.setText(config['XMPP']['password'])
+            self.ui.lineEdit_22.setText(config['XMPP']['tosend'])
+
+            if config['XMPP']['sendinfoerr'] == 'Yes':
+                self.ui.checkBox_10.setChecked(True)
+            if config['XMPP']['sendinfonewcrl'] == 'Yes':
+                self.ui.checkBox_9.setChecked(True)
+            if config['XMPP']['sendinfonewtsl'] == 'Yes':
+                self.ui.checkBox_11.setChecked(True)
 
             if config['Sec']['allowImportCRL'] == 'Yes':
                 self.ui.checkBox_4.setChecked(True)
@@ -1409,7 +1446,7 @@ class MainWindow(QMainWindow):
             else:
                 self.ui.pushButton_5.setDisabled(True)
 
-            # Interface  config
+            # Sub  config
             self.ui.lineEdit_12.setText(config['MainWindow']['height'])
             self.ui.lineEdit_11.setText(config['MainWindow']['width'])
             self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
@@ -1420,6 +1457,19 @@ class MainWindow(QMainWindow):
                 self.setMinimumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMaximumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
 
+            self.ui.comboBox.setCurrentText(config['Logs']['loglevel'])
+            self.ui.spinBox.setValue(int(config['Logs']['dividelogsbysize']))
+            if config['Logs']['dividelogsbyday'] == 'Yes':
+                self.ui.checkBox_14.setChecked(True)
+
+            if config['Schedule']['allowupdatecrlbystart'] == 'Yes':
+                self.ui.checkBox_12.setChecked(True)
+            else:
+                self.ui.pushButton_12.setDisabled(True)
+            if config['Schedule']['allowupdatetslbystart'] == 'Yes':
+                self.ui.checkBox_13.setChecked(True)
+            else:
+                self.ui.pushButton_13.setDisabled(True)
             # download config
             self.ui.label_13.setText(config['Folders']['crls'])
             self.ui.label_12.setText(config['Folders']['certs'])
@@ -1452,31 +1502,30 @@ class MainWindow(QMainWindow):
                 self.ui.lineEdit_10.setEnabled(True)
 
             # Logs
+            if config['Logs']['dividelogsbyday'] == 'Yes':
+                datetime_day = '_' + datetime.datetime.now().strftime('%Y%m%d')
+            else:
+                datetime_day = ''
+
             try:
                 self.ui.textBrowser.setText(
-                    open(config['Folders']['logs'] + '/log_' + datetime.datetime.now().strftime('%Y%m%d')
-                         + '.log', 'r').read())
+                    open(config['Folders']['logs'] + '/log' + datetime_day + '.log', 'r').read())
             except Exception:
-                print('Error: init_settings()::Filed_open_log::logs/log_' + datetime.datetime.now().strftime(
-                    '%Y%m%d') + '.log')
-                logs('Error: init_settings()::Filed_open_log::logs/log_' + datetime.datetime.now().strftime(
-                    '%Y%m%d') + '.log', 'errors')
+                print('Error: init_settings()::Filed_open_log::logs/log' + datetime_day + '.log')
+                logs('Error: init_settings()::Filed_open_log::logs/log' + datetime_day + '.log', 'errors', '2')
             try:
                 self.ui.textBrowser_2.setText(
-                    open(config['Folders']['logs'] + '/error_' + datetime.datetime.now().strftime('%Y%m%d')
-                         + '.log', 'r').read())
+                    open(config['Folders']['logs'] + '/error' + datetime_day + '.log', 'r').read())
             except Exception:
-                print('Error: init_settings()::Filed_open_log::logs/error_' + datetime.datetime.now().strftime(
-                    '%Y%m%d') + '.log')
-                logs('Error: init_settings()::Filed_open_log::logs/error_' + datetime.datetime.now().strftime(
-                    '%Y%m%d') + '.log', 'errors')
+                print('Error: init_settings()::Filed_open_log::logs/error' + datetime_day + '.log')
+                logs('Error: init_settings()::Filed_open_log::logs/error' + datetime_day + '.log', 'errors', '2')
 
             self.ui.pushButton_21.pressed.connect(lambda: self.save_settings_main())
             self.ui.pushButton_23.pressed.connect(lambda: self.save_settings_sub())
             self.ui.pushButton_24.pressed.connect(lambda: self.save_settings_logs())
         except Exception:
             print('Error: init_settings()')
-            logs('Error: init_settings()', 'errors')
+            logs('Error: init_settings()', 'errors', '1')
 
     def save_settings_main(self):
         try:
@@ -1488,13 +1537,29 @@ class MainWindow(QMainWindow):
             set_value_in_property_file('settings.ini', 'Tabs', 'wcdLimit', self.ui.lineEdit_14.text())
             set_value_in_property_file('settings.ini', 'MainWindow', 'height', self.ui.lineEdit_12.text())
             set_value_in_property_file('settings.ini', 'MainWindow', 'width', self.ui.lineEdit_11.text())
+            set_value_in_property_file('settings.ini', 'XMPP', 'server', self.ui.lineEdit_19.text())
+            set_value_in_property_file('settings.ini', 'XMPP', 'login', self.ui.lineEdit_20.text())
+            set_value_in_property_file('settings.ini', 'XMPP', 'password', self.ui.lineEdit_21.text())
+            set_value_in_property_file('settings.ini', 'XMPP', 'tosend', self.ui.lineEdit_22.text())
+
+            if self.ui.checkBox_10.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'No')
+            elif self.ui.checkBox_10.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'Yes')
+            if self.ui.checkBox_9.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'No')
+            elif self.ui.checkBox_9.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'Yes')
+            if self.ui.checkBox_11.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'No')
+            elif self.ui.checkBox_11.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'Yes')
 
             if self.ui.checkBox_3.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
                 self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMinimumSize(0, 0)
                 self.setMaximumSize(16777215, 16777215)
-
             elif self.ui.checkBox_3.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
                 self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
@@ -1503,7 +1568,6 @@ class MainWindow(QMainWindow):
 
             if self.ui.checkBox_2.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
-
             elif self.ui.checkBox_2.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
 
@@ -1535,50 +1599,61 @@ class MainWindow(QMainWindow):
             elif self.ui.checkBox_8.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'Yes')
                 self.ui.pushButton_5.setEnabled(True)
-
+            self.ui.label_27.setText('Настройки сохранены')
             print('Info: save_settings_main()::Saved')
-            logs('Info: save_settings_main()::Saved')
+            logs('Info: save_settings_main()::Saved', 'info', '6')
         except Exception:
             print('Error: save_settings_main()')
-            logs('Error: save_settings_main()', 'errors')
-
+            logs('Error: save_settings_main()', 'errors', '1')
 
     def save_settings_sub(self):
-        set_value_in_property_file('settings.ini', 'Folders', 'certs', self.ui.label_13.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'crls', self.ui.label_12.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'tmp', self.ui.label_11.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'logs', self.ui.label_10.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'to_uc', self.ui.label_9.text())
+        try:
+            set_value_in_property_file('settings.ini', 'Folders', 'certs', self.ui.label_12.text())
+            set_value_in_property_file('settings.ini', 'Folders', 'crls', self.ui.label_13.text())
+            set_value_in_property_file('settings.ini', 'Folders', 'tmp', self.ui.label_10.text())
+            set_value_in_property_file('settings.ini', 'Folders', 'uc', self.ui.label_11.text())
+            set_value_in_property_file('settings.ini', 'Folders', 'to_uc', self.ui.label_9.text())
 
-        set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text())
+            set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text())
+            set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text())
+            set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text())
+            set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text())
 
-        if self.ui.checkBox_12.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Update', 'advancedchecking', 'No')
-        elif self.ui.checkBox_12.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Update', 'advancedchecking', 'Yes')
-        if self.ui.checkBox_13.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Update', 'viewingcrllastnextupdate', 'No')
-        elif self.ui.checkBox_13.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Update', 'viewingcrllastnextupdate', 'Yes')
+            if self.ui.checkBox_12.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'No')
+            elif self.ui.checkBox_12.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'Yes')
+            if self.ui.checkBox_13.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'No')
+            elif self.ui.checkBox_13.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'Yes')
 
-        if self.ui.checkBox.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No')
-            self.ui.lineEdit_7.setDisabled(True)
-            self.ui.lineEdit_8.setDisabled(True)
-            self.ui.lineEdit_9.setDisabled(True)
-            self.ui.lineEdit_10.setDisabled(True)
-        elif self.ui.checkBox.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes')
-            self.ui.lineEdit_7.setEnabled(True)
-            self.ui.lineEdit_8.setEnabled(True)
-            self.ui.lineEdit_9.setEnabled(True)
-            self.ui.lineEdit_10.setEnabled(True)
+            if self.ui.checkBox.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No')
+                self.ui.lineEdit_7.setDisabled(True)
+                self.ui.lineEdit_8.setDisabled(True)
+                self.ui.lineEdit_9.setDisabled(True)
+                self.ui.lineEdit_10.setDisabled(True)
+            elif self.ui.checkBox.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes')
+                self.ui.lineEdit_7.setEnabled(True)
+                self.ui.lineEdit_8.setEnabled(True)
+                self.ui.lineEdit_9.setEnabled(True)
+                self.ui.lineEdit_10.setEnabled(True)
 
-    def save_settings_logs(self):
-        print()
+            set_value_in_property_file('settings.ini', 'Logs', 'loglevel', self.ui.comboBox.currentText())
+            set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbysize', str(self.ui.spinBox.value()))
+            if self.ui.checkBox_14.checkState() == 0:
+                set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'No')
+            elif self.ui.checkBox_14.checkState() == 2:
+                set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'Yes')
+
+            self.ui.label_28.setText('Настройки сохранены')
+            print('Info: save_settings_sub()::Saved')
+            logs('Info: save_settings_sub()::Saved', 'info', '6')
+        except Exception:
+            print('Error: save_settings_sub()')
+            logs('Error: save_settings_sub()', 'errors', '1')
 
     def init_xml(self):
         try:
@@ -1591,7 +1666,7 @@ class MainWindow(QMainWindow):
             CERT.create_table()
             CRL.create_table()
             self.ui.label_7.setText('Обрабатываем данные.')
-            logs('Info: Init TLS started')
+            logs('Info: Init TLS started', 'info', '5')
             with open('tsl.xml', "rt", encoding="utf-8") as obj:
                 xml = obj.read().encode()
 
@@ -1698,7 +1773,7 @@ class MainWindow(QMainWindow):
                             uc_count = uc_count + 1
                 if registration_number != '':
                     self.ui.label_7.setText('Обрабатываем данные:\n УЦ: ' + name)
-                    logs('Info: Processing - UC:' + name)
+                    logs('Info: Processing - UC:' + name, 'info', '6')
                     uc = UC(Registration_Number=registration_number,
                             INN=inn,
                             OGRN=ogrn,
@@ -1762,10 +1837,10 @@ class MainWindow(QMainWindow):
             self.ui.pushButton.setEnabled(True)
             self.ui.pushButton_2.setEnabled(True)
             self.ui.label_7.setText('Готово.')
-            logs('Info: Processing successful done')
+            logs('Info: Processing successful done', 'info', '6')
         except Exception:
             print('Error: init_xml()')
-            logs('Error: init_xml()', 'errors')
+            logs('Error: init_xml()', 'errors', '1')
 
     def open_sub_window_info_uc(self, reg_number):
         try:
@@ -1777,7 +1852,7 @@ class MainWindow(QMainWindow):
                 self.window_uc = None  # Discard reference.
         except Exception:
             print('Error: open_sub_window_info_uc()')
-            logs('Error: open_sub_window_info_uc()', 'errors')
+            logs('Error: open_sub_window_info_uc()', 'errors', '1')
 
     def open_sub_window_add(self):
         try:
@@ -1789,7 +1864,7 @@ class MainWindow(QMainWindow):
                 self.window_add_crl = None  # Discard reference.
         except Exception:
             print('Error: open_sub_window_info_uc()')
-            logs('Error: open_sub_window_info_uc()', 'errors')
+            logs('Error: open_sub_window_info_uc()', 'errors', '1')
 
     def choose_directory(self, type):
         try:
@@ -1806,7 +1881,7 @@ class MainWindow(QMainWindow):
                 self.ui.label_11.setText(input_dir)
         except Exception:
             print('Error: choose_directory()')
-            logs('Error: choose_directory()', 'errors')
+            logs('Error: choose_directory()', 'errors', '1')
 
     def check_all_crl(self):
         try:
@@ -1824,7 +1899,7 @@ class MainWindow(QMainWindow):
             # self.textBrowser.setText(open('main.log', 'rb').read().decode())
         except Exception:
             print('Error: check_all_crl()')
-            logs('Error: check_all_crl()', 'errors')
+            logs('Error: check_all_crl()', 'errors', '1')
 
     def add_watch_current_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
         try:
@@ -1851,19 +1926,19 @@ class MainWindow(QMainWindow):
                     self.ui.label_24.setText('Проводится проверка')
                     if check_crl(add_to_watching_crl.ID, row.Name, keyid, url_crl) == 'down_error':
                         print('Warning: add_watch_current_crl()::crl_added_error:down_error:' + keyid)
-                        logs('Warning: add_watch_current_crl()::crl_added_error:down_error:' + keyid)
+                        logs('Warning: add_watch_current_crl()::crl_added_error:down_error:' + keyid, 'warn', '4')
                         self.ui.label_24.setText('Ошибка добавления, невозможно скачать файл, проверьте источник')
                     else:
                         print('Info: add_watch_current_crl()::crl_added:' + keyid)
-                        logs('Info: add_watch_current_crl()::crl_added:' + keyid)
+                        logs('Info: add_watch_current_crl()::crl_added:' + keyid, 'info', '7')
                         self.ui.label_24.setText('CRL ' + keyid + ' добавлен в список отлеживания')
             else:
                 print('Info: add_watch_current_crl()::crl_exist:' + keyid)
-                logs('Info: add_watch_current_crl()::crl_exist:' + keyid)
+                logs('Info: add_watch_current_crl()::crl_exist:' + keyid, 'info', '7')
                 self.ui.label_24.setText('CRL ' + keyid + ' уже находится в списке отслеживания')
         except Exception:
             print('Error: add_watch_current_crl()')
-            logs('Error: add_watch_current_crl()', 'errors')
+            logs('Error: add_watch_current_crl()', 'errors', '1')
 
     def add_watch_custom_crl(self, url_crl):
         try:
@@ -1879,15 +1954,15 @@ class MainWindow(QMainWindow):
                 add_to_watching_crl.save()
                 self.counter_added_custom = self.counter_added_custom + 1
                 print('Info: add_watch_custom_crl()::crl_added:' + url_crl)
-                logs('Info: add_watch_custom_crl()::crl_added:' + url_crl)
+                logs('Info: add_watch_custom_crl()::crl_added:' + url_crl, 'info', '7')
             else:
                 print('Info: add_watch_custom_crl()::crl_exist:' + url_crl)
-                logs('Info: add_watch_custom_crl()::crl_exist:' + url_crl)
+                logs('Info: add_watch_custom_crl()::crl_exist:' + url_crl, 'info', '7')
                 self.counter_added_exist = self.counter_added_exist + 1
             self.on_changed_find_watching_crl('')
         except Exception:
             print('Error: add_watch_custom_crl()')
-            logs('Error: add_watch_custom_crl()', 'errors')
+            logs('Error: add_watch_custom_crl()', 'errors', '1')
 
     def move_watching_to_passed(self, id_var, from_var):
         try:
@@ -1913,7 +1988,7 @@ class MainWindow(QMainWindow):
                 self.sub_tab_watching_crl()
                 self.sub_tab_watching_disabled_crl()
                 print('Info: move_watching_to_passed()::moving_success_current:')
-                logs('Info: move_watching_to_passed()::moving_success_current:')
+                logs('Info: move_watching_to_passed()::moving_success_current:', 'info', '7')
             elif from_var == 'custom':
                 from_bd = WatchingCustomCRL.select().where(WatchingCustomCRL.ID == id_var)
                 for row in from_bd:
@@ -1936,13 +2011,13 @@ class MainWindow(QMainWindow):
                 self.sub_tab_watching_custom_crl()
                 self.sub_tab_watching_disabled_crl()
                 print('Info: move_watching_to_passed()::moving_success_custom:')
-                logs('Info: move_watching_to_passed()::moving_success_custom:')
+                logs('Info: move_watching_to_passed()::moving_success_custom:', 'info', '7')
             else:
                 print('Error: move_watching_to_passed()::Error_Moving')
-                logs('Error: move_watching_to_passed()::Error_Moving', 'errors')
+                logs('Error: move_watching_to_passed()::Error_Moving', 'errors', '2')
         except Exception:
             print('Error: move_watching_to_passed()')
-            logs('Error: move_watching_to_passed()', 'errors')
+            logs('Error: move_watching_to_passed()', 'errors', '1')
 
     def move_passed_to_watching(self, id_var):
         try:
@@ -1967,7 +2042,7 @@ class MainWindow(QMainWindow):
                     self.sub_tab_watching_disabled_crl()
                     self.sub_tab_watching_crl()
                     print('Info: move_passed_to_watching()::moving_success_current:')
-                    logs('Info: move_passed_to_watching()::moving_success_current:')
+                    logs('Info: move_passed_to_watching()::moving_success_current:', 'info', '7')
                 elif row.moved_from == 'custom':
                     to_custom = WatchingCustomCRL(Name=row.Name,
                                                   INN=row.INN,
@@ -1987,13 +2062,13 @@ class MainWindow(QMainWindow):
                     self.sub_tab_watching_disabled_crl()
                     self.sub_tab_watching_custom_crl()
                     print('Info: move_passed_to_watching()::moving_success_custom:')
-                    logs('Info: move_passed_to_watching()::moving_success_custom:')
+                    logs('Info: move_passed_to_watching()::moving_success_custom:', 'info', '7')
                 else:
                     print('Error: move_passed_to_watching()::error_moving')
-                    logs('Error: move_passed_to_watching()::error_moving', 'errors')
+                    logs('Error: move_passed_to_watching()::error_moving', 'errors', '2')
         except Exception:
             print('Error: move_passed_to_watching()')
-            logs('Error: move_passed_to_watching()', 'errors')
+            logs('Error: move_passed_to_watching()', 'errors', '1')
 
     # def delete_watching(self, id):
     #     WatchingCRL.delete_by_id(id)
@@ -2022,7 +2097,7 @@ class MainWindow(QMainWindow):
             self._download.start()
         except Exception:
             print('Error: download_xml()')
-            logs('Error: download_xml()', 'errors')
+            logs('Error: download_xml()', 'errors', '1')
 
     def download_all_crls(self):
         try:
@@ -2049,7 +2124,7 @@ class MainWindow(QMainWindow):
                 download_file(file_url, file_name, folder, 'current', wc.ID)
                 # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
             print('WatchingCRL downloaded ' + str(counter_watching_crl))
-            logs('Info: WatchingCRL downloaded ' + str(counter_watching_crl))
+            logs('Info: WatchingCRL downloaded ' + str(counter_watching_crl), 'info', '5')
             for wcc in query_2:
                 QCoreApplication.processEvents()
                 counter_watching_custom_crl = counter_watching_custom_crl + 1
@@ -2065,13 +2140,13 @@ class MainWindow(QMainWindow):
                 # Downloader(str(wcc.UrlCRL), str(wcc.SerialNumber)+'.crl'
             self.ui.label_8.setText('Загрузка закончена')
             print('WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl))
-            logs('Info: WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl))
+            logs('Info: WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl), 'info', '5')
             print('All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl))
-            logs('Info: All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl))
+            logs('Info: All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl), 'info', '5')
             self.ui.pushButton_4.setEnabled(True)
         except Exception:
             print('Error: download_all_crls()')
-            logs('Error: download_all_crls()', 'errors')
+            logs('Error: download_all_crls()', 'errors', '1')
 
     def import_crl_list(self, file_name='crl_list.txt'):
         try:
@@ -2098,10 +2173,10 @@ class MainWindow(QMainWindow):
                 print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
             else:
                 print('Not found crl_list.txt')
-                logs('Info: Not found crl_list.txt')
+                logs('Info: Not found crl_list.txt', 'info', '5')
         except Exception:
             print('Error: import_crl_list()')
-            logs('Error: import_crl_list()', 'errors')
+            logs('Error: import_crl_list()', 'errors', '1')
 
     def export_crl(self):
         self.ui.label_7.setText('Генерируем файл')
@@ -2199,10 +2274,10 @@ class UcWindow(QWidget):
                 self.ui.tableWidget.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
             except Exception:
                 print('Error: UcWindow()::init()::query_to_row')
-                logs('Error: UcWindow()::init()::query_to_row', 'errors')
+                logs('Error: UcWindow()::init()::query_to_row', 'errors', '2')
         except Exception:
             print('Error: UcWindow()::init()')
-            logs('Error: UcWindow()::init()', 'errors')
+            logs('Error: UcWindow()::init()', 'errors', '1')
 
 
 class AddCRLWindow(QWidget):
@@ -2218,7 +2293,7 @@ class AddCRLWindow(QWidget):
             self.init()
         except Exception:
             print('Error: AddCRLWindow()::__init__()', 'errors')
-            logs('Error: AddCRLWindow()::__init__()', 'errors')
+            logs('Error: AddCRLWindow()::__init__()', 'errors', '1')
 
     def init(self, text=''):
         try:
@@ -2232,7 +2307,7 @@ class AddCRLWindow(QWidget):
                 self.ui_add.comboBox.addItem(row.Name, row.KeyId)
         except Exception:
             print('Error: AddCRLWindow()::init()', 'errors')
-            logs('Error: AddCRLWindow()::init()', 'errors')
+            logs('Error: AddCRLWindow()::init()', 'errors', '2')
 
     def set_fields(self):
         try:
@@ -2252,7 +2327,7 @@ class AddCRLWindow(QWidget):
                 self.ui_add.lineEdit_2.setText(str(row_uc.OGRN))
         except Exception:
             print('Error: AddCRLWindow()::set_fields()', 'errors')
-            logs('Error: AddCRLWindow()::set_fields()', 'errors')
+            logs('Error: AddCRLWindow()::set_fields()', 'errors', '2')
 
     def query_fields(self):
         try:
@@ -2264,7 +2339,7 @@ class AddCRLWindow(QWidget):
                                               or WatchingCRL.SerialNumber == self.ui_add.lineEdit_4.text()
                                               or WatchingCRL.UrlCRL == self.ui_add.lineEdit_9.text()).count() > 0:
                     print('Info: CRL is exists in WatchingCRL')
-                    logs('Info: CRL is exists in WatchingCRL')
+                    logs('Info: CRL is exists in WatchingCRL', 'info', '7')
                     self.ui_add.label_10.setText('CRL уже есть в основном списке отслеживания')
                 elif WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == self.ui_add.lineEdit_3.text()
                                                       or WatchingCustomCRL.Stamp == self.ui_add.lineEdit_8.text()
@@ -2272,7 +2347,7 @@ class AddCRLWindow(QWidget):
                                                       or WatchingCustomCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
                         .count() > 0:
                     print('Info: CRL is exist in WatchingCustomCRL')
-                    logs('Info: CRL is exist in WatchingCustomCRL')
+                    logs('Info: CRL is exist in WatchingCustomCRL', 'info', '7')
                     self.ui_add.label_10.setText('CRL уже есть в своем списке отслеживания')
                 elif WatchingDeletedCRL.select().where(WatchingDeletedCRL.KeyId == self.ui_add.lineEdit_3.text()
                                                        or WatchingDeletedCRL.Stamp == self.ui_add.lineEdit_8.text()
@@ -2280,7 +2355,7 @@ class AddCRLWindow(QWidget):
                                                        or WatchingDeletedCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
                         .count() > 0:
                     print('Info: CRL is exist in WatchingDeletedCRL')
-                    logs('Info: CRL is exist in WatchingDeletedCRL')
+                    logs('Info: CRL is exist in WatchingDeletedCRL', 'info', '7')
                     self.ui_add.label_10.setText('CRL уже есть в удаленных, или удалите полностью или верните обратно')
                 else:
                     name = self.ui_add.lineEdit_6.text()
@@ -2293,7 +2368,7 @@ class AddCRLWindow(QWidget):
                     if name == '' or inn == '' or ogrn == '' or key_id == '' or stamp == '' or serial_number == '' or url_crl == '':
                         print('Заполните все поля')
                         print('Info: The fields should not be empty')
-                        logs('Info: The fields should not be empty')
+                        logs('Info: The fields should not be empty', 'info', '6')
                         self.ui_add.label_10.setText('Заполните все поля')
                     else:
                         query = WatchingCustomCRL(Name=name,
@@ -2318,20 +2393,20 @@ class AddCRLWindow(QWidget):
                         #               set_dd='Yes')
                         check_custom_crl(query.ID, name, key_id)
                         print('Info: CRL added in WatchingCustomCRL')
-                        logs('Info: CRL added in WatchingCustomCRL')
+                        logs('Info: CRL added in WatchingCustomCRL', 'info', '7')
                         self.ui_add.label_10.setText('CRL "' + name + '" добавлен в список отслеживания')
             else:
-                print('Info: Cert not found')
-                logs('Info: Cert not found')
+                print('Warning: Cert not found')
+                logs('Warning: Cert not found', 'warn', '4')
                 self.ui_add.label_10.setText('Не найден квалифицированный сертификат УЦ')
         except Exception:
-            print('Error: AddCRLWindow()::query_fields()', 'errors')
-            logs('Error: AddCRLWindow()::query_fields()', 'errors')
+            print('Error: AddCRLWindow()::query_fields()')
+            logs('Error: AddCRLWindow()::query_fields()', 'errors', '2')
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setStyle(config['Style']['Window'])
+    app.setStyle(config['Style']['window'])
     main_app = MainWindow()
     main_app.show()
     sys.exit(app.exec_())
