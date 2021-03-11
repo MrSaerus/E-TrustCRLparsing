@@ -562,9 +562,12 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
         path = folder + '/' + file_name  # + '.' + type_file
         try:
             if config['Proxy']['proxyon'] == 'Yes':
-                proxy = request.ProxyHandler(
-                    {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
-                     'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                if file_url.split('/')[0] == 'https:':
+                    proxy = request.ProxyHandler(
+                        {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                else:
+                    proxy = request.ProxyHandler(
+                        {'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                 opener = request.build_opener(proxy)
                 request.install_opener(opener)
                 logs('Info: Used proxy', 'info', '6')
@@ -828,24 +831,24 @@ class Downloader(QThread):
             self._init = False
             self.fileUrl = file_url
             self.fileName = file_name
-            print(file_url)
-            print(file_name)
+            print('Info: Downloading starting, ' + self.fileUrl)
+            logs('Info: Downloading starting, ' + self.fileUrl, 'info', '5')
 
         def run(self):
             try:
                 logs('Info: Downloading TSL', 'info', '5')
                 if config['Proxy']['proxyon'] == 'Yes':
-                    proxy = request.ProxyHandler(
-                        {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
-                         'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                    print(self.fileUrl.split('/')[0])
+                    if self.fileUrl.split('/')[0] == 'https:':
+                        proxy = request.ProxyHandler(
+                            {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                    else:
+                        proxy = request.ProxyHandler(
+                            {'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                     opener = request.build_opener(proxy)
                     request.install_opener(opener)
                     logs('Info: Used proxy', 'info', '7')
                 request.urlretrieve(self.fileUrl, self.fileName, self._progress)
-            except error.HTTPError as e:
-                print(e)
-                self.done.emit('Ошибка загрузки')
-                logs('Warning: download failed', 'warn', '4')
             except Exception:
                 self.done.emit('Ошибка загрузки')
                 logs('Warning: download failed', 'warn', '4')
@@ -952,7 +955,7 @@ class MainWindow(QMainWindow):
             self.ui.label.setText(" Всего УЦ: " + str(ucs.count()))
             self.ui.label_4.setText(" Всего Сертификатов: " + str(certs.count()))
             self.ui.label_5.setText(" Всего CRL: " + str(crls.count()))
-            self.ui.label_6.setText(" CRL будет загружено: "
+            self.ui.label_6.setText(" Мониторится CRL: "
                                     + str(int(watching_crl.count())
                                           + int(watching_custom_crl.count())))
             self.ui.pushButton.clicked.connect(self.download_xml)
@@ -1874,11 +1877,11 @@ class MainWindow(QMainWindow):
             if type == 'cert':
                 self.ui.label_12.setText(input_dir)
             if type == 'uc':
-                self.ui.label_9.setText(input_dir)
+                self.ui.label_11.setText(input_dir)
             if type == 'tmp':
                 self.ui.label_10.setText(input_dir)
             if type == 'to_uc':
-                self.ui.label_11.setText(input_dir)
+                self.ui.label_9.setText(input_dir)
         except Exception:
             print('Error: choose_directory()')
             logs('Error: choose_directory()', 'errors', '1')
