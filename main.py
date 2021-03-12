@@ -340,12 +340,17 @@ def get_info_xlm(type_data, xml_file='tsl.xml'):
         return last_update
 
 
-def save_cert(key_id):
+def save_cert(key_id, folder):
     try:
         for certs in CERT.select().where(CERT.KeyId == key_id):
-            with open(config['Folders']['certs'] + "/" + certs.KeyId + ".cer", "wb") as file:
+            with open(folder + "/" + certs.KeyId + ".cer", "wb") as file:
                 file.write(base64.decodebytes(certs.Data.encode()))
-        os.startfile(os.path.realpath(config['Folders']['certs'] + "/"))
+            if folder == config['Folders']['certs']:
+                os.startfile(os.path.realpath(config['Folders']['certs']))
+                print(os.path.realpath(config['Folders']['certs']))
+            elif folder == config['Folders']['to_uc']:
+                os.startfile(os.path.realpath(config['Folders']['to_uc']))
+                print(os.path.realpath(config['Folders']['to_uc']))
     except Exception:
         print('Error: save_cert(key_id)')
 
@@ -562,12 +567,15 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
         path = folder + '/' + file_name  # + '.' + type_file
         try:
             if config['Proxy']['proxyon'] == 'Yes':
-                if file_url.split('/')[0] == 'https:':
-                    proxy = request.ProxyHandler(
-                        {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
-                else:
-                    proxy = request.ProxyHandler(
-                        {'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                proxy = request.ProxyHandler(
+                    {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
+                     'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                # if file_url.split('/')[0] == 'https:':
+                #     proxy = request.ProxyHandler(
+                #         {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                # else:
+                #     proxy = request.ProxyHandler(
+                #         {'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                 opener = request.build_opener(proxy)
                 request.install_opener(opener)
                 logs('Info: Used proxy', 'info', '6')
@@ -838,13 +846,16 @@ class Downloader(QThread):
             try:
                 logs('Info: Downloading TSL', 'info', '5')
                 if config['Proxy']['proxyon'] == 'Yes':
-                    print(self.fileUrl.split('/')[0])
-                    if self.fileUrl.split('/')[0] == 'https:':
-                        proxy = request.ProxyHandler(
-                            {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
-                    else:
-                        proxy = request.ProxyHandler(
-                            {'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                    proxy = request.ProxyHandler(
+                        {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
+                         'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                    # print(self.fileUrl.split('/')[0])
+                    # if self.fileUrl.split('/')[0] == 'https:':
+                    #     proxy = request.ProxyHandler(
+                    #         {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
+                    # else:
+                    #     proxy = request.ProxyHandler(
+                    #         {'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                     opener = request.build_opener(proxy)
                     request.install_opener(opener)
                     logs('Info: Used proxy', 'info', '7')
@@ -1066,6 +1077,14 @@ class MainWindow(QMainWindow):
         try:
             self.ui.pushButton_8.pressed.connect(lambda: self.ui.lineEdit_2.setText(''))
 
+            icon0 = QIcon()
+            pm = QPixmap()
+            pm.loadFromData(base64.b64decode(base64_file))
+            icon0.addPixmap(pm)
+            self.ui.pushButton_22.setIcon(icon0)
+            self.ui.pushButton_22.setFlat(True)
+            self.ui.pushButton_22.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['certs'])))
+
             query = CERT.select().where(CERT.Registration_Number.contains(text)
                                         | CERT.Name.contains(text)
                                         | CERT.KeyId.contains(text)
@@ -1084,28 +1103,29 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget_2.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
                 self.ui.tableWidget_2.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
 
-                self.button_cert = QPushButton()
-                self.button_cert.setFixedSize(30, 30)
+                button_cert = QPushButton()
+                button_cert.setFixedSize(30, 30)
                 icon2 = QIcon()
                 pm = QPixmap()
                 pm.loadFromData(base64.b64decode(base64_diskette))
                 icon2.addPixmap(pm)
-                self.button_cert.setIcon(icon2)
-                self.button_cert.setFlat(True)
+                button_cert.setIcon(icon2)
+                button_cert.setFlat(True)
                 ki = row.KeyId
-                self.button_cert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
-                self.ui.tableWidget_2.setCellWidget(count, 4, self.button_cert)
+                # button_cert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
+                button_cert.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['to_uc']))
+                self.ui.tableWidget_2.setCellWidget(count, 4, button_cert)
 
                 button_cert_save = QPushButton()
                 button_cert_save.setFixedSize(30, 30)
                 icon1 = QIcon()
                 pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_file))
+                pm.loadFromData(base64.b64decode(base64_diskette))
                 icon1.addPixmap(pm)
                 button_cert_save.setIcon(icon1)
                 button_cert_save.setFlat(True)
                 ki = row.KeyId
-                button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id))
+                button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['certs']))
                 self.ui.tableWidget_2.setCellWidget(count, 5, button_cert_save)
                 count = count + 1
             self.ui.tableWidget_2.setColumnWidth(1, 150)
@@ -1121,6 +1141,13 @@ class MainWindow(QMainWindow):
     def tab_crl(self, text=''):
         try:
             self.ui.pushButton_9.pressed.connect(lambda: self.ui.lineEdit_3.setText(''))
+            icon9 = QIcon()
+            pm = QPixmap()
+            pm.loadFromData(base64.b64decode(base64_file))
+            icon9.addPixmap(pm)
+            self.ui.pushButton_26.setIcon(icon9)
+            self.ui.pushButton_26.setFlat(True)
+            self.ui.pushButton_26.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
 
             query = CRL.select().where(CRL.Registration_Number.contains(text)
                                        | CRL.Name.contains(text)
@@ -1153,6 +1180,19 @@ class MainWindow(QMainWindow):
                 button_crl_save.pressed.connect(
                     lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['crls']))
                 self.ui.tableWidget_3.setCellWidget(count, 5, button_crl_save)
+
+                button_crl_save = QPushButton()
+                button_crl_save.setFixedSize(30, 30)
+                icon4 = QIcon()
+                pm = QPixmap()
+                pm.loadFromData(base64.b64decode(base64_diskette))
+                icon4.addPixmap(pm)
+                button_crl_save.setIcon(icon4)
+                button_crl_save.setFlat(True)
+                button_crl_save.pressed.connect(
+                    lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['to_uc']))
+                self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save)
+
                 button_add_to_watch = QPushButton()
                 button_add_to_watch.setFixedSize(30, 30)
                 icon5 = QIcon()
@@ -1175,7 +1215,7 @@ class MainWindow(QMainWindow):
                                                                                                   stamp,
                                                                                                   serial_number,
                                                                                                   url_crl))
-                self.ui.tableWidget_3.setCellWidget(count, 6, button_add_to_watch)
+                self.ui.tableWidget_3.setCellWidget(count, 7, button_add_to_watch)
 
                 count = count + 1
             self.ui.tableWidget_3.resizeColumnToContents(0)
@@ -1185,6 +1225,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_3.setColumnWidth(4, 150)
             self.ui.tableWidget_3.setColumnWidth(5, 30)
             self.ui.tableWidget_3.setColumnWidth(6, 30)
+            self.ui.tableWidget_3.setColumnWidth(7, 30)
             self.ui.tableWidget_3.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_crl()')
@@ -1247,6 +1288,20 @@ class MainWindow(QMainWindow):
                     status_item_2.setIcon(status_icon_2)
                     self.ui.tableWidget_4.setItem(count, 6, status_item_2)
 
+                button_crl_to_uc = QPushButton()
+                button_crl_to_uc.setFixedSize(30, 30)
+                icon6 = QIcon()
+                pm = QPixmap()
+                pm.loadFromData(base64.b64decode(base64_diskette))
+                icon6.addPixmap(pm)
+                button_crl_to_uc.setIcon(icon6)
+                button_crl_to_uc.setFlat(True)
+                row_key_id = row.KeyId
+                button_crl_to_uc.pressed.connect(
+                    lambda rki=row_key_id: shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl',
+                                                        config['Folders']['to_uc'] + '/' + rki + '.crl'))
+                self.ui.tableWidget_4.setCellWidget(count, 7, button_crl_to_uc)
+
                 button_delete_watch = QPushButton()
                 button_delete_watch.setFixedSize(30, 30)
                 icon6 = QIcon()
@@ -1257,7 +1312,7 @@ class MainWindow(QMainWindow):
                 button_delete_watch.setFlat(True)
                 id_row = row.ID
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
-                self.ui.tableWidget_4.setCellWidget(count, 7, button_delete_watch)
+                self.ui.tableWidget_4.setCellWidget(count, 8, button_delete_watch)
                 count = count + 1
             self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.tableWidget_4.setColumnWidth(1, 100)
@@ -1267,6 +1322,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_4.setColumnWidth(5, 150)
             self.ui.tableWidget_4.setColumnWidth(6, 30)
             self.ui.tableWidget_4.setColumnWidth(7, 30)
+            self.ui.tableWidget_4.setColumnWidth(8, 30)
         except Exception:
             print('Error: sub_tab_watching_crl()')
             logs('Error: sub_tab_watching_crl()', 'errors', '1')
@@ -1323,6 +1379,20 @@ class MainWindow(QMainWindow):
                     status_item_2.setIcon(status_icon_2)
                     self.ui.tableWidget_5.setItem(count, 6, status_item_2)
 
+                button_crl_to_uc = QPushButton()
+                button_crl_to_uc.setFixedSize(30, 30)
+                icon6 = QIcon()
+                pm = QPixmap()
+                pm.loadFromData(base64.b64decode(base64_diskette))
+                icon6.addPixmap(pm)
+                button_crl_to_uc.setIcon(icon6)
+                button_crl_to_uc.setFlat(True)
+                row_key_id = row.KeyId
+                button_crl_to_uc.pressed.connect(
+                    lambda rki=row_key_id: shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl',
+                                                        config['Folders']['to_uc'] + '/' + rki + '.crl'))
+                self.ui.tableWidget_5.setCellWidget(count, 7, button_crl_to_uc)
+
                 button_delete_watch = QPushButton()
                 button_delete_watch.setFixedSize(30, 30)
                 icon7 = QIcon()
@@ -1333,7 +1403,7 @@ class MainWindow(QMainWindow):
                 button_delete_watch.setFlat(True)
                 id_row = row.ID
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'custom'))
-                self.ui.tableWidget_5.setCellWidget(count, 7, button_delete_watch)
+                self.ui.tableWidget_5.setCellWidget(count, 8, button_delete_watch)
 
                 count = count + 1
 
@@ -1346,6 +1416,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_5.setColumnWidth(5, 150)
             self.ui.tableWidget_5.setColumnWidth(6, 30)
             self.ui.tableWidget_5.setColumnWidth(7, 30)
+            self.ui.tableWidget_5.setColumnWidth(8, 30)
         except Exception:
             print('Error: sub_tab_watching_custom_crl()')
             logs('Error: sub_tab_watching_custom_crl()', 'errors', '1')
