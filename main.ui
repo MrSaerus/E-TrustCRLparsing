@@ -795,6 +795,13 @@ border-color: rgb(0, 0, 0);</string>
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_22">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>
@@ -928,6 +935,13 @@ border-color: rgb(0, 0, 0);</string>
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_26">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
             </layout>
@@ -994,6 +1008,11 @@ border-color: rgb(0, 0, 0);</string>
           <column>
            <property name="text">
             <string>Адрес в интернете</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string/>
            </property>
           </column>
           <column>
@@ -1172,6 +1191,11 @@ border-color: rgb(0, 0, 0);</string>
                 <string/>
                </property>
               </column>
+              <column>
+               <property name="text">
+                <string/>
+               </property>
+              </column>
              </widget>
             </item>
            </layout>
@@ -1321,6 +1345,11 @@ border-color: rgb(0, 0, 0);</string>
               <column>
                <property name="text">
                 <string>Cледующее обновление</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string/>
                </property>
               </column>
               <column>

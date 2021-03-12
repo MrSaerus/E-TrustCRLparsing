@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainqPnBnl.ui'
+## Form generated from reading UI file 'mainsAamHo.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -486,6 +486,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_8.addWidget(self.pushButton_8)
 
+        self.pushButton_22 = QPushButton(self.frame_5)
+        self.pushButton_22.setObjectName(u"pushButton_22")
+
+        self.horizontalLayout_8.addWidget(self.pushButton_22)
+
 
         self.verticalLayout_28.addLayout(self.horizontalLayout_8)
 
@@ -560,6 +565,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_9.addWidget(self.pushButton_9)
 
+        self.pushButton_26 = QPushButton(self.frame_6)
+        self.pushButton_26.setObjectName(u"pushButton_26")
+
+        self.horizontalLayout_9.addWidget(self.pushButton_26)
+
 
         self.verticalLayout_29.addLayout(self.horizontalLayout_9)
 
@@ -585,8 +595,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_22.addLayout(self.horizontalLayout_77)
 
         self.tableWidget_3 = QTableWidget(self.tab_4)
-        if (self.tableWidget_3.columnCount() < 7):
-            self.tableWidget_3.setColumnCount(7)
+        if (self.tableWidget_3.columnCount() < 8):
+            self.tableWidget_3.setColumnCount(8)
         __qtablewidgetitem18 = QTableWidgetItem()
         self.tableWidget_3.setHorizontalHeaderItem(0, __qtablewidgetitem18)
         __qtablewidgetitem19 = QTableWidgetItem()
@@ -601,6 +611,8 @@ class Ui_MainWindow(object):
         self.tableWidget_3.setHorizontalHeaderItem(5, __qtablewidgetitem23)
         __qtablewidgetitem24 = QTableWidgetItem()
         self.tableWidget_3.setHorizontalHeaderItem(6, __qtablewidgetitem24)
+        __qtablewidgetitem25 = QTableWidgetItem()
+        self.tableWidget_3.setHorizontalHeaderItem(7, __qtablewidgetitem25)
         self.tableWidget_3.setObjectName(u"tableWidget_3")
         self.tableWidget_3.setSortingEnabled(True)
 
@@ -678,24 +690,26 @@ class Ui_MainWindow(object):
         self.verticalLayout_21.addLayout(self.verticalLayout_25)
 
         self.tableWidget_4 = QTableWidget(self.tab_7)
-        if (self.tableWidget_4.columnCount() < 8):
-            self.tableWidget_4.setColumnCount(8)
-        __qtablewidgetitem25 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(0, __qtablewidgetitem25)
+        if (self.tableWidget_4.columnCount() < 9):
+            self.tableWidget_4.setColumnCount(9)
         __qtablewidgetitem26 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(1, __qtablewidgetitem26)
+        self.tableWidget_4.setHorizontalHeaderItem(0, __qtablewidgetitem26)
         __qtablewidgetitem27 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(2, __qtablewidgetitem27)
+        self.tableWidget_4.setHorizontalHeaderItem(1, __qtablewidgetitem27)
         __qtablewidgetitem28 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(3, __qtablewidgetitem28)
+        self.tableWidget_4.setHorizontalHeaderItem(2, __qtablewidgetitem28)
         __qtablewidgetitem29 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(4, __qtablewidgetitem29)
+        self.tableWidget_4.setHorizontalHeaderItem(3, __qtablewidgetitem29)
         __qtablewidgetitem30 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(5, __qtablewidgetitem30)
+        self.tableWidget_4.setHorizontalHeaderItem(4, __qtablewidgetitem30)
         __qtablewidgetitem31 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(6, __qtablewidgetitem31)
+        self.tableWidget_4.setHorizontalHeaderItem(5, __qtablewidgetitem31)
         __qtablewidgetitem32 = QTableWidgetItem()
-        self.tableWidget_4.setHorizontalHeaderItem(7, __qtablewidgetitem32)
+        self.tableWidget_4.setHorizontalHeaderItem(6, __qtablewidgetitem32)
+        __qtablewidgetitem33 = QTableWidgetItem()
+        self.tableWidget_4.setHorizontalHeaderItem(7, __qtablewidgetitem33)
+        __qtablewidgetitem34 = QTableWidgetItem()
+        self.tableWidget_4.setHorizontalHeaderItem(8, __qtablewidgetitem34)
         self.tableWidget_4.setObjectName(u"tableWidget_4")
         self.tableWidget_4.setSortingEnabled(True)
 
@@ -759,24 +773,26 @@ class Ui_MainWindow(object):
         self.verticalLayout_20.addLayout(self.horizontalLayout_48)
 
         self.tableWidget_5 = QTableWidget(self.tab_8)
-        if (self.tableWidget_5.columnCount() < 8):
-            self.tableWidget_5.setColumnCount(8)
-        __qtablewidgetitem33 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(0, __qtablewidgetitem33)
-        __qtablewidgetitem34 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(1, __qtablewidgetitem34)
+        if (self.tableWidget_5.columnCount() < 9):
+            self.tableWidget_5.setColumnCount(9)
         __qtablewidgetitem35 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(2, __qtablewidgetitem35)
+        self.tableWidget_5.setHorizontalHeaderItem(0, __qtablewidgetitem35)
         __qtablewidgetitem36 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(3, __qtablewidgetitem36)
+        self.tableWidget_5.setHorizontalHeaderItem(1, __qtablewidgetitem36)
         __qtablewidgetitem37 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(4, __qtablewidgetitem37)
+        self.tableWidget_5.setHorizontalHeaderItem(2, __qtablewidgetitem37)
         __qtablewidgetitem38 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(5, __qtablewidgetitem38)
+        self.tableWidget_5.setHorizontalHeaderItem(3, __qtablewidgetitem38)
         __qtablewidgetitem39 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(6, __qtablewidgetitem39)
+        self.tableWidget_5.setHorizontalHeaderItem(4, __qtablewidgetitem39)
         __qtablewidgetitem40 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(7, __qtablewidgetitem40)
+        self.tableWidget_5.setHorizontalHeaderItem(5, __qtablewidgetitem40)
+        __qtablewidgetitem41 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(6, __qtablewidgetitem41)
+        __qtablewidgetitem42 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(7, __qtablewidgetitem42)
+        __qtablewidgetitem43 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(8, __qtablewidgetitem43)
         self.tableWidget_5.setObjectName(u"tableWidget_5")
         self.tableWidget_5.setSortingEnabled(True)
 
@@ -822,20 +838,20 @@ class Ui_MainWindow(object):
         self.tableWidget_6 = QTableWidget(self.tab_9)
         if (self.tableWidget_6.columnCount() < 7):
             self.tableWidget_6.setColumnCount(7)
-        __qtablewidgetitem41 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(0, __qtablewidgetitem41)
-        __qtablewidgetitem42 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(1, __qtablewidgetitem42)
-        __qtablewidgetitem43 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(2, __qtablewidgetitem43)
         __qtablewidgetitem44 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(3, __qtablewidgetitem44)
+        self.tableWidget_6.setHorizontalHeaderItem(0, __qtablewidgetitem44)
         __qtablewidgetitem45 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(4, __qtablewidgetitem45)
+        self.tableWidget_6.setHorizontalHeaderItem(1, __qtablewidgetitem45)
         __qtablewidgetitem46 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(5, __qtablewidgetitem46)
+        self.tableWidget_6.setHorizontalHeaderItem(2, __qtablewidgetitem46)
         __qtablewidgetitem47 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(6, __qtablewidgetitem47)
+        self.tableWidget_6.setHorizontalHeaderItem(3, __qtablewidgetitem47)
+        __qtablewidgetitem48 = QTableWidgetItem()
+        self.tableWidget_6.setHorizontalHeaderItem(4, __qtablewidgetitem48)
+        __qtablewidgetitem49 = QTableWidgetItem()
+        self.tableWidget_6.setHorizontalHeaderItem(5, __qtablewidgetitem49)
+        __qtablewidgetitem50 = QTableWidgetItem()
+        self.tableWidget_6.setHorizontalHeaderItem(6, __qtablewidgetitem50)
         self.tableWidget_6.setObjectName(u"tableWidget_6")
         self.tableWidget_6.setSortingEnabled(True)
 
@@ -2054,6 +2070,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem10.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0413\u0420\u041d", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"\u0421\u043f\u0438\u0441\u043e\u043a \u0423\u0426", None))
         self.pushButton_8.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
+        self.pushButton_22.setText("")
         self.label_21.setText("")
         ___qtablewidgetitem11 = self.tableWidget_2.horizontalHeaderItem(0)
         ___qtablewidgetitem11.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None));
@@ -2065,6 +2082,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem14.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0435\u0440\u0438\u0439\u043d\u044b\u0439 \u043d\u043e\u043c\u0435\u0440", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("MainWindow", u"\u0421\u043f\u0438\u0441\u043e\u043a \u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0432", None))
         self.pushButton_9.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
+        self.pushButton_26.setText("")
         self.label_24.setText("")
         ___qtablewidgetitem15 = self.tableWidget_3.horizontalHeaderItem(0)
         ___qtablewidgetitem15.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None));
