@@ -18,6 +18,7 @@ import sqlite3
 import sys
 import time
 
+base64_inbox = '''iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjczMjMyNzNEOTk2MTExRTc5QzkxODZBQUIyRkZBQ0ZBIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjczMjMyNzNFOTk2MTExRTc5QzkxODZBQUIyRkZBQ0ZBIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NzMyMzI3M0I5OTYxMTFFNzlDOTE4NkFBQjJGRkFDRkEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NzMyMzI3M0M5OTYxMTFFNzlDOTE4NkFBQjJGRkFDRkEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7Wj2kJAAAF7ElEQVR42uyce0xTVxzH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'''
 base64_icon = '''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'''
 base64_info = '''iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjczNzI1OUQ2OTk2MTExRTdCNjU2ODA5MjgwQTNGNEVBIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjczNzI1OUQ3OTk2MTExRTdCNjU2ODA5MjgwQTNGNEVBIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NzM3MjU5RDQ5OTYxMTFFN0I2NTY4MDkyODBBM0Y0RUEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NzM3MjU5RDU5OTYxMTFFN0I2NTY4MDkyODBBM0Y0RUEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4vUyHzAAAOeUlEQVR42uxcCXAUVRp+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'''
 base64_diskette = '''iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjQ0OUNBRTk4OTk2MTExRTdBNjA1REY3OEVGNEFERThCIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjQ0OUNBRTk5OTk2MTExRTdBNjA1REY3OEVGNEFERThCIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDQ5Q0FFOTY5OTYxMTFFN0E2MDVERjc4RUY0QURFOEIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NDQ5Q0FFOTc5OTYxMTFFN0E2MDVERjc4RUY0QURFOEIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5NfXAoAAAGBklEQVR42uybW09cVRTH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'''
@@ -355,6 +356,15 @@ def save_cert(key_id, folder):
         print('Error: save_cert(key_id)')
 
 
+def copy_crl_to_uc(rki):
+    if os.path.exists(config['Folders']['crls'] + '/' + rki + '.crl'):
+        shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl', config['Folders']['to_uc'] + '/' + rki + '.crl')
+        print('Found ' + config['Folders']['crls'] + '/' + rki + '.crl, copy.')
+    else:
+        print('Not found ' + config['Folders']['crls'] + '/' + rki + '.crl')
+        logs('Info: Not found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
+
+
 def open_file(file_name, file_type, url='None'):
     # open_file(sn + ".cer", "cer")
     # CryptExtAddCER «файл» Добавляет сертификат безопасности.
@@ -532,7 +542,7 @@ def check_for_import_in_uc():
                 download_file(wc.UrlCRL, wc.KeyId + '.crl', folder, 'current', wc.ID, 'Yes')
                 try:
                     shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
-                                 config['Folders']['to_uc'] + 'current_' + wc.KeyId + '.crl')
+                                 config['Folders']['to_uc'] + '/' +'current_' + wc.KeyId + '.crl')
                     check_crl(wc.ID, wc.Name, wc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_current')
@@ -545,7 +555,7 @@ def check_for_import_in_uc():
                 download_file(wcc.UrlCRL, wcc.KeyId + '.crl', folder, 'custome', wcc.ID, 'Yes')
                 try:
                     shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
-                                 config['Folders']['to_uc'] + 'custom_' + wcc.KeyId + '.crl')
+                                 config['Folders']['to_uc'] + '/' +'custom_' + wcc.KeyId + '.crl')
                     check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_custom')
@@ -670,6 +680,7 @@ def set_value_in_property_file(file_path, section, key, value):
 
 class MainWorker(QObject):
     try:
+        threadMessageSender = pyqtSignal(str)
         threadTimerSender = pyqtSignal(str)
         threadButtonStartE = pyqtSignal(str)
         threadButtonStopE = pyqtSignal(str)
@@ -798,6 +809,7 @@ class MainWorker(QObject):
                     self.threadTimerSender.emit(timer)
                     if self._step == int(sec_to_get) - 1:
                         check_for_import_in_uc()
+                        # self.threadMessageSender.emit('test')
                         timer_b = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         timer_a = datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get)
                         timer_a = datetime.datetime.strftime(timer_a, '%Y-%m-%d %H:%M:%S')
@@ -839,8 +851,8 @@ class Downloader(QThread):
             self._init = False
             self.fileUrl = file_url
             self.fileName = file_name
-            print('Info: Downloading starting, ' + self.fileUrl)
-            logs('Info: Downloading starting, ' + self.fileUrl, 'info', '5')
+            print('Info: Download starting, ' + self.fileUrl)
+            logs('Info: Download starting, ' + self.fileUrl, 'info', '5')
 
         def run(self):
             try:
@@ -862,6 +874,7 @@ class Downloader(QThread):
                 request.urlretrieve(self.fileUrl, self.fileName, self._progress)
             except Exception:
                 self.done.emit('Ошибка загрузки')
+                print('Warning: download failed')
                 logs('Warning: download failed', 'warn', '4')
             else:
                 print('Загрузка завершена')
@@ -1026,6 +1039,10 @@ class MainWindow(QMainWindow):
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
+            # self.worker.threadMessageSender.connect(lambda: self.ui.listWidget.addItems('666'))
+            # self.ui.tableWidget_9.setRowCount(1)
+            # self.ui.tableWidget_9.setItem(0, 0, QTableWidgetItem('1234'))
+            # self.ui.tableWidget_9.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.pushButton_20.clicked.connect(lambda: self.worker.stop() and self.stop_thread)
             self.ui.pushButton_19.clicked.connect(self.worker.task)
         except Exception:
@@ -1067,7 +1084,7 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget.setCellWidget(count, 3, button_info)
                 count = count + 1
             self.ui.tableWidget.resizeColumnsToContents()
-            self.ui.tableWidget.setColumnWidth(3, 30)
+            self.ui.tableWidget.setColumnWidth(3, 31)
             self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_uc()')
@@ -1113,26 +1130,26 @@ class MainWindow(QMainWindow):
                 button_cert.setFlat(True)
                 ki = row.KeyId
                 # button_cert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
-                button_cert.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['to_uc']))
+                button_cert.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['certs']))
                 self.ui.tableWidget_2.setCellWidget(count, 4, button_cert)
 
                 button_cert_save = QPushButton()
                 button_cert_save.setFixedSize(30, 30)
                 icon1 = QIcon()
                 pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_diskette))
+                pm.loadFromData(base64.b64decode(base64_inbox))
                 icon1.addPixmap(pm)
                 button_cert_save.setIcon(icon1)
                 button_cert_save.setFlat(True)
                 ki = row.KeyId
-                button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['certs']))
+                button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['to_uc']))
                 self.ui.tableWidget_2.setCellWidget(count, 5, button_cert_save)
                 count = count + 1
             self.ui.tableWidget_2.setColumnWidth(1, 150)
             self.ui.tableWidget_2.setColumnWidth(2, 150)
             self.ui.tableWidget_2.setColumnWidth(3, 150)
-            self.ui.tableWidget_2.setColumnWidth(4, 30)
-            self.ui.tableWidget_2.setColumnWidth(5, 30)
+            self.ui.tableWidget_2.setColumnWidth(4, 31)
+            self.ui.tableWidget_2.setColumnWidth(5, 31)
             self.ui.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_cert()')
@@ -1185,12 +1202,12 @@ class MainWindow(QMainWindow):
                 button_crl_save.setFixedSize(30, 30)
                 icon4 = QIcon()
                 pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_diskette))
+                pm.loadFromData(base64.b64decode(base64_inbox))
                 icon4.addPixmap(pm)
                 button_crl_save.setIcon(icon4)
                 button_crl_save.setFlat(True)
                 button_crl_save.pressed.connect(
-                    lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['to_uc']))
+                    lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', (config['Folders']['to_uc'])))
                 self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save)
 
                 button_add_to_watch = QPushButton()
@@ -1223,9 +1240,9 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_3.setColumnWidth(2, 150)
             self.ui.tableWidget_3.setColumnWidth(3, 150)
             self.ui.tableWidget_3.setColumnWidth(4, 150)
-            self.ui.tableWidget_3.setColumnWidth(5, 30)
-            self.ui.tableWidget_3.setColumnWidth(6, 30)
-            self.ui.tableWidget_3.setColumnWidth(7, 30)
+            self.ui.tableWidget_3.setColumnWidth(5, 31)
+            self.ui.tableWidget_3.setColumnWidth(6, 31)
+            self.ui.tableWidget_3.setColumnWidth(7, 31)
             self.ui.tableWidget_3.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
         except Exception:
             print('Error: tab_crl()')
@@ -1292,14 +1309,12 @@ class MainWindow(QMainWindow):
                 button_crl_to_uc.setFixedSize(30, 30)
                 icon6 = QIcon()
                 pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_diskette))
+                pm.loadFromData(base64.b64decode(base64_inbox))
                 icon6.addPixmap(pm)
                 button_crl_to_uc.setIcon(icon6)
                 button_crl_to_uc.setFlat(True)
                 row_key_id = row.KeyId
-                button_crl_to_uc.pressed.connect(
-                    lambda rki=row_key_id: shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl',
-                                                        config['Folders']['to_uc'] + '/' + rki + '.crl'))
+                button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
                 self.ui.tableWidget_4.setCellWidget(count, 7, button_crl_to_uc)
 
                 button_delete_watch = QPushButton()
@@ -1320,9 +1335,9 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_4.setColumnWidth(3, 150)
             self.ui.tableWidget_4.setColumnWidth(4, 150)
             self.ui.tableWidget_4.setColumnWidth(5, 150)
-            self.ui.tableWidget_4.setColumnWidth(6, 30)
-            self.ui.tableWidget_4.setColumnWidth(7, 30)
-            self.ui.tableWidget_4.setColumnWidth(8, 30)
+            self.ui.tableWidget_4.setColumnWidth(6, 25)
+            self.ui.tableWidget_4.setColumnWidth(7, 31)
+            self.ui.tableWidget_4.setColumnWidth(8, 31)
         except Exception:
             print('Error: sub_tab_watching_crl()')
             logs('Error: sub_tab_watching_crl()', 'errors', '1')
@@ -1383,14 +1398,12 @@ class MainWindow(QMainWindow):
                 button_crl_to_uc.setFixedSize(30, 30)
                 icon6 = QIcon()
                 pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_diskette))
+                pm.loadFromData(base64.b64decode(base64_inbox))
                 icon6.addPixmap(pm)
                 button_crl_to_uc.setIcon(icon6)
                 button_crl_to_uc.setFlat(True)
                 row_key_id = row.KeyId
-                button_crl_to_uc.pressed.connect(
-                    lambda rki=row_key_id: shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl',
-                                                        config['Folders']['to_uc'] + '/' + rki + '.crl'))
+                button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
                 self.ui.tableWidget_5.setCellWidget(count, 7, button_crl_to_uc)
 
                 button_delete_watch = QPushButton()
@@ -1414,9 +1427,9 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_5.setColumnWidth(4, 150)
             self.ui.tableWidget_5.setColumnWidth(4, 150)
             self.ui.tableWidget_5.setColumnWidth(5, 150)
-            self.ui.tableWidget_5.setColumnWidth(6, 30)
-            self.ui.tableWidget_5.setColumnWidth(7, 30)
-            self.ui.tableWidget_5.setColumnWidth(8, 30)
+            self.ui.tableWidget_5.setColumnWidth(6, 25)
+            self.ui.tableWidget_5.setColumnWidth(7, 31)
+            self.ui.tableWidget_5.setColumnWidth(8, 31)
         except Exception:
             print('Error: sub_tab_watching_custom_crl()')
             logs('Error: sub_tab_watching_custom_crl()', 'errors', '1')
@@ -1473,7 +1486,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_6.setColumnWidth(3, 150)
             self.ui.tableWidget_6.setColumnWidth(4, 150)
             self.ui.tableWidget_6.setColumnWidth(5, 150)
-            self.ui.tableWidget_6.setColumnWidth(6, 30)
+            self.ui.tableWidget_6.setColumnWidth(6, 31)
             self.ui.tableWidget_6.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: sub_tab_watching_off_crl()')
@@ -1604,74 +1617,106 @@ class MainWindow(QMainWindow):
     def save_settings_main(self):
         try:
             set_value_in_property_file('settings.ini', 'Tabs', 'ucLimit', self.ui.lineEdit_13.text())
+            config.set('Tabs', 'ucLimit', self.ui.lineEdit_13.text())
             set_value_in_property_file('settings.ini', 'Tabs', 'certLimit', self.ui.lineEdit_18.text())
+            config.set('Tabs', 'certLimit', self.ui.lineEdit_18.text())
             set_value_in_property_file('settings.ini', 'Tabs', 'crlLimit', self.ui.lineEdit_17.text())
+            config.set('Tabs', 'crlLimit', self.ui.lineEdit_17.text())
             set_value_in_property_file('settings.ini', 'Tabs', 'wcLimit', self.ui.lineEdit_16.text())
+            config.set('Tabs', 'wcLimit', self.ui.lineEdit_16.text())
             set_value_in_property_file('settings.ini', 'Tabs', 'wccLimit', self.ui.lineEdit_15.text())
+            config.set('Tabs', 'wccLimit', self.ui.lineEdit_15.text())
             set_value_in_property_file('settings.ini', 'Tabs', 'wcdLimit', self.ui.lineEdit_14.text())
+            config.set('Tabs', 'wcdLimit', self.ui.lineEdit_14.text())
             set_value_in_property_file('settings.ini', 'MainWindow', 'height', self.ui.lineEdit_12.text())
+            config.set('MainWindow', 'height', self.ui.lineEdit_12.text())
             set_value_in_property_file('settings.ini', 'MainWindow', 'width', self.ui.lineEdit_11.text())
+            config.set('MainWindow', 'width', self.ui.lineEdit_11.text())
             set_value_in_property_file('settings.ini', 'XMPP', 'server', self.ui.lineEdit_19.text())
+            config.set('XMPP', 'server', self.ui.lineEdit_19.text())
             set_value_in_property_file('settings.ini', 'XMPP', 'login', self.ui.lineEdit_20.text())
+            config.set('XMPP', 'login', self.ui.lineEdit_20.text())
             set_value_in_property_file('settings.ini', 'XMPP', 'password', self.ui.lineEdit_21.text())
+            config.set('XMPP', 'password', self.ui.lineEdit_21.text())
             set_value_in_property_file('settings.ini', 'XMPP', 'tosend', self.ui.lineEdit_22.text())
+            config.set('XMPP', 'tosend', self.ui.lineEdit_22.text())
 
             if self.ui.checkBox_10.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'No')
+                config.set('XMPP', 'sendinfoerr', 'No')
             elif self.ui.checkBox_10.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'Yes')
+                config.set('XMPP', 'sendinfoerr', 'Yes')
             if self.ui.checkBox_9.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'No')
+                config.set('XMPP', 'sendinfonewcrl', 'No')
             elif self.ui.checkBox_9.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'Yes')
+                config.set('XMPP', 'sendinfonewcrl', 'Yes')
             if self.ui.checkBox_11.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'No')
+                config.set('XMPP', 'sendinfonewtsl', 'No')
             elif self.ui.checkBox_11.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'Yes')
+                config.set('XMPP', 'sendinfonewtsl', 'Yes')
 
             if self.ui.checkBox_3.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
+                config.set('MainWindow', 'allowresize', 'Yes')
                 self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMinimumSize(0, 0)
                 self.setMaximumSize(16777215, 16777215)
             elif self.ui.checkBox_3.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
+                config.set('MainWindow', 'allowresize', 'No')
                 self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMinimumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMaximumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
 
             if self.ui.checkBox_2.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
+                config.set('MainWindow', 'savewidth', 'No')
             elif self.ui.checkBox_2.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
+                config.set('MainWindow', 'savewidth', 'Yes')
 
             if self.ui.checkBox_4.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'No')
+                config.set('Sec', 'allowImportCRL', 'No')
                 self.ui.pushButton_6.setDisabled(True)
             elif self.ui.checkBox_4.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'Yes')
+                config.set('Sec', 'allowImportCRL', 'Yes')
                 self.ui.pushButton_6.setEnabled(True)
             if self.ui.checkBox_5.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'No')
+                config.set('Sec', 'allowExportCRL', 'No')
                 self.ui.pushButton_13.setDisabled(True)
             elif self.ui.checkBox_5.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'Yes')
+                config.set('Sec', 'allowExportCRL', 'Yes')
                 self.ui.pushButton_13.setEnabled(True)
             if self.ui.checkBox_6.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'No')
+                config.set('Sec', 'allowDeleteWatchingCRL', 'No')
             elif self.ui.checkBox_6.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'Yes')
+                config.set('Sec', 'allowDeleteWatchingCRL', 'Yes')
             if self.ui.checkBox_7.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'No')
+                config.set('Sec', 'allowDownloadButtonCRL', 'No')
                 self.ui.pushButton_4.setDisabled(True)
             elif self.ui.checkBox_7.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'Yes')
+                config.set('Sec', 'allowDownloadButtonCRL', 'Yes')
                 self.ui.pushButton_4.setEnabled(True)
             if self.ui.checkBox_8.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'No')
+                config.set('Sec', 'allowCheckButtonCRL', 'No')
                 self.ui.pushButton_5.setDisabled(True)
             elif self.ui.checkBox_8.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'Yes')
+                config.set('Sec', 'allowCheckButtonCRL', 'Yes')
                 self.ui.pushButton_5.setEnabled(True)
             self.ui.label_27.setText('Настройки сохранены')
             print('Info: save_settings_main()::Saved')
@@ -1683,45 +1728,67 @@ class MainWindow(QMainWindow):
     def save_settings_sub(self):
         try:
             set_value_in_property_file('settings.ini', 'Folders', 'certs', self.ui.label_12.text())
+            config.set('Folders', 'certs', self.ui.label_12.text())
             set_value_in_property_file('settings.ini', 'Folders', 'crls', self.ui.label_13.text())
+            config.set('Folders', 'crls', self.ui.label_13.text())
             set_value_in_property_file('settings.ini', 'Folders', 'tmp', self.ui.label_10.text())
+            config.set('Folders', 'tmp', self.ui.label_10.text())
             set_value_in_property_file('settings.ini', 'Folders', 'uc', self.ui.label_11.text())
+            config.set('Folders', 'uc', self.ui.label_11.text())
             set_value_in_property_file('settings.ini', 'Folders', 'to_uc', self.ui.label_9.text())
+            config.set('Folders', 'to_uc', self.ui.label_9.text())
 
             set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text())
+            config['Proxy']['ip'] = self.ui.lineEdit_7.text()
+            config.set('Schedule', 'allowupdatecrlbystart', 'No')
             set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text())
+            config['Proxy']['port'] = self.ui.lineEdit_8.text()
+            config.set('Schedule', 'allowupdatecrlbystart', 'No')
             set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text())
+            config['Proxy']['login'] = self.ui.lineEdit_9.text()
+            config.set('Schedule', 'allowupdatecrlbystart', 'No')
             set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text())
+            config['Proxy']['password'] = self.ui.lineEdit_10.text()
+            config.set('Schedule', 'allowupdatecrlbystart', 'No')
 
             if self.ui.checkBox_12.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'No')
+                config.set('Schedule', 'allowupdatecrlbystart', 'No')
             elif self.ui.checkBox_12.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'Yes')
+                config.set('Schedule', 'allowupdatecrlbystart', 'Yes')
             if self.ui.checkBox_13.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'No')
+                config.set('Schedule', 'allowupdatetslbystart', 'No')
             elif self.ui.checkBox_13.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'Yes')
+                config.set('Schedule', 'allowupdatetslbystart', 'Yes')
 
             if self.ui.checkBox.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No')
+                config.set('Proxy', 'proxyon', 'No')
                 self.ui.lineEdit_7.setDisabled(True)
                 self.ui.lineEdit_8.setDisabled(True)
                 self.ui.lineEdit_9.setDisabled(True)
                 self.ui.lineEdit_10.setDisabled(True)
             elif self.ui.checkBox.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes')
+                config.set('Proxy', 'proxyon', 'Yes')
                 self.ui.lineEdit_7.setEnabled(True)
                 self.ui.lineEdit_8.setEnabled(True)
                 self.ui.lineEdit_9.setEnabled(True)
                 self.ui.lineEdit_10.setEnabled(True)
 
             set_value_in_property_file('settings.ini', 'Logs', 'loglevel', self.ui.comboBox.currentText())
+            config.set('Logs', 'loglevel', self.ui.comboBox.currentText())
             set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbysize', str(self.ui.spinBox.value()))
+            config.set('Logs', 'dividelogsbysize', str(self.ui.spinBox.value()))
             if self.ui.checkBox_14.checkState() == 0:
                 set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'No')
+                config.set('Logs', 'dividelogsbyday', 'No')
             elif self.ui.checkBox_14.checkState() == 2:
                 set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'Yes')
-
+                config.set('Logs', 'dividelogsbyday', 'Yes')
             self.ui.label_28.setText('Настройки сохранены')
             print('Info: save_settings_sub()::Saved')
             logs('Info: save_settings_sub()::Saved', 'info', '6')
