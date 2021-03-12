@@ -9,6 +9,7 @@
 /strs/*
 /temp/*
 /uc/*
+/to_uc/*
 /output/*
 crl_list.txt
 cert_crl.db-*
