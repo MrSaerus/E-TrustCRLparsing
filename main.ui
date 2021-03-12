@@ -182,13 +182,24 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QListWidget" name="listWidget">
+                 <widget class="QTableWidget" name="tableWidget_9">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <attribute name="horizontalHeaderVisible">
+                   <bool>false</bool>
+                  </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
+                  </attribute>
+                  <column>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </column>
                  </widget>
                 </item>
                 <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
@@ -715,6 +726,9 @@ border-color: rgb(0, 0, 0);</string>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>16</number>
+          </attribute>
           <column>
            <property name="text">
             <string>Название</string>
@@ -845,6 +859,9 @@ border-color: rgb(0, 0, 0);</string>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>16</number>
+          </attribute>
           <column>
            <property name="text">
             <string>Название</string>
@@ -985,6 +1002,9 @@ border-color: rgb(0, 0, 0);</string>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>16</number>
+          </attribute>
           <column>
            <property name="text">
             <string>Название</string>
@@ -1151,6 +1171,9 @@ border-color: rgb(0, 0, 0);</string>
               <property name="sortingEnabled">
                <bool>true</bool>
               </property>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>16</number>
+              </attribute>
               <column>
                <property name="text">
                 <string>Название</string>
@@ -1317,6 +1340,9 @@ border-color: rgb(0, 0, 0);</string>
               <property name="sortingEnabled">
                <bool>true</bool>
               </property>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>16</number>
+              </attribute>
               <column>
                <property name="text">
                 <string>Название</string>
@@ -1428,6 +1454,9 @@ border-color: rgb(0, 0, 0);</string>
               <property name="sortingEnabled">
                <bool>true</bool>
               </property>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>16</number>
+              </attribute>
               <column>
                <property name="text">
                 <string>Название</string>
