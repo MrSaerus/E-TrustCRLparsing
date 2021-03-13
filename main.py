@@ -536,6 +536,7 @@ def check_for_import_in_uc():
         )
         # datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S')
         count = 0
+        return_list_msg = ''
         for wc in query_1:
             if current_datetime > wc.next_update:
                 print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
@@ -544,6 +545,7 @@ def check_for_import_in_uc():
                     shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
                                  config['Folders']['to_uc'] + '/' +'current_' + wc.KeyId + '.crl')
                     check_crl(wc.ID, wc.Name, wc.KeyId)
+                    return_list_msg = return_list_msg + ';' + wc.Name
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_current')
                     logs('Error: check_for_import_in_uc()::error_copy_current', 'errors', '2')
@@ -557,6 +559,7 @@ def check_for_import_in_uc():
                     shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
                                  config['Folders']['to_uc'] + '/' +'custom_' + wcc.KeyId + '.crl')
                     check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+                    return_list_msg = return_list_msg + ';' + wcc.Name
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_custom')
                     logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors', '2')
@@ -564,9 +567,11 @@ def check_for_import_in_uc():
         if count > 0:
             print('Info: Copied ' + str(count) + ' count\'s CRL')
             logs('Info: Copied ' + str(count) + ' count\'s CRL', 'info', '5')
+            return return_list_msg
         else:
             print('Info: Needed CRL not found')
             logs('Info: Needed CRL not found', 'info', '5')
+            return 'NaN'
     except Exception:
         print('Error: check_for_import_in_uc()')
         logs('Error: check_for_import_in_uc()', 'errors', '1')
@@ -808,8 +813,8 @@ class MainWorker(QObject):
                     # print('Сек ', sec_start)
                     self.threadTimerSender.emit(timer)
                     if self._step == int(sec_to_get) - 1:
-                        check_for_import_in_uc()
-                        # self.threadMessageSender.emit('test')
+                        # check_for_import_in_uc()
+                        self.threadMessageSender.emit(check_for_import_in_uc())
                         timer_b = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         timer_a = datetime.datetime.now() + datetime.timedelta(seconds=sec_to_get)
                         timer_a = datetime.datetime.strftime(timer_a, '%Y-%m-%d %H:%M:%S')
@@ -1039,10 +1044,10 @@ class MainWindow(QMainWindow):
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
-            # self.worker.threadMessageSender.connect(lambda: self.ui.listWidget.addItems('666'))
-            # self.ui.tableWidget_9.setRowCount(1)
-            # self.ui.tableWidget_9.setItem(0, 0, QTableWidgetItem('1234'))
-            # self.ui.tableWidget_9.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+            self.worker.threadMessageSender.connect(lambda msg: self.add_log_to_main_tab(msg))
+            self.ui.tableWidget_9.setRowCount(1)
+            self.ui.tableWidget_9.setItem(0, 0, QTableWidgetItem('Info: init log system'))
+            self.ui.tableWidget_9.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.pushButton_20.clicked.connect(lambda: self.worker.stop() and self.stop_thread)
             self.ui.pushButton_19.clicked.connect(self.worker.task)
         except Exception:
@@ -2104,6 +2109,15 @@ class MainWindow(QMainWindow):
         except Exception:
             print('Error: add_watch_custom_crl()')
             logs('Error: add_watch_custom_crl()', 'errors', '1')
+
+    def add_log_to_main_tab(self, msg):
+        msg_list = msg.split(';')[1:]
+        for msg in msg_list:
+            if not msg == 'NaN':
+                current_row_count = self.ui.tableWidget_9.rowCount()
+                self.ui.tableWidget_9.setRowCount(current_row_count + 1)
+                self.ui.tableWidget_9.setItem(current_row_count, 0, QTableWidgetItem(msg))
+                self.ui.tableWidget_9.scrollToBottom()
 
     def move_watching_to_passed(self, id_var, from_var):
         try:
