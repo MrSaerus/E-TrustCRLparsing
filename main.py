@@ -39,7 +39,6 @@ else:
                          'logs': 'logs/',
                          'to_uc': 'to_uc/',
                          'uc': 'uc/'}
-
     config['MainWindow'] = {'width ': '1100',
                             'height ': '650',
                             'saveWidth': 'No',
@@ -77,7 +76,7 @@ else:
                       'wcdAllowDelete': 'No'}
     config['Schedule'] = {'allowSchedule': 'No',
                           'weekUpdate': 'All',
-                          'timeUpdate': '10M',
+                          'timeUpdate': '1M',
                           'periodUpdate': '9:00; 12:00; 16:00',
                           'allowUpdateTSLbyStart': 'No',
                           'allowUpdateCRLbyStart': 'No',
@@ -97,6 +96,8 @@ else:
                       'sendinfoerr': 'No',
                       'sendinfonewcrl': 'No',
                       'sendinfonewtsl': 'No'}
+    config['Custom'] = {'main_uc_ogrn': '1047702026701',
+                        'self_uc_ogrn': '1020203227263'}
     with open('settings.ini', 'w') as configfile:
         config.write(configfile)
 
@@ -545,7 +546,7 @@ def check_for_import_in_uc():
                     shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
                                  config['Folders']['to_uc'] + '/' +'current_' + wc.KeyId + '.crl')
                     check_crl(wc.ID, wc.Name, wc.KeyId)
-                    return_list_msg = return_list_msg + ';' + wc.Name
+                    return_list_msg = return_list_msg + ';' + wc.KeyId + ' ' + wc.Name
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_current')
                     logs('Error: check_for_import_in_uc()::error_copy_current', 'errors', '2')
@@ -559,7 +560,7 @@ def check_for_import_in_uc():
                     shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
                                  config['Folders']['to_uc'] + '/' +'custom_' + wcc.KeyId + '.crl')
                     check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
-                    return_list_msg = return_list_msg + ';' + wcc.Name
+                    return_list_msg = return_list_msg + ';' + wcc.KeyId + ' ' + wcc.Name
                 except Exception:
                     print('Error: check_for_import_in_uc()::error_copy_custom')
                     logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors', '2')
@@ -932,9 +933,9 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         ico = QIcon()
-        pm = QPixmap()
-        pm.loadFromData(base64.b64decode(base64_icon))
-        ico.addPixmap(pm)
+        pixmap_0 = QPixmap()
+        pixmap_0.loadFromData(base64.b64decode(base64_icon))
+        ico.addPixmap(pixmap_0)
         self.setWindowIcon(QIcon(ico))
         self.window_uc = None
         self.window_add_crl = None
@@ -1079,9 +1080,9 @@ class MainWindow(QMainWindow):
                 button_info = QPushButton()
                 button_info.setFixedSize(30, 30)
                 icon3 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_info))
-                icon3.addPixmap(pm)
+                pixmap_1 = QPixmap()
+                pixmap_1.loadFromData(base64.b64decode(base64_info))
+                icon3.addPixmap(pixmap_1)
                 button_info.setIcon(icon3)
                 button_info.setFlat(True)
                 reg_num = row.Registration_Number
@@ -1100,9 +1101,9 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_8.pressed.connect(lambda: self.ui.lineEdit_2.setText(''))
 
             icon0 = QIcon()
-            pm = QPixmap()
-            pm.loadFromData(base64.b64decode(base64_file))
-            icon0.addPixmap(pm)
+            pixmap_2 = QPixmap()
+            pixmap_2.loadFromData(base64.b64decode(base64_file))
+            icon0.addPixmap(pixmap_2)
             self.ui.pushButton_22.setIcon(icon0)
             self.ui.pushButton_22.setFlat(True)
             self.ui.pushButton_22.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['certs'])))
@@ -1128,9 +1129,9 @@ class MainWindow(QMainWindow):
                 button_cert = QPushButton()
                 button_cert.setFixedSize(30, 30)
                 icon2 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_diskette))
-                icon2.addPixmap(pm)
+                pixmap_3 = QPixmap()
+                pixmap_3.loadFromData(base64.b64decode(base64_diskette))
+                icon2.addPixmap(pixmap_3)
                 button_cert.setIcon(icon2)
                 button_cert.setFlat(True)
                 ki = row.KeyId
@@ -1141,9 +1142,9 @@ class MainWindow(QMainWindow):
                 button_cert_save = QPushButton()
                 button_cert_save.setFixedSize(30, 30)
                 icon1 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_inbox))
-                icon1.addPixmap(pm)
+                pixmap_4 = QPixmap()
+                pixmap_4.loadFromData(base64.b64decode(base64_inbox))
+                icon1.addPixmap(pixmap_4)
                 button_cert_save.setIcon(icon1)
                 button_cert_save.setFlat(True)
                 ki = row.KeyId
@@ -1164,9 +1165,9 @@ class MainWindow(QMainWindow):
         try:
             self.ui.pushButton_9.pressed.connect(lambda: self.ui.lineEdit_3.setText(''))
             icon9 = QIcon()
-            pm = QPixmap()
-            pm.loadFromData(base64.b64decode(base64_file))
-            icon9.addPixmap(pm)
+            pixmap_5 = QPixmap()
+            pixmap_5.loadFromData(base64.b64decode(base64_file))
+            icon9.addPixmap(pixmap_5)
             self.ui.pushButton_26.setIcon(icon9)
             self.ui.pushButton_26.setFlat(True)
             self.ui.pushButton_26.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
@@ -1194,9 +1195,9 @@ class MainWindow(QMainWindow):
                 button_crl_save = QPushButton()
                 button_crl_save.setFixedSize(30, 30)
                 icon4 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_diskette))
-                icon4.addPixmap(pm)
+                pixmap_6 = QPixmap()
+                pixmap_6.loadFromData(base64.b64decode(base64_diskette))
+                icon4.addPixmap(pixmap_6)
                 button_crl_save.setIcon(icon4)
                 button_crl_save.setFlat(True)
                 button_crl_save.pressed.connect(
@@ -1205,11 +1206,11 @@ class MainWindow(QMainWindow):
 
                 button_crl_save = QPushButton()
                 button_crl_save.setFixedSize(30, 30)
-                icon4 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_inbox))
-                icon4.addPixmap(pm)
-                button_crl_save.setIcon(icon4)
+                icon5 = QIcon()
+                pixmap_7 = QPixmap()
+                pixmap_7.loadFromData(base64.b64decode(base64_inbox))
+                icon5.addPixmap(pixmap_7)
+                button_crl_save.setIcon(icon5)
                 button_crl_save.setFlat(True)
                 button_crl_save.pressed.connect(
                     lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', (config['Folders']['to_uc'])))
@@ -1217,11 +1218,11 @@ class MainWindow(QMainWindow):
 
                 button_add_to_watch = QPushButton()
                 button_add_to_watch.setFixedSize(30, 30)
-                icon5 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_import))
-                icon5.addPixmap(pm)
-                button_add_to_watch.setIcon(icon5)
+                icon6 = QIcon()
+                pixmap_8 = QPixmap()
+                pixmap_8.loadFromData(base64.b64decode(base64_import))
+                icon6.addPixmap(pixmap_8)
+                button_add_to_watch.setIcon(icon6)
                 button_add_to_watch.setFlat(True)
                 rb = row.Registration_Number
                 ki = row.KeyId
@@ -1260,8 +1261,8 @@ class MainWindow(QMainWindow):
 
     def sub_tab_watching_crl(self, text=''):
         try:
-            self.ui.label_8.setText('Ищем: ' + text)
-            self.ui.label_8.adjustSize()
+            # self.ui.label_8.setText('Ищем: ' + text)
+            # self.ui.label_8.adjustSize()
 
             self.ui.pushButton_10.pressed.connect(lambda: self.ui.lineEdit_4.setText(''))
 
@@ -1281,6 +1282,7 @@ class MainWindow(QMainWindow):
                                                    | WatchingCRL.SerialNumber.contains(text)
                                                    | WatchingCRL.UrlCRL.contains(text)).limit(
                 config['Listing']['watch']).count()
+            # self.ui.tableWidget_4.clear()
             self.ui.tableWidget_4.setRowCount(count_all)
             count = 0
             brush = QBrush(QColor(0, 255, 0, 255))
@@ -1296,26 +1298,26 @@ class MainWindow(QMainWindow):
                 if row.status == 'Info: Filetype good':
                     status_item = QTableWidgetItem()
                     status_icon = QIcon()
-                    pm = QPixmap()
-                    pm.loadFromData(base64.b64decode(base64_white_list))
-                    status_icon.addPixmap(pm)
+                    pixmap_9 = QPixmap()
+                    pixmap_9.loadFromData(base64.b64decode(base64_white_list))
+                    status_icon.addPixmap(pixmap_9)
                     status_item.setIcon(status_icon)
                     self.ui.tableWidget_4.setItem(count, 6, status_item)
                 else:
                     status_item_2 = QTableWidgetItem()
                     status_icon_2 = QIcon()
-                    pm = QPixmap()
-                    pm.loadFromData(base64.b64decode(base64_black_list))
-                    status_icon_2.addPixmap(pm)
+                    pixmap_10 = QPixmap()
+                    pixmap_10.loadFromData(base64.b64decode(base64_black_list))
+                    status_icon_2.addPixmap(pixmap_10)
                     status_item_2.setIcon(status_icon_2)
                     self.ui.tableWidget_4.setItem(count, 6, status_item_2)
 
                 button_crl_to_uc = QPushButton()
                 button_crl_to_uc.setFixedSize(30, 30)
                 icon6 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_inbox))
-                icon6.addPixmap(pm)
+                pixmap_11 = QPixmap()
+                pixmap_11.loadFromData(base64.b64decode(base64_inbox))
+                icon6.addPixmap(pixmap_11)
                 button_crl_to_uc.setIcon(icon6)
                 button_crl_to_uc.setFlat(True)
                 row_key_id = row.KeyId
@@ -1324,11 +1326,11 @@ class MainWindow(QMainWindow):
 
                 button_delete_watch = QPushButton()
                 button_delete_watch.setFixedSize(30, 30)
-                icon6 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_export))
-                icon6.addPixmap(pm)
-                button_delete_watch.setIcon(icon6)
+                icon7 = QIcon()
+                pixmap_12 = QPixmap()
+                pixmap_12.loadFromData(base64.b64decode(base64_export))
+                icon7.addPixmap(pixmap_12)
+                button_delete_watch.setIcon(icon7)
                 button_delete_watch.setFlat(True)
                 id_row = row.ID
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
@@ -1349,8 +1351,8 @@ class MainWindow(QMainWindow):
 
     def sub_tab_watching_custom_crl(self, text=''):
         try:
-            self.ui.label_8.setText('Ищем: ' + text)
-            self.ui.label_8.adjustSize()
+            # self.ui.label_8.setText('Ищем: ' + text)
+            # self.ui.label_8.adjustSize()
 
             self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
             self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
@@ -1372,6 +1374,7 @@ class MainWindow(QMainWindow):
                                                          | WatchingCustomCRL.SerialNumber.contains(text)
                                                          | WatchingCustomCRL.UrlCRL.contains(text)). \
                 limit(config['Listing']['watch']).count()
+            # self.ui.tableWidget_5.clear()
             self.ui.tableWidget_5.setRowCount(count_all)
             count = 0
             for row in query:
@@ -1385,26 +1388,26 @@ class MainWindow(QMainWindow):
                 if row.status == 'Info: Filetype good':
                     status_item = QTableWidgetItem()
                     status_icon = QIcon()
-                    pm = QPixmap()
-                    pm.loadFromData(base64.b64decode(base64_white_list))
-                    status_icon.addPixmap(pm)
+                    pixmap_13 = QPixmap()
+                    pixmap_13.loadFromData(base64.b64decode(base64_white_list))
+                    status_icon.addPixmap(pixmap_13)
                     status_item.setIcon(status_icon)
                     self.ui.tableWidget_5.setItem(count, 6, status_item)
                 else:
                     status_item_2 = QTableWidgetItem()
                     status_icon_2 = QIcon()
-                    pm = QPixmap()
-                    pm.loadFromData(base64.b64decode(base64_black_list))
-                    status_icon_2.addPixmap(pm)
+                    pixmap_14 = QPixmap()
+                    pixmap_14.loadFromData(base64.b64decode(base64_black_list))
+                    status_icon_2.addPixmap(pixmap_14)
                     status_item_2.setIcon(status_icon_2)
                     self.ui.tableWidget_5.setItem(count, 6, status_item_2)
 
                 button_crl_to_uc = QPushButton()
                 button_crl_to_uc.setFixedSize(30, 30)
                 icon6 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_inbox))
-                icon6.addPixmap(pm)
+                pixmap_15 = QPixmap()
+                pixmap_15.loadFromData(base64.b64decode(base64_inbox))
+                icon6.addPixmap(pixmap_15)
                 button_crl_to_uc.setIcon(icon6)
                 button_crl_to_uc.setFlat(True)
                 row_key_id = row.KeyId
@@ -1413,11 +1416,11 @@ class MainWindow(QMainWindow):
 
                 button_delete_watch = QPushButton()
                 button_delete_watch.setFixedSize(30, 30)
-                icon7 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_export))
-                icon7.addPixmap(pm)
-                button_delete_watch.setIcon(icon7)
+                icon8 = QIcon()
+                pixmap_16 = QPixmap()
+                pixmap_16.loadFromData(base64.b64decode(base64_export))
+                icon8.addPixmap(pixmap_16)
+                button_delete_watch.setIcon(icon8)
                 button_delete_watch.setFlat(True)
                 id_row = row.ID
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'custom'))
@@ -1441,8 +1444,8 @@ class MainWindow(QMainWindow):
 
     def sub_tab_watching_disabled_crl(self, text=''):
         try:
-            self.ui.label_8.setText('Ищем: ' + text)
-            self.ui.label_8.adjustSize()
+            # self.ui.label_8.setText('Ищем: ' + text)
+            # self.ui.label_8.adjustSize()
 
             self.ui.pushButton_12.pressed.connect(lambda: self.ui.lineEdit_6.setText(''))
 
@@ -1463,6 +1466,7 @@ class MainWindow(QMainWindow):
                                                           | WatchingDeletedCRL.SerialNumber.contains(text)
                                                           | WatchingDeletedCRL.UrlCRL.contains(text)). \
                 limit(config['Listing']['watch']).count()
+            # self.ui.tableWidget_6.clear()
             self.ui.tableWidget_6.setRowCount(count_all)
             count = 0
             for row in query:
@@ -1475,11 +1479,11 @@ class MainWindow(QMainWindow):
 
                 buttonReturnWatch = QPushButton()
                 buttonReturnWatch.setFixedSize(30, 30)
-                icon8 = QIcon()
-                pm = QPixmap()
-                pm.loadFromData(base64.b64decode(base64_import))
-                icon8.addPixmap(pm)
-                buttonReturnWatch.setIcon(icon8)
+                icon10 = QIcon()
+                pixmap_17 = QPixmap()
+                pixmap_17.loadFromData(base64.b64decode(base64_import))
+                icon10.addPixmap(pixmap_17)
+                buttonReturnWatch.setIcon(icon10)
                 buttonReturnWatch.setFlat(True)
                 id_row = row.ID
                 buttonReturnWatch.pressed.connect(lambda o=id_row: self.move_passed_to_watching(o))
@@ -1542,10 +1546,11 @@ class MainWindow(QMainWindow):
             self.ui.lineEdit_12.setText(config['MainWindow']['height'])
             self.ui.lineEdit_11.setText(config['MainWindow']['width'])
             self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
-            if config['MainWindow']['saveWidth'] == 'No':
-                self.ui.checkBox_3.setChecked(True)
-            if config['MainWindow']['AllowResize'] == 'No':
+            if config['MainWindow']['savewidth'] == 'No':
                 self.ui.checkBox_2.setChecked(True)
+            if config['MainWindow']['allowresize'] == 'Yes':
+                self.ui.checkBox_3.setChecked(True)
+                self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMinimumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMaximumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
 
@@ -1666,23 +1671,23 @@ class MainWindow(QMainWindow):
                 config.set('XMPP', 'sendinfonewtsl', 'Yes')
 
             if self.ui.checkBox_3.checkState() == 0:
-                set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
+                set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
                 config.set('MainWindow', 'allowresize', 'Yes')
                 self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMinimumSize(0, 0)
                 self.setMaximumSize(16777215, 16777215)
             elif self.ui.checkBox_3.checkState() == 2:
-                set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
+                set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
                 config.set('MainWindow', 'allowresize', 'No')
                 self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMinimumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
                 self.setMaximumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
 
             if self.ui.checkBox_2.checkState() == 0:
-                set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
+                set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
                 config.set('MainWindow', 'savewidth', 'No')
             elif self.ui.checkBox_2.checkState() == 2:
-                set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
+                set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
                 config.set('MainWindow', 'savewidth', 'Yes')
 
             if self.ui.checkBox_4.checkState() == 0:
