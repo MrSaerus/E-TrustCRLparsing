@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainkWjYpa.ui'
+## Form generated from reading UI file 'mainmRbBtj.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -153,6 +153,7 @@ class Ui_MainWindow(object):
         self.tableWidget_9.setSizePolicy(sizePolicy)
         self.tableWidget_9.horizontalHeader().setVisible(False)
         self.tableWidget_9.verticalHeader().setVisible(False)
+        self.tableWidget_9.verticalHeader().setDefaultSectionSize(23)
 
         self.verticalLayout_34.addWidget(self.tableWidget_9)
 
@@ -213,6 +214,7 @@ class Ui_MainWindow(object):
         self.tableWidget_7.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.tableWidget_7.setSortingEnabled(True)
         self.tableWidget_7.verticalHeader().setVisible(False)
+        self.tableWidget_7.verticalHeader().setDefaultSectionSize(23)
 
         self.verticalLayout_35.addWidget(self.tableWidget_7)
 
@@ -238,6 +240,7 @@ class Ui_MainWindow(object):
         self.tableWidget_8.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.tableWidget_8.setSortingEnabled(True)
         self.tableWidget_8.verticalHeader().setVisible(False)
+        self.tableWidget_8.verticalHeader().setDefaultSectionSize(23)
 
         self.verticalLayout_36.addWidget(self.tableWidget_8)
 
