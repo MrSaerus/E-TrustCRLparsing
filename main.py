@@ -527,44 +527,40 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
 def check_for_import_in_uc():
     try:
         folder = config['Folders']['crls']
-        current_datetime = datetime.datetime.now()
-        before_current_datetime = datetime.datetime.now() - datetime.timedelta(days=5)
-        query_1 = WatchingCRL.select().where(
-            WatchingCRL.last_update.between(before_current_datetime, current_datetime)
-        )
-        query_2 = WatchingCustomCRL.select().where(
-            WatchingCustomCRL.last_update.between(before_current_datetime, current_datetime)
-        )
-        # datetime.datetime.strptime(last_date_copy, '%Y-%m-%d %H:%M:%S')
+        current_datetimes = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_datetime = datetime.datetime.strptime(current_datetimes, '%Y-%m-%d %H:%M:%S')
+        before_current_date = datetime.datetime.now() - datetime.timedelta(days=5)
+        query_1 = WatchingCRL.select()
+        query_2 = WatchingCustomCRL.select()
         count = 0
         return_list_msg = ''
         for wc in query_1:
-            if current_datetime > wc.next_update:
-                print('1 Need to download', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
-                download_file(wc.UrlCRL, wc.KeyId + '.crl', folder, 'current', wc.ID, 'Yes')
-                try:
-                    shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
-                                 config['Folders']['to_uc'] + '/' +'current_' + wc.KeyId + '.crl')
-                    check_crl(wc.ID, wc.Name, wc.KeyId)
-                    return_list_msg = return_list_msg + ';' + wc.KeyId + ' ' + wc.Name
-                except Exception:
-                    print('Error: check_for_import_in_uc()::error_copy_current')
-                    logs('Error: check_for_import_in_uc()::error_copy_current', 'errors', '2')
-                count = count + 1
+            if current_datetime > wc.next_update > before_current_date:
+                print('Info: Need to download current', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
+                if download_file(wc.UrlCRL, wc.KeyId + '.crl', folder, 'current', wc.ID, 'Yes') == 'down_success':
+                    try:
+                        shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
+                                     config['Folders']['to_uc'] + '/' +'current_' + wc.KeyId + '.crl')
+                        check_crl(wc.ID, wc.Name, wc.KeyId)
+                        return_list_msg = return_list_msg + ';' + wc.KeyId + ' ' + wc.Name
+                    except Exception:
+                        print('Error: check_for_import_in_uc()::error_copy_current')
+                        logs('Error: check_for_import_in_uc()::error_copy_current', 'errors', '2')
+                    count = count + 1
         for wcc in query_2:
-            if current_datetime > wcc.next_update:
-                print('2 Need to download', wcc.Name, current_datetime, wcc.last_download, wcc.last_update,
+            if current_datetime > wcc.next_update > before_current_date:
+                print('Info: Need to download custom', wcc.Name, current_datetime, wcc.last_download, wcc.last_update,
                       wcc.next_update)
-                download_file(wcc.UrlCRL, wcc.KeyId + '.crl', folder, 'custome', wcc.ID, 'Yes')
-                try:
-                    shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
-                                 config['Folders']['to_uc'] + '/' +'custom_' + wcc.KeyId + '.crl')
-                    check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
-                    return_list_msg = return_list_msg + ';' + wcc.KeyId + ' ' + wcc.Name
-                except Exception:
-                    print('Error: check_for_import_in_uc()::error_copy_custom')
-                    logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors', '2')
-                count = count + 1
+                if download_file(wcc.UrlCRL, wcc.KeyId + '.crl', folder, 'custome', wcc.ID, 'Yes') == 'down_success':
+                    try:
+                        shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
+                                     config['Folders']['to_uc'] + '/' +'custom_' + wcc.KeyId + '.crl')
+                        check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+                        return_list_msg = return_list_msg + ';' + wcc.KeyId + ' ' + wcc.Name
+                    except Exception:
+                        print('Error: check_for_import_in_uc()::error_copy_custom')
+                        logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors', '2')
+                    count = count + 1
         if count > 0:
             print('Info: Copied ' + str(count) + ' count\'s CRL')
             logs('Info: Copied ' + str(count) + ' count\'s CRL', 'info', '5')
@@ -1336,7 +1332,6 @@ class MainWindow(QMainWindow):
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
                 self.ui.tableWidget_4.setCellWidget(count, 8, button_delete_watch)
                 count = count + 1
-            self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.tableWidget_4.setColumnWidth(1, 100)
             self.ui.tableWidget_4.setColumnWidth(2, 150)
             self.ui.tableWidget_4.setColumnWidth(3, 150)
@@ -1345,6 +1340,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_4.setColumnWidth(6, 25)
             self.ui.tableWidget_4.setColumnWidth(7, 31)
             self.ui.tableWidget_4.setColumnWidth(8, 31)
+            self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: sub_tab_watching_crl()')
             logs('Error: sub_tab_watching_crl()', 'errors', '1')
@@ -1427,8 +1423,6 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget_5.setCellWidget(count, 8, button_delete_watch)
 
                 count = count + 1
-
-            self.ui.tableWidget_5.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.tableWidget_5.setColumnWidth(1, 100)
             self.ui.tableWidget_5.setColumnWidth(2, 150)
             self.ui.tableWidget_5.setColumnWidth(3, 150)
@@ -1438,6 +1432,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_5.setColumnWidth(6, 25)
             self.ui.tableWidget_5.setColumnWidth(7, 31)
             self.ui.tableWidget_5.setColumnWidth(8, 31)
+            self.ui.tableWidget_5.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         except Exception:
             print('Error: sub_tab_watching_custom_crl()')
             logs('Error: sub_tab_watching_custom_crl()', 'errors', '1')
