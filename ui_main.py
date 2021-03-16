@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainmRbBtj.ui'
+## Form generated from reading UI file 'mainsQbyLc.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -642,6 +642,16 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.label_8)
 
+        self.pushButton_27 = QPushButton(self.tab_5)
+        self.pushButton_27.setObjectName(u"pushButton_27")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.pushButton_27.sizePolicy().hasHeightForWidth())
+        self.pushButton_27.setSizePolicy(sizePolicy3)
+
+        self.horizontalLayout.addWidget(self.pushButton_27)
+
         self.pushButton_4 = QPushButton(self.tab_5)
         self.pushButton_4.setObjectName(u"pushButton_4")
         self.pushButton_4.setMaximumSize(QSize(120, 16777215))
@@ -915,9 +925,6 @@ class Ui_MainWindow(object):
 
         self.lineEdit_17 = QLineEdit(self.frame_20)
         self.lineEdit_17.setObjectName(u"lineEdit_17")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.lineEdit_17.sizePolicy().hasHeightForWidth())
         self.lineEdit_17.setSizePolicy(sizePolicy3)
         self.lineEdit_17.setMinimumSize(QSize(0, 20))
@@ -2038,7 +2045,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.10.4", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.10", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u" \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u0430\u044f \u0438\u043d\u0438\u0446\u0438\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044f \u0441\u0435\u0440\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0432 \u0438 \u0441\u043f\u0438\u0441\u043a\u0430 \u043e\u0442\u0437\u044b\u0432\u043e\u0432", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0435\u0440\u0441\u0438\u044f \u0431\u0430\u0437\u044b:", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0430 \u0432\u044b\u043f\u0443\u0441\u043a\u0430 \u0431\u0430\u0437\u044b:", None))
@@ -2111,6 +2118,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem19.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441 \u0432 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442\u0435", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QCoreApplication.translate("MainWindow", u"\u0421\u043f\u0438\u0441\u043e\u043a CRL", None))
         self.label_8.setText("")
+        self.pushButton_27.setText("")
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043a\u0430\u0447\u0430\u0442\u044c \u0432\u0441\u0435 CRL'\u044b", None))
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0432\u0441\u0435 CRL", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c CRL \u0434\u043b\u044f \u0423\u0426", None))

@@ -1263,6 +1263,13 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.pressed.connect(self.download_all_crls)
         self.ui.pushButton_5.clicked.connect(self.check_all_crl)
         self.ui.pushButton_3.clicked.connect(self.export_crl_to_uc)
+        icon11 = QIcon()
+        pixmap_18 = QPixmap()
+        pixmap_18.loadFromData(base64.b64decode(base64_file))
+        icon11.addPixmap(pixmap_18)
+        self.ui.pushButton_27.setIcon(icon11)
+        self.ui.pushButton_27.setFlat(True)
+        self.ui.pushButton_27.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
 
     def sub_tab_watching_crl(self, text=''):
         try:
