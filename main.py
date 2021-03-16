@@ -1053,6 +1053,9 @@ class MainWindow(QMainWindow):
 
     def tab_uc(self, text=''):
         try:
+
+            self.ui.tableWidget.clearContents()
+
             self.ui.pushButton_7.pressed.connect(lambda: self.ui.lineEdit.setText(''))
             # .order_by(MyModel.something.desc(nulls='LAST'))
             query = UC.select().order_by(UC.Name).where(UC.Registration_Number.contains(text)
@@ -1094,6 +1097,9 @@ class MainWindow(QMainWindow):
 
     def tab_cert(self, text=''):
         try:
+
+            self.ui.tableWidget_2.clearContents()
+
             self.ui.pushButton_8.pressed.connect(lambda: self.ui.lineEdit_2.setText(''))
 
             icon0 = QIcon()
@@ -1159,6 +1165,9 @@ class MainWindow(QMainWindow):
 
     def tab_crl(self, text=''):
         try:
+
+            self.ui.tableWidget_3.clearContents()
+
             self.ui.pushButton_9.pressed.connect(lambda: self.ui.lineEdit_3.setText(''))
             icon9 = QIcon()
             pixmap_5 = QPixmap()
@@ -1260,6 +1269,8 @@ class MainWindow(QMainWindow):
             # self.ui.label_8.setText('Ищем: ' + text)
             # self.ui.label_8.adjustSize()
 
+            self.ui.tableWidget_4.clearContents()
+
             self.ui.pushButton_10.pressed.connect(lambda: self.ui.lineEdit_4.setText(''))
 
             query = WatchingCRL.select().order_by(WatchingCRL.Name).where(WatchingCRL.Name.contains(text)
@@ -1349,6 +1360,8 @@ class MainWindow(QMainWindow):
         try:
             # self.ui.label_8.setText('Ищем: ' + text)
             # self.ui.label_8.adjustSize()
+
+            self.ui.tableWidget_5.clearContents()
 
             self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
             self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
@@ -1441,6 +1454,8 @@ class MainWindow(QMainWindow):
         try:
             # self.ui.label_8.setText('Ищем: ' + text)
             # self.ui.label_8.adjustSize()
+
+            self.ui.tableWidget_6.clearContents()
 
             self.ui.pushButton_12.pressed.connect(lambda: self.ui.lineEdit_6.setText(''))
 
