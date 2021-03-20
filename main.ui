@@ -67,7 +67,7 @@
                       </size>
                      </property>
                      <property name="title">
-                      <string> Начальная инициализация сертификатов и списка отзывов</string>
+                      <string>Информация TSL E-Trust</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_14">
                       <item>

@@ -177,12 +177,7 @@
             </column>
             <column>
              <property name="text">
-              <string>Последнее обновление</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Следующее обновление</string>
+              <string>Адрес CRL</string>
              </property>
             </column>
            </widget>
