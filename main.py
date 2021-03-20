@@ -582,12 +582,6 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                 proxy = request.ProxyHandler(
                     {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port'],
                      'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
-                # if file_url.split('/')[0] == 'https:':
-                #     proxy = request.ProxyHandler(
-                #         {'https': 'https://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
-                # else:
-                #     proxy = request.ProxyHandler(
-                #         {'http': 'http://' + config['Proxy']['ip'] + ':' + config['Proxy']['port']})
                 opener = request.build_opener(proxy)
                 request.install_opener(opener)
                 logs('Info: Used proxy', 'info', '6')
@@ -678,6 +672,198 @@ def set_value_in_property_file(file_path, section, key, value):
     configfile = open(file_path, 'w')
     set_config.write(configfile, space_around_delimiters=False)  # use flag in case case you need to avoid white space.
     configfile.close()
+
+
+class DownloadAllCRL(QObject):
+    try:
+        threadInfoMessage = pyqtSignal(str)
+
+        def __init__(self):
+            try:
+                super(DownloadAllCRL, self).__init__()
+                self._step = 0
+                self._isRunning = True
+            except Exception:
+                print('Error: CheckCRL::__init__')
+                logs('Error: CheckCRL::__init__', 'errors', '1')
+
+        def task(self):
+            try:
+                print('Info: Starting checking CRL')
+                logs('Info: Starting checking CRL', 'info', '6')
+                ## self.threadInfoMessage.emit('Info: Starting checking CRL')
+                if not self._isRunning:
+                    self._isRunning = True
+                    self._step = 0
+                while self._isRunning:
+                    self._step += 1
+                    try:
+                        ## self.ui.pushButton_4.setEnabled(False)
+                        QCoreApplication.processEvents()
+                        query_1 = WatchingCRL.select()
+                        query_2 = WatchingCustomCRL.select()
+                        counter_watching_crl_all = WatchingCRL.select().count()
+                        watching_custom_crl_all = WatchingCustomCRL.select().count()
+                        counter_watching_crl = 0
+                        counter_watching_custom_crl = 0
+                        self.threadInfoMessage.emit('Загрузка началась')
+                        for wc in query_1:
+                            QCoreApplication.processEvents()
+                            counter_watching_crl = counter_watching_crl + 1
+                            file_url = wc.UrlCRL
+                            file_name = wc.KeyId + '.crl'
+                            # file_name = wc.UrlCRL.split('/')[-1]
+                            # file_name = wcc.KeyId
+                            folder = config['Folders']['crls']
+                            self.threadInfoMessage.emit(
+                                str(counter_watching_crl) + ' из ' + str(
+                                    counter_watching_crl_all) + ' Загружаем: ' + str(
+                                    wc.Name) + ' ' + str(wc.KeyId))
+                            download_file(file_url, file_name, folder, 'current', wc.ID)
+                            # Downloader(str(wc.UrlCRL), str(wc.SerialNumber)+'.crl')
+                        print('WatchingCRL downloaded ' + str(counter_watching_crl))
+                        logs('Info: WatchingCRL downloaded ' + str(counter_watching_crl), 'info', '5')
+                        for wcc in query_2:
+                            QCoreApplication.processEvents()
+                            counter_watching_custom_crl = counter_watching_custom_crl + 1
+                            file_url = wcc.UrlCRL
+                            file_name = wcc.KeyId + '.crl'
+                            # file_name = wcc.UrlCRL.split('/')[-1]
+                            # file_name = wcc.KeyId
+                            folder = config['Folders']['crls']
+                            self.threadInfoMessage.emit(
+                                str(counter_watching_custom_crl) + ' из ' + str(
+                                    watching_custom_crl_all) + ' Загружаем: ' + str(
+                                    wcc.Name) + ' ' + str(wcc.KeyId))
+                            download_file(file_url, file_name, folder, 'custome', wcc.ID)
+                            # Downloader(str(wcc.UrlCRL), str(wcc.SerialNumber)+'.crl'
+                        self.threadInfoMessage.emit('Загрузка закончена')
+                        print('WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl))
+                        logs('Info: WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl), 'info', '5')
+                        print('All download done, w=' + str(counter_watching_crl) + ', c=' + str(
+                            counter_watching_custom_crl))
+                        logs('Info: All download done, w=' + str(counter_watching_crl) + ', c=' + str(
+                            counter_watching_custom_crl), 'info', '5')
+                        ## self.ui.pushButton_4.setEnabled(True)
+                    except Exception:
+                        print('Error: download_all_crls()')
+                        logs('Error: download_all_crls()', 'errors', '1')
+                        self._isRunning = False
+                    else:
+                        self._isRunning = False
+                    time.sleep(1)
+                print('Info: Checking completed')
+                logs('Info: Checking completed', 'info', '6')
+                ## self.threadInfoMessage.emit('Info: Checking completed')
+            except Exception:
+                print('Error: CheckCRL::task')
+                logs('Error: CheckCRL::task', 'errors', '2')
+
+        def stop(self):
+            try:
+                self._isRunning = False
+            except Exception:
+                print('Error: CheckCRL::top')
+                logs('Error: CheckCRL::top', 'errors', '2')
+    except Exception:
+        print('Error: CheckCRL()')
+        logs('Error: CheckCRL()', 'errors', '1')
+
+
+class CheckCRL(QObject):
+    try:
+        threadInfoMessage = pyqtSignal(str)
+
+        def __init__(self):
+            try:
+                super(CheckCRL, self).__init__()
+                self._step = 0
+                self._isRunning = True
+            except Exception:
+                print('Error: CheckCRL::__init__')
+                logs('Error: CheckCRL::__init__', 'errors', '1')
+
+        def task(self):
+            try:
+                print('Info: Starting checking CRL')
+                logs('Info: Starting checking CRL', 'info', '6')
+                self.threadInfoMessage.emit('Начинаем проверку')
+                if not self._isRunning:
+                    self._isRunning = True
+                    self._step = 0
+                while self._isRunning:
+                    self._step += 1
+                    try:
+                        folder = config['Folders']['crls']
+                        current_datetimes = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        current_datetime = datetime.datetime.strptime(current_datetimes, '%Y-%m-%d %H:%M:%S')
+                        before_current_date = datetime.datetime.now() - datetime.timedelta(days=5)
+                        query_1 = WatchingCRL.select()
+                        query_2 = WatchingCustomCRL.select()
+                        count = 0
+                        return_list_msg = ''
+                        for wc in query_1:
+                            if current_datetime > wc.next_update > before_current_date:
+                                # print('Info: Need to download current', wc.Name, current_datetime, wc.last_download,
+                                #       wc.last_update, wc.next_update)
+                                self.threadInfoMessage.emit('Скачиваем: ' + wc.Name)
+                                if download_file(wc.UrlCRL, wc.KeyId + '.crl', folder, 'current', wc.ID,
+                                                 'Yes') == 'down_success':
+                                    try:
+                                        shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
+                                                     config['Folders']['to_uc'] + '/' + 'current_' + wc.KeyId + '.crl')
+                                        check_crl(wc.ID, wc.Name, wc.KeyId)
+                                        return_list_msg = return_list_msg + ';' + wc.KeyId + ' ' + wc.Name
+                                    except Exception:
+                                        print('Error: check_for_import_in_uc()::error_copy_current')
+                                        logs('Error: check_for_import_in_uc()::error_copy_current', 'errors', '2')
+                                    count = count + 1
+                        for wcc in query_2:
+                            if current_datetime > wcc.next_update > before_current_date:
+                                # print('Info: Need to download custom', wcc.Name, current_datetime, wcc.last_download,
+                                #       wcc.last_update,
+                                #       wcc.next_update)
+                                self.threadInfoMessage.emit('Скачиваем: ' + wcc.Name)
+                                if download_file(wcc.UrlCRL, wcc.KeyId + '.crl', folder, 'custome', wcc.ID,
+                                                 'Yes') == 'down_success':
+                                    try:
+                                        shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
+                                                     config['Folders']['to_uc'] + '/' + 'custom_' + wcc.KeyId + '.crl')
+                                        check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+                                        return_list_msg = return_list_msg + ';' + wcc.KeyId + ' ' + wcc.Name
+                                    except Exception:
+                                        print('Error: check_for_import_in_uc()::error_copy_custom')
+                                        logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors', '2')
+                                    count = count + 1
+                        if count > 0:
+                            print('Info: Copied ' + str(count) + ' count\'s CRL')
+                            logs('Info: Copied ' + str(count) + ' count\'s CRL', 'info', '5')
+                        else:
+                            print('Info: Needed CRL not found')
+                            logs('Info: Needed CRL not found', 'info', '5')
+                    except Exception:
+                        print('Error: check_for_import_in_uc()')
+                        logs('Error: check_for_import_in_uc()', 'errors', '1')
+                        self._isRunning = False
+                    else:
+                        self._isRunning = False
+                    time.sleep(1)
+                print('Info: Checking completed')
+                logs('Info: Checking completed', 'info', '6')
+                self.threadInfoMessage.emit('Проверка завершена')
+            except Exception:
+                print('Error: CheckCRL::task')
+                logs('Error: CheckCRL::task', 'errors', '2')
+
+        def stop(self):
+            try:
+                self._isRunning = False
+            except Exception:
+                print('Error: CheckCRL::top')
+                logs('Error: CheckCRL::top', 'errors', '2')
+    except Exception:
+        print('Error: CheckCRL()')
+        logs('Error: CheckCRL()', 'errors', '1')
 
 
 class MainWorker(QObject):
@@ -881,7 +1067,6 @@ class Downloader(QThread):
             else:
                 print('Загрузка завершена')
                 logs('Info: Downloading successfully', 'info', '5')
-
                 query_get_settings = Settings.select()
                 ver_from_tsl = get_info_xlm('current_version')
                 ver = 0
@@ -897,14 +1082,13 @@ class Downloader(QThread):
                     logs('Info: Need update, new version ' + ver_from_tsl + ', old ' + ver, 'info', '6')
                     self.done.emit('Загрузка завершена, требуются обновления Базы УЦ и сертификатов. Новая версия '
                                    + ver_from_tsl + ' текущая версия ' + ver)
-
-                # get_info_xlm('last_update')
                 size_tls = os.path.getsize("tsl.xml")
                 self.pre_progress.emit(size_tls)
                 self.progress.emit(size_tls)
+                self.pre_progress.emit(-1)
 
         def _progress(self, block_num, block_size, total_size=int('15000000')):
-            total_size = int('15000000')
+            total_size = int('12000000')
             print(block_num, block_size, total_size)
             self.downloading.emit('Загрузка.')
             if not self._init:
@@ -957,8 +1141,6 @@ class MainWindow(QMainWindow):
             self.download_xml()
         if config['Schedule']['allowupdatecrlbystart'] == 'Yes':
             self.check_all_crl()
-        #if config['Schedule']['allowschedule'] == 'Yes':
-        #    self.worker.task()
 
     def tab_info(self):
         try:
@@ -985,9 +1167,13 @@ class MainWindow(QMainWindow):
                                     + str(int(watching_crl.count())
                                           + int(watching_custom_crl.count())))
             self.ui.pushButton.clicked.connect(self.download_xml)
+            self.ui.pushButton.setToolTip('Скачать TSL')
             self.ui.pushButton_2.clicked.connect(self.init_xml)
+            self.ui.pushButton_2.setToolTip('Обработать TSL')
             self.ui.pushButton_13.clicked.connect(self.export_crl)
+            self.ui.pushButton_13.setToolTip('Экспортировать список CRL')
             self.ui.pushButton_6.pressed.connect(self.import_crl_list)
+            self.ui.pushButton_6.setToolTip('Импортировать список CRL')
 
             watching_crl = WatchingCRL.select().order_by(WatchingCRL.next_update).where(
                 WatchingCRL.OGRN == config['Custom']['main_uc_ogrn'])
@@ -1046,7 +1232,9 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_9.setItem(0, 0, QTableWidgetItem('Info: init log system'))
             self.ui.tableWidget_9.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
             self.ui.pushButton_20.clicked.connect(lambda: self.worker.stop() and self.stop_thread)
+            self.ui.pushButton_20.setToolTip('Остановить мониторинг CRL')
             self.ui.pushButton_19.clicked.connect(self.worker.task)
+            self.ui.pushButton_19.setToolTip('Запустить мониторинг CRL')
         except Exception:
             print('Error: tab_info()')
             logs('Error: tab_info()', 'errors', '1')
@@ -1086,6 +1274,7 @@ class MainWindow(QMainWindow):
                 button_info.setFlat(True)
                 reg_num = row.Registration_Number
                 button_info.pressed.connect(lambda rg=reg_num: self.open_sub_window_info_uc(rg))
+                button_info.setToolTip('Подробная информация по УЦ')
                 self.ui.tableWidget.setCellWidget(count, 3, button_info)
                 count = count + 1
             self.ui.tableWidget.resizeColumnsToContents()
@@ -1109,6 +1298,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_22.setIcon(icon0)
             self.ui.pushButton_22.setFlat(True)
             self.ui.pushButton_22.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['certs'])))
+            self.ui.pushButton_22.setToolTip('Открыть папку с сертами')
 
             query = CERT.select().where(CERT.Registration_Number.contains(text)
                                         | CERT.Name.contains(text)
@@ -1139,6 +1329,7 @@ class MainWindow(QMainWindow):
                 ki = row.KeyId
                 # button_cert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
                 button_cert.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['certs']))
+                button_cert.setToolTip('Сохранить сертификат')
                 self.ui.tableWidget_2.setCellWidget(count, 4, button_cert)
 
                 button_cert_save = QPushButton()
@@ -1151,6 +1342,7 @@ class MainWindow(QMainWindow):
                 button_cert_save.setFlat(True)
                 ki = row.KeyId
                 button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['to_uc']))
+                button_cert_save.setToolTip('Сохранить сертификат в папку УЦ')
                 self.ui.tableWidget_2.setCellWidget(count, 5, button_cert_save)
                 count = count + 1
             self.ui.tableWidget_2.setColumnWidth(1, 150)
@@ -1176,6 +1368,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_26.setIcon(icon9)
             self.ui.pushButton_26.setFlat(True)
             self.ui.pushButton_26.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
+            self.ui.pushButton_26.setToolTip('Открыть папку с CRL')
 
             query = CRL.select().where(CRL.Registration_Number.contains(text)
                                        | CRL.Name.contains(text)
@@ -1207,19 +1400,21 @@ class MainWindow(QMainWindow):
                 button_crl_save.setFlat(True)
                 button_crl_save.pressed.connect(
                     lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['crls']))
+                button_crl_save.setToolTip('Сохранить CRL')
                 self.ui.tableWidget_3.setCellWidget(count, 5, button_crl_save)
 
-                button_crl_save = QPushButton()
-                button_crl_save.setFixedSize(30, 30)
+                button_crl_save_to_uc = QPushButton()
+                button_crl_save_to_uc.setFixedSize(30, 30)
                 icon5 = QIcon()
                 pixmap_7 = QPixmap()
                 pixmap_7.loadFromData(base64.b64decode(base64_inbox))
                 icon5.addPixmap(pixmap_7)
-                button_crl_save.setIcon(icon5)
-                button_crl_save.setFlat(True)
-                button_crl_save.pressed.connect(
+                button_crl_save_to_uc.setIcon(icon5)
+                button_crl_save_to_uc.setFlat(True)
+                button_crl_save_to_uc.pressed.connect(
                     lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', (config['Folders']['to_uc'])))
-                self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save)
+                button_crl_save_to_uc.setToolTip('Сохранить CRL в УЦ')
+                self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save_to_uc)
 
                 button_add_to_watch = QPushButton()
                 button_add_to_watch.setFixedSize(30, 30)
@@ -1243,6 +1438,7 @@ class MainWindow(QMainWindow):
                                                                                                   stamp,
                                                                                                   serial_number,
                                                                                                   url_crl))
+                button_add_to_watch.setToolTip('Добавить CRL в мониторинг')
                 self.ui.tableWidget_3.setCellWidget(count, 7, button_add_to_watch)
 
                 count = count + 1
@@ -1260,9 +1456,19 @@ class MainWindow(QMainWindow):
             logs('Error: tab_crl()', 'errors', '1')
 
     def tab_watching_crl(self):
-        self.ui.pushButton_4.pressed.connect(self.download_all_crls)
-        self.ui.pushButton_5.clicked.connect(self.check_all_crl)
+        self.thread_3 = QThread()
+        self.thread_3.start()
+        self.worker_3 = DownloadAllCRL()
+        self.worker_3.moveToThread(self.thread_3)
+        self.ui.pushButton_4.pressed.connect(self.worker_3.task)
+        # self.ui.pushButton_4.pressed.connect(self.download_all_crls)
+        self.ui.pushButton_4.setToolTip('Скачать все CRL (Занимает значительное время при использовании прокси)')
+        self.worker_3.threadInfoMessage.connect(lambda msg: self.ui.label_8.setText(msg))
+
+        # self.ui.pushButton_5.clicked.connect(self.check_all_crl)
         self.ui.pushButton_3.clicked.connect(self.export_crl_to_uc)
+        self.ui.pushButton_3.setToolTip('Проверить CRL для копирования в УЦ')
+
         icon11 = QIcon()
         pixmap_18 = QPixmap()
         pixmap_18.loadFromData(base64.b64decode(base64_file))
@@ -1270,6 +1476,16 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_27.setIcon(icon11)
         self.ui.pushButton_27.setFlat(True)
         self.ui.pushButton_27.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
+        self.ui.pushButton_27.setToolTip('Открыть папку с CRL')
+
+        self.thread_2 = QThread()
+        self.thread_2.start()
+        self.worker_2 = CheckCRL()
+        self.worker_2.moveToThread(self.thread_2)
+        self.ui.pushButton_5.clicked.connect(self.worker_2.task)
+        self.ui.pushButton_5.setToolTip('Запустить проверку всех CRL '
+                                        '(Занимает значительное время при использовании прокси)')
+        self.worker_2.threadInfoMessage.connect(lambda msg: self.ui.label_8.setText(msg))
 
     def sub_tab_watching_crl(self, text=''):
         try:
@@ -1316,6 +1532,7 @@ class MainWindow(QMainWindow):
                     pixmap_9.loadFromData(base64.b64decode(base64_white_list))
                     status_icon.addPixmap(pixmap_9)
                     status_item.setIcon(status_icon)
+                    status_item.setToolTip('Файл прошел проверку')
                     self.ui.tableWidget_4.setItem(count, 6, status_item)
                 else:
                     status_item_2 = QTableWidgetItem()
@@ -1324,6 +1541,7 @@ class MainWindow(QMainWindow):
                     pixmap_10.loadFromData(base64.b64decode(base64_black_list))
                     status_icon_2.addPixmap(pixmap_10)
                     status_item_2.setIcon(status_icon_2)
+                    status_item_2.setToolTip('Ошибка в файле или не скачан')
                     self.ui.tableWidget_4.setItem(count, 6, status_item_2)
 
                 button_crl_to_uc = QPushButton()
@@ -1336,6 +1554,7 @@ class MainWindow(QMainWindow):
                 button_crl_to_uc.setFlat(True)
                 row_key_id = row.KeyId
                 button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
+                button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
                 self.ui.tableWidget_4.setCellWidget(count, 7, button_crl_to_uc)
 
                 button_delete_watch = QPushButton()
@@ -1348,6 +1567,7 @@ class MainWindow(QMainWindow):
                 button_delete_watch.setFlat(True)
                 id_row = row.ID
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
+                button_delete_watch.setToolTip('Убрать CRL из мониторинга')
                 self.ui.tableWidget_4.setCellWidget(count, 8, button_delete_watch)
                 count = count + 1
             self.ui.tableWidget_4.setColumnWidth(1, 100)
@@ -1408,6 +1628,7 @@ class MainWindow(QMainWindow):
                     pixmap_13.loadFromData(base64.b64decode(base64_white_list))
                     status_icon.addPixmap(pixmap_13)
                     status_item.setIcon(status_icon)
+                    status_item.setToolTip('Файл прошел проверку')
                     self.ui.tableWidget_5.setItem(count, 6, status_item)
                 else:
                     status_item_2 = QTableWidgetItem()
@@ -1416,6 +1637,7 @@ class MainWindow(QMainWindow):
                     pixmap_14.loadFromData(base64.b64decode(base64_black_list))
                     status_icon_2.addPixmap(pixmap_14)
                     status_item_2.setIcon(status_icon_2)
+                    status_item_2.setToolTip('Ошибка в файле или не скачан')
                     self.ui.tableWidget_5.setItem(count, 6, status_item_2)
 
                 button_crl_to_uc = QPushButton()
@@ -1428,6 +1650,7 @@ class MainWindow(QMainWindow):
                 button_crl_to_uc.setFlat(True)
                 row_key_id = row.KeyId
                 button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
+                button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
                 self.ui.tableWidget_5.setCellWidget(count, 7, button_crl_to_uc)
 
                 button_delete_watch = QPushButton()
@@ -1440,6 +1663,7 @@ class MainWindow(QMainWindow):
                 button_delete_watch.setFlat(True)
                 id_row = row.ID
                 button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'custom'))
+                button_delete_watch.setToolTip('Убрать CRL из мониторинга')
                 self.ui.tableWidget_5.setCellWidget(count, 8, button_delete_watch)
 
                 count = count + 1
@@ -1504,6 +1728,7 @@ class MainWindow(QMainWindow):
                 buttonReturnWatch.setFlat(True)
                 id_row = row.ID
                 buttonReturnWatch.pressed.connect(lambda o=id_row: self.move_passed_to_watching(o))
+                buttonReturnWatch.setToolTip('Вернуть CRL в мониторинг')
                 self.ui.tableWidget_6.setCellWidget(count, 6, buttonReturnWatch)
                 count = count + 1
 
@@ -1592,10 +1817,15 @@ class MainWindow(QMainWindow):
             self.ui.label_9.setText(config['Folders']['to_uc'])
 
             self.ui.pushButton_18.clicked.connect(lambda: self.choose_directory('crl'))
+            self.ui.pushButton_18.setToolTip('Папка загрузки CRL')
             self.ui.pushButton_17.clicked.connect(lambda: self.choose_directory('cert'))
+            self.ui.pushButton_17.setToolTip('Папка загрузки сертификатов')
             self.ui.pushButton_16.clicked.connect(lambda: self.choose_directory('uc'))
+            self.ui.pushButton_16.setToolTip('Папка загрузки данных УЦ')
             self.ui.pushButton_15.clicked.connect(lambda: self.choose_directory('tmp'))
+            self.ui.pushButton_15.setToolTip('Папка загрузки временныйх файлов программы')
             self.ui.pushButton_14.clicked.connect(lambda: self.choose_directory('to_uc'))
+            self.ui.pushButton_14.setToolTip('Папка загрузки в УЦ')
 
             self.ui.lineEdit_7.setText(config['Proxy']['ip'])
             self.ui.lineEdit_8.setText(config['Proxy']['port'])
@@ -1845,6 +2075,7 @@ class MainWindow(QMainWindow):
             crl_count_all = 3267
             current_version = 'Unknown'
             last_update = 'Unknown'
+            self.ui.progressBar_2.setMaximum(100)
             for appt in root.getchildren():
                 QCoreApplication.processEvents()
                 address_code = ''
@@ -2006,6 +2237,8 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_2.setEnabled(True)
             self.ui.label_7.setText('Готово.')
             logs('Info: Processing successful done', 'info', '6')
+            self.ui.progressBar_2.setMaximum(-1)
+
         except Exception:
             print('Error: init_xml()')
             logs('Error: init_xml()', 'errors', '1')
@@ -2440,15 +2673,13 @@ class UcWindow(QWidget):
                     self.ui.tableWidget.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
                     self.ui.tableWidget.setItem(count, 2, QTableWidgetItem(str(row.Stamp)))
                     self.ui.tableWidget.setItem(count, 3, QTableWidgetItem(str(row.SerialNumber)))
-                    self.ui.tableWidget.setItem(count, 4, QTableWidgetItem(str()))
-                    self.ui.tableWidget.setItem(count, 5, QTableWidgetItem(str(row.UrlCRL)))
+                    self.ui.tableWidget.setItem(count, 4, QTableWidgetItem(str(row.UrlCRL)))
                     count = count + 1
                 self.ui.tableWidget.setColumnWidth(0, 50)
                 self.ui.tableWidget.setColumnWidth(1, 150)
                 self.ui.tableWidget.setColumnWidth(2, 150)
                 self.ui.tableWidget.setColumnWidth(3, 150)
-                self.ui.tableWidget.setColumnWidth(4, 150)
-                self.ui.tableWidget.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
+                self.ui.tableWidget.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
             except Exception:
                 print('Error: UcWindow()::init()::query_to_row')
                 logs('Error: UcWindow()::init()::query_to_row', 'errors', '2')
