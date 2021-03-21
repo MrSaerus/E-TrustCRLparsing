@@ -189,8 +189,14 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <property name="showGrid">
+                   <bool>false</bool>
+                  </property>
                   <attribute name="horizontalHeaderVisible">
                    <bool>false</bool>
+                  </attribute>
+                  <attribute name="horizontalHeaderMinimumSectionSize">
+                   <number>30</number>
                   </attribute>
                   <attribute name="verticalHeaderVisible">
                    <bool>false</bool>
@@ -198,6 +204,11 @@
                   <attribute name="verticalHeaderDefaultSectionSize">
                    <number>23</number>
                   </attribute>
+                  <column>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </column>
                   <column>
                    <property name="text">
                     <string/>
