@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QPushButton, QWidget, QTableWidgetItem, QHeaderView, QFileDialog
 from PyQt5.QtCore import pyqtSignal, QThread
-from urllib import request, error
+from urllib import request
 from ui_sub_main import *
 from lxml import etree
 from ui_sub_main_add import *
@@ -318,7 +318,7 @@ def schedule(block_num, block_size, total_size):
     if percent > 1.0:
         percent = 1.0
     percent = percent * 100
-    print("\n download : %.2f%%" % (percent))
+    print("\n download : %.2f%%" % percent)
     progressbar(percent)
 
 
@@ -406,7 +406,7 @@ def open_file(file_name, file_type, url='None'):
     print(path)
     if not os.path.exists(path):
         if file_type == 'cer':
-            save_cert(file_name)
+            save_cert(file_name, config['Folders']['certs'])
         elif file_type == 'crl':
             download_file(url, file_name + '.crl', config['Folders']['crls'])
     else:
@@ -446,10 +446,8 @@ def check_custom_crl(id_custom_crl, name, id_key, url_crl=''):
             query_update = WatchingCustomCRL.update(INN=issuer['INN'],
                                                     OGRN=issuer['OGRN'],
                                                     status='Info: Filetype good',
-                                                    last_update=cryptography.last_update +
-                                                                datetime.timedelta(hours=5),
-                                                    next_update=cryptography.next_update +
-                                                                datetime.timedelta(hours=5)). \
+                                                    last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                                                    next_update=cryptography.next_update + datetime.timedelta(hours=5)). \
                 where(WatchingCustomCRL.ID == id_custom_crl)
             query_update.execute()
             issuer['INN'] = 'Unknown'
@@ -476,11 +474,11 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
         try:
             if not os.path.isfile(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl'):
                 if download_file(url_crl,
-                                     key_id_wc + '.crl',
-                                     config['Folders']['crls'],
-                                     'current',
-                                     str(id_wc),
-                                     'Yes') == 'down_success':
+                                 key_id_wc + '.crl',
+                                 config['Folders']['crls'],
+                                 'current',
+                                 str(id_wc),
+                                 'Yes') == 'down_success':
                     crl = OpenSSL.crypto.load_crl(
                         OpenSSL.crypto.FILETYPE_ASN1,
                         open(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl', 'rb').read())
@@ -489,7 +487,7 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
                         update(status='Info: Filetype good',
                                last_update=cryptography.last_update + datetime.timedelta(hours=5),
                                next_update=cryptography.next_update + datetime.timedelta(hours=5)).where(
-                        WatchingCRL.ID == id_wc)
+                                   WatchingCRL.ID == id_wc)
                     query_update.execute()
                     print('Info: check_crl()::success ' + name_wc)
                     logs('Info: check_crl()::success ' + name_wc, 'info', '5')
@@ -507,7 +505,7 @@ def check_crl(id_wc, name_wc, key_id_wc, url_crl=''):
                     update(status='Info: Filetype good',
                            last_update=cryptography.last_update + datetime.timedelta(hours=5),
                            next_update=cryptography.next_update + datetime.timedelta(hours=5)).where(
-                    WatchingCRL.ID == id_wc)
+                               WatchingCRL.ID == id_wc)
                 query_update.execute()
                 print('Info: check_crl()::success ' + name_wc)
                 logs('Info: check_crl()::success ' + name_wc, 'info', '5')
@@ -536,11 +534,12 @@ def check_for_import_in_uc():
         return_list_msg = ''
         for wc in query_1:
             if current_datetime > wc.next_update > before_current_date:
-                print('Info: Need to download current', wc.Name, current_datetime, wc.last_download, wc.last_update, wc.next_update)
+                print('Info: Need to download current', wc.Name, current_datetime, wc.last_download, wc.last_update,
+                      wc.next_update)
                 if download_file(wc.UrlCRL, wc.KeyId + '.crl', folder, 'current', wc.ID, 'Yes') == 'down_success':
                     try:
                         shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
-                                     config['Folders']['to_uc'] + '/' +'current_' + wc.KeyId + '.crl')
+                                     config['Folders']['to_uc'] + '/' + 'current_' + wc.KeyId + '.crl')
                         check_crl(wc.ID, wc.Name, wc.KeyId)
                         return_list_msg = return_list_msg + ';' + wc.KeyId + ' ' + wc.Name
                     except Exception:
@@ -554,7 +553,7 @@ def check_for_import_in_uc():
                 if download_file(wcc.UrlCRL, wcc.KeyId + '.crl', folder, 'custome', wcc.ID, 'Yes') == 'down_success':
                     try:
                         shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
-                                     config['Folders']['to_uc'] + '/' +'custom_' + wcc.KeyId + '.crl')
+                                     config['Folders']['to_uc'] + '/' + 'custom_' + wcc.KeyId + '.crl')
                         check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
                         return_list_msg = return_list_msg + ';' + wcc.KeyId + ' ' + wcc.Name
                     except Exception:
@@ -626,7 +625,7 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                                                             .strftime('%Y-%m-%d %H:%M:%S')
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
-                    print('Info: Download successfully', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
+                    print('Info: Download successfully', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
                 # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
             else:
                 if type_download == 'current':
@@ -669,9 +668,9 @@ def set_value_in_property_file(file_path, section, key, value):
     set_config = configparser.ConfigParser()
     set_config.read(file_path)
     set_config.set(section, key, value)
-    configfile = open(file_path, 'w')
-    set_config.write(configfile, space_around_delimiters=False)  # use flag in case case you need to avoid white space.
-    configfile.close()
+    config_file = open(file_path, 'w')
+    set_config.write(config_file, space_around_delimiters=False)
+    config_file.close()
 
 
 class DownloadAllCRL(QObject):
@@ -691,14 +690,14 @@ class DownloadAllCRL(QObject):
             try:
                 print('Info: Starting checking CRL')
                 logs('Info: Starting checking CRL', 'info', '6')
-                ## self.threadInfoMessage.emit('Info: Starting checking CRL')
+                # self.threadInfoMessage.emit('Info: Starting checking CRL')
                 if not self._isRunning:
                     self._isRunning = True
                     self._step = 0
                 while self._isRunning:
                     self._step += 1
                     try:
-                        ## self.ui.pushButton_4.setEnabled(False)
+                        # self.ui.pushButton_4.setEnabled(False)
                         QCoreApplication.processEvents()
                         query_1 = WatchingCRL.select()
                         query_2 = WatchingCustomCRL.select()
@@ -744,7 +743,7 @@ class DownloadAllCRL(QObject):
                             counter_watching_custom_crl))
                         logs('Info: All download done, w=' + str(counter_watching_crl) + ', c=' + str(
                             counter_watching_custom_crl), 'info', '5')
-                        ## self.ui.pushButton_4.setEnabled(True)
+                        # self.ui.pushButton_4.setEnabled(True)
                     except Exception:
                         print('Error: download_all_crls()')
                         logs('Error: download_all_crls()', 'errors', '1')
@@ -754,7 +753,7 @@ class DownloadAllCRL(QObject):
                     time.sleep(1)
                 print('Info: Checking completed')
                 logs('Info: Checking completed', 'info', '6')
-                ## self.threadInfoMessage.emit('Info: Checking completed')
+                # self.threadInfoMessage.emit('Info: Checking completed')
             except Exception:
                 print('Error: CheckCRL::task')
                 logs('Error: CheckCRL::task', 'errors', '2')
@@ -1087,8 +1086,9 @@ class Downloader(QThread):
                 self.progress.emit(size_tls)
                 self.pre_progress.emit(-1)
 
-        def _progress(self, block_num, block_size, total_size=int('15000000')):
-            total_size = int('12000000')
+        def _progress(self, block_num, block_size, total_size):
+            if total_size == -1:
+                total_size = int('12000000')
             print(block_num, block_size, total_size)
             self.downloading.emit('Загрузка.')
             if not self._init:
@@ -1412,7 +1412,7 @@ class MainWindow(QMainWindow):
                 button_crl_save_to_uc.setIcon(icon5)
                 button_crl_save_to_uc.setFlat(True)
                 button_crl_save_to_uc.pressed.connect(
-                    lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', (config['Folders']['to_uc'])))
+                    lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['to_uc']))
                 button_crl_save_to_uc.setToolTip('Сохранить CRL в УЦ')
                 self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save_to_uc)
 
@@ -1430,17 +1430,16 @@ class MainWindow(QMainWindow):
                 sn = row.SerialNumber
                 uc = row.UrlCRL
                 button_add_to_watch.pressed.connect(lambda registration_number=rb,
-                                                           keyid=ki,
-                                                           stamp=st,
-                                                           serial_number=sn,
-                                                           url_crl=uc: self.add_watch_current_crl(registration_number,
-                                                                                                  keyid,
-                                                                                                  stamp,
-                                                                                                  serial_number,
-                                                                                                  url_crl))
+                                                    keyid=ki,
+                                                    stamp=st,
+                                                    serial_number=sn,
+                                                    url_crl=uc: self.add_watch_current_crl(registration_number,
+                                                                                           keyid,
+                                                                                           stamp,
+                                                                                           serial_number,
+                                                                                           url_crl))
                 button_add_to_watch.setToolTip('Добавить CRL в мониторинг')
                 self.ui.tableWidget_3.setCellWidget(count, 7, button_add_to_watch)
-
                 count = count + 1
             self.ui.tableWidget_3.resizeColumnToContents(0)
             self.ui.tableWidget_3.setColumnWidth(1, 150)
@@ -1502,7 +1501,7 @@ class MainWindow(QMainWindow):
                                                                           | WatchingCRL.KeyId.contains(text)
                                                                           | WatchingCRL.Stamp.contains(text)
                                                                           | WatchingCRL.SerialNumber.contains(text)
-                                                                          | WatchingCRL.UrlCRL.contains(text)).\
+                                                                          | WatchingCRL.UrlCRL.contains(text)). \
                 limit(config['Listing']['watch'])
             count_all = WatchingCRL.select().where(WatchingCRL.Name.contains(text)
                                                    | WatchingCRL.INN.contains(text)
@@ -1593,7 +1592,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
             self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
 
-            query = WatchingCustomCRL.select().order_by(WatchingCustomCRL.Name)\
+            query = WatchingCustomCRL.select().order_by(WatchingCustomCRL.Name) \
                 .where(WatchingCustomCRL.Name.contains(text)
                        | WatchingCustomCRL.INN.contains(text)
                        | WatchingCustomCRL.OGRN.contains(text)
@@ -1690,7 +1689,7 @@ class MainWindow(QMainWindow):
 
             self.ui.pushButton_12.pressed.connect(lambda: self.ui.lineEdit_6.setText(''))
 
-            query = WatchingDeletedCRL.select().order_by(WatchingDeletedCRL.Name).\
+            query = WatchingDeletedCRL.select().order_by(WatchingDeletedCRL.Name). \
                 where(WatchingDeletedCRL.Name.contains(text)
                       | WatchingDeletedCRL.INN.contains(text)
                       | WatchingDeletedCRL.OGRN.contains(text)
@@ -1718,18 +1717,18 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget_6.setItem(count, 4, QTableWidgetItem(str(row.SerialNumber)))
                 self.ui.tableWidget_6.setItem(count, 5, QTableWidgetItem(str(row.UrlCRL)))
 
-                buttonReturnWatch = QPushButton()
-                buttonReturnWatch.setFixedSize(30, 30)
+                button_return_watch = QPushButton()
+                button_return_watch.setFixedSize(30, 30)
                 icon10 = QIcon()
                 pixmap_17 = QPixmap()
                 pixmap_17.loadFromData(base64.b64decode(base64_import))
                 icon10.addPixmap(pixmap_17)
-                buttonReturnWatch.setIcon(icon10)
-                buttonReturnWatch.setFlat(True)
+                button_return_watch.setIcon(icon10)
+                button_return_watch.setFlat(True)
                 id_row = row.ID
-                buttonReturnWatch.pressed.connect(lambda o=id_row: self.move_passed_to_watching(o))
-                buttonReturnWatch.setToolTip('Вернуть CRL в мониторинг')
-                self.ui.tableWidget_6.setCellWidget(count, 6, buttonReturnWatch)
+                button_return_watch.pressed.connect(lambda o=id_row: self.move_passed_to_watching(o))
+                button_return_watch.setToolTip('Вернуть CRL в мониторинг')
+                self.ui.tableWidget_6.setCellWidget(count, 6, button_return_watch)
                 count = count + 1
 
             self.ui.tableWidget_6.setColumnWidth(1, 100)
@@ -1847,22 +1846,22 @@ class MainWindow(QMainWindow):
 
             # Logs
             if config['Logs']['dividelogsbyday'] == 'Yes':
-                datetime_day = '_' + datetime.datetime.now().strftime('%Y%m%d')
+                date_time_day = '_' + datetime.datetime.now().strftime('%Y%m%d')
             else:
-                datetime_day = ''
+                date_time_day = ''
 
             try:
                 self.ui.textBrowser.setText(
-                    open(config['Folders']['logs'] + '/log' + datetime_day + '.log', 'r').read())
+                    open(config['Folders']['logs'] + '/log' + date_time_day + '.log', 'r').read())
             except Exception:
-                print('Error: init_settings()::Filed_open_log::logs/log' + datetime_day + '.log')
-                logs('Error: init_settings()::Filed_open_log::logs/log' + datetime_day + '.log', 'errors', '2')
+                print('Error: init_settings()::Filed_open_log::logs/log' + date_time_day + '.log')
+                logs('Error: init_settings()::Filed_open_log::logs/log' + date_time_day + '.log', 'errors', '2')
             try:
                 self.ui.textBrowser_2.setText(
-                    open(config['Folders']['logs'] + '/error' + datetime_day + '.log', 'r').read())
+                    open(config['Folders']['logs'] + '/error' + date_time_day + '.log', 'r').read())
             except Exception:
-                print('Error: init_settings()::Filed_open_log::logs/error' + datetime_day + '.log')
-                logs('Error: init_settings()::Filed_open_log::logs/error' + datetime_day + '.log', 'errors', '2')
+                print('Error: init_settings()::Filed_open_log::logs/error' + date_time_day + '.log')
+                logs('Error: init_settings()::Filed_open_log::logs/error' + date_time_day + '.log', 'errors', '2')
 
             self.ui.pushButton_21.pressed.connect(lambda: self.save_settings_main())
             self.ui.pushButton_23.pressed.connect(lambda: self.save_settings_sub())
@@ -2267,18 +2266,18 @@ class MainWindow(QMainWindow):
             print('Error: open_sub_window_info_uc()')
             logs('Error: open_sub_window_info_uc()', 'errors', '1')
 
-    def choose_directory(self, type):
+    def choose_directory(self, type_file):
         try:
             input_dir = QFileDialog.getExistingDirectory(None, 'Выбор директории:', os.path.expanduser("~"))
-            if type == 'crl':
+            if type_file == 'crl':
                 self.ui.label_13.setText(input_dir)
-            if type == 'cert':
+            if type_file == 'cert':
                 self.ui.label_12.setText(input_dir)
-            if type == 'uc':
+            if type_file == 'uc':
                 self.ui.label_11.setText(input_dir)
-            if type == 'tmp':
+            if type_file == 'tmp':
                 self.ui.label_10.setText(input_dir)
-            if type == 'to_uc':
+            if type_file == 'to_uc':
                 self.ui.label_9.setText(input_dir)
         except Exception:
             print('Error: choose_directory()')
@@ -2552,7 +2551,8 @@ class MainWindow(QMainWindow):
             print('WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl))
             logs('Info: WatchingCustomCRL downloaded ' + str(counter_watching_custom_crl), 'info', '5')
             print('All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl))
-            logs('Info: All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl), 'info', '5')
+            logs('Info: All download done, w=' + str(counter_watching_crl) + ', c=' + str(counter_watching_custom_crl),
+                 'info', '5')
             self.ui.pushButton_4.setEnabled(True)
         except Exception:
             print('Error: download_all_crls()')
@@ -2752,7 +2752,7 @@ class AddCRLWindow(QWidget):
                 elif WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == self.ui_add.lineEdit_3.text()
                                                       or WatchingCustomCRL.Stamp == self.ui_add.lineEdit_8.text()
                                                       or WatchingCustomCRL.SerialNumber == self.ui_add.lineEdit_4.text()
-                                                      or WatchingCustomCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
+                                                      or WatchingCustomCRL.UrlCRL == self.ui_add.lineEdit_9.text()) \
                         .count() > 0:
                     print('Info: CRL is exist in WatchingCustomCRL')
                     logs('Info: CRL is exist in WatchingCustomCRL', 'info', '7')
@@ -2760,7 +2760,7 @@ class AddCRLWindow(QWidget):
                 elif WatchingDeletedCRL.select().where(WatchingDeletedCRL.KeyId == self.ui_add.lineEdit_3.text()
                                                        or WatchingDeletedCRL.Stamp == self.ui_add.lineEdit_8.text()
                                                        or WatchingDeletedCRL.SerialNumber == self.ui_add.lineEdit_4.text()
-                                                       or WatchingDeletedCRL.UrlCRL == self.ui_add.lineEdit_9.text())\
+                                                       or WatchingDeletedCRL.UrlCRL == self.ui_add.lineEdit_9.text()) \
                         .count() > 0:
                     print('Info: CRL is exist in WatchingDeletedCRL')
                     logs('Info: CRL is exist in WatchingDeletedCRL', 'info', '7')
