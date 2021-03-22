@@ -827,7 +827,7 @@ def check_for_import_in_uc():
                         shutil.copy2(config['Folders']['crls'] + '/' + wc.KeyId + '.crl',
                                      config['Folders']['to_uc'] + '/' + 'current_' + wc.KeyId + '.crl')
                         check_crl(wc.ID, wc.Name, wc.KeyId)
-                        return_list_msg = return_list_msg + ';' + wc.KeyId + ' ' + wc.Name
+                        return_list_msg = return_list_msg + ';' + wc.KeyId + ' : ' + wc.Name
                     except Exception:
                         print('Error: check_for_import_in_uc()::error_copy_current')
                         logs('Error: check_for_import_in_uc()::error_copy_current', 'errors', '2')
@@ -841,7 +841,7 @@ def check_for_import_in_uc():
                         shutil.copy2(config['Folders']['crls'] + '/' + wcc.KeyId + '.crl',
                                      config['Folders']['to_uc'] + '/' + 'custom_' + wcc.KeyId + '.crl')
                         check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
-                        return_list_msg = return_list_msg + ';' + wcc.KeyId + ' ' + wcc.Name
+                        return_list_msg = return_list_msg + ';' + wcc.KeyId + ' : ' + wcc.Name
                     except Exception:
                         print('Error: check_for_import_in_uc()::error_copy_custom')
                         logs('Error: check_for_import_in_uc()::error_copy_custom', 'errors', '2')
@@ -1515,8 +1515,8 @@ class MainWindow(QMainWindow):
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadMessageSender.connect(lambda msg: self.add_log_to_main_tab(msg))
             self.ui.tableWidget_9.setRowCount(1)
-            self.ui.tableWidget_9.setItem(1, 0, QTableWidgetItem('Info: init log system'))
-            self.ui.tableWidget_9.setColumnWidth(0, 30)
+            self.ui.tableWidget_9.setItem(0, 1, QTableWidgetItem('Info: init log system'))
+            self.ui.tableWidget_9.setColumnWidth(0, 23)
             self.ui.tableWidget_9.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
             self.ui.pushButton_20.clicked.connect(lambda: self.worker.stop() and self.stop_thread)
             self.ui.pushButton_20.setToolTip('Остановить мониторинг CRL')
@@ -2656,7 +2656,7 @@ class MainWindow(QMainWindow):
         for msg in msg_list:
             if not msg == 'NaN':
                 button_info_log = QPushButton()
-                button_info_log.setFixedSize(30, 30)
+                button_info_log.setFixedSize(23, 23)
                 icon12 = QIcon()
                 pixmap_19 = QPixmap()
                 pixmap_19.loadFromData(base64.b64decode(base64_info))
@@ -2664,13 +2664,12 @@ class MainWindow(QMainWindow):
                 button_info_log.setIcon(icon12)
                 button_info_log.setFlat(True)
                 reg_num = 1
-                button_info_log.pressed.connect(lambda rg=reg_num: self.open_sub_window_info_uc(rg))
+                # button_info_log.pressed.connect(lambda rg=reg_num: self.open_sub_window_info_uc(msg.split(' : ')[0]))
                 button_info_log.setToolTip('Подробная информация')
-
                 current_row_count = self.ui.tableWidget_9.rowCount()
                 self.ui.tableWidget_9.setRowCount(current_row_count + 1)
                 self.ui.tableWidget_9.setCellWidget(current_row_count, 0, button_info_log)
-                self.ui.tableWidget_9.setItem(current_row_count, 1, QTableWidgetItem(msg))
+                self.ui.tableWidget_9.setItem(current_row_count, 1, QTableWidgetItem(msg.split(' : ')[1]))
                 self.ui.tableWidget_9.scrollToBottom()
 
     def move_watching_to_passed(self, id_var, from_var):
