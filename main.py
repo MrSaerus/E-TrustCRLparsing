@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import QPushButton, QWidget, QTableWidgetItem, QHeaderView, QFileDialog
 from PyQt5.QtCore import pyqtSignal, QThread
 from urllib import request
-from ui_sub_main import *
 from lxml import etree
+from ui_sub_main import *
+from ui_sub_main_crl import *
 from ui_sub_main_add import *
 from ui_main import *
 from peewee import *
@@ -813,7 +814,7 @@ def check_for_import_in_uc():
         folder = config['Folders']['crls']
         current_datetimes = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         current_datetime = datetime.datetime.strptime(current_datetimes, '%Y-%m-%d %H:%M:%S')
-        before_current_date = datetime.datetime.now() - datetime.timedelta(days=5)
+        before_current_date = datetime.datetime.now() - datetime.timedelta(days=10)
         query_1 = WatchingCRL.select()
         query_2 = WatchingCustomCRL.select()
         count = 0
@@ -1404,6 +1405,7 @@ class MainWindow(QMainWindow):
         ico.addPixmap(pixmap_0)
         self.setWindowIcon(QIcon(ico))
         self.window_uc = None
+        self.window_crl = None
         self.window_add_crl = None
         self.init_settings()
         self.tab_info()
@@ -2541,6 +2543,18 @@ class MainWindow(QMainWindow):
             print('Error: open_sub_window_info_uc()')
             logs('Error: open_sub_window_info_uc()', 'errors', '1')
 
+    def open_sub_window_info_crl(self, crl_key_id):
+        try:
+            if self.window_crl is None:
+                self.window_crl = CRLWindow(crl_key_id)
+                self.window_crl.show()
+            else:
+                self.window_crl.close()  # Close window.
+                self.window_crl = None  # Discard reference.
+        except Exception:
+            print('Error: open_sub_window_info_crl()')
+            logs('Error: open_sub_window_info_crl()', 'errors', '1')
+
     def open_sub_window_add(self):
         try:
             if self.window_add_crl is None:
@@ -2663,8 +2677,8 @@ class MainWindow(QMainWindow):
                 icon12.addPixmap(pixmap_19)
                 button_info_log.setIcon(icon12)
                 button_info_log.setFlat(True)
-                reg_num = 1
-                # button_info_log.pressed.connect(lambda rg=reg_num: self.open_sub_window_info_uc(msg.split(' : ')[0]))
+                key_id = msg.split(' : ')[0]
+                button_info_log.pressed.connect(lambda id_key=key_id: self.open_sub_window_info_crl(id_key))
                 button_info_log.setToolTip('Подробная информация')
                 current_row_count = self.ui.tableWidget_9.rowCount()
                 self.ui.tableWidget_9.setRowCount(current_row_count + 1)
@@ -2985,6 +2999,36 @@ class UcWindow(QWidget):
         except Exception:
             print('Error: UcWindow()::init()')
             logs('Error: UcWindow()::init()', 'errors', '1')
+
+
+class CRLWindow(QWidget):
+    def __init__(self, crl_key_id):
+        super().__init__()
+        self.ui_crl = Ui_Form_crl()
+        self.ui_crl.setupUi(self)
+        self.setWindowIcon(QIcon('assists/favicon.ico'))
+        self.init(crl_key_id)
+
+    def init(self, crl_key_id):
+        try:
+            query_1 = WatchingCRL.select().where(WatchingCRL.KeyId == crl_key_id)
+            if query_1.count() == 0:
+                query_1 = WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == crl_key_id)
+            for wc in query_1:
+                self.ui_crl.lineEdit.setText(str(wc.Name))
+                self.ui_crl.lineEdit_2.setText(str(wc.INN))
+                self.ui_crl.lineEdit_3.setText(str(wc.OGRN))
+                self.ui_crl.lineEdit_4.setText(str(wc.KeyId))
+                self.ui_crl.lineEdit_5.setText(str(wc.Stamp))
+                self.ui_crl.lineEdit_6.setText(str(wc.SerialNumber))
+                self.ui_crl.lineEdit_7.setText(str(wc.UrlCRL))
+                self.ui_crl.lineEdit_8.setText(str(wc.last_download))
+                self.ui_crl.lineEdit_9.setText(str(wc.last_update))
+                self.ui_crl.lineEdit_10.setText(str(wc.next_update))
+
+        except Exception:
+            print('Error: CRLWindow()::init()')
+            logs('Error: CRLWindow()::init()', 'errors', '1')
 
 
 class AddCRLWindow(QWidget):
