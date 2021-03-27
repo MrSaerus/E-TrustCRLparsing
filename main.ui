@@ -12,7 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>E-Trust CRL Parsing v1.0.0-beta.11.1</string>
+   <string>E-Trust CRL Parsing v1.0.0-beta.11.3</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_12">

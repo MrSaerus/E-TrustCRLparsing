@@ -1407,22 +1407,31 @@ class MainWindow(QMainWindow):
         self.window_uc = None
         self.window_crl = None
         self.window_add_crl = None
+
+        self.ui.pushButton_7.pressed.connect(lambda: self.ui.lineEdit.setText(''))
+        self.ui.pushButton_8.pressed.connect(lambda: self.ui.lineEdit_2.setText(''))
+        self.ui.pushButton_9.pressed.connect(lambda: self.ui.lineEdit_3.setText(''))
+        self.ui.pushButton_10.pressed.connect(lambda: self.ui.lineEdit_4.setText(''))
+        self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
+        self.ui.pushButton_12.pressed.connect(lambda: self.ui.lineEdit_6.setText(''))
+
+        self.ui.lineEdit.textChanged[str].connect(self.tab_uc)
+        self.ui.lineEdit_2.textChanged[str].connect(self.tab_cert)
+        self.ui.lineEdit_3.textChanged[str].connect(self.tab_crl)
+        self.ui.lineEdit_4.textChanged[str].connect(self.sub_tab_watching_crl)
+        self.ui.lineEdit_5.textChanged[str].connect(self.sub_tab_watching_custom_crl)
+        self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_disabled_crl)
+
         self.init_settings()
+        self.init_schedule()
         self.tab_info()
         self.tab_uc()
-        self.ui.lineEdit.textChanged[str].connect(self.tab_uc)
         self.tab_cert()
-        self.ui.lineEdit_2.textChanged[str].connect(self.tab_cert)
         self.tab_crl()
-        self.ui.lineEdit_3.textChanged[str].connect(self.tab_crl)
         self.tab_watching_crl()
         self.sub_tab_watching_crl()
-        self.ui.lineEdit_4.textChanged[str].connect(self.sub_tab_watching_crl)
         self.sub_tab_watching_custom_crl()
-        self.ui.lineEdit_5.textChanged[str].connect(self.sub_tab_watching_custom_crl)
         self.sub_tab_watching_disabled_crl()
-        self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_disabled_crl)
-        self.init_schedule()
 
     def init_schedule(self):
         if config['Schedule']['allowupdatetslbystart'] == 'Yes':
@@ -1530,11 +1539,8 @@ class MainWindow(QMainWindow):
 
     def tab_uc(self, text=''):
         try:
-
             self.ui.tableWidget.clearContents()
 
-            self.ui.pushButton_7.pressed.connect(lambda: self.ui.lineEdit.setText(''))
-            # .order_by(MyModel.something.desc(nulls='LAST'))
             query = UC.select().order_by(UC.Name).where(UC.Registration_Number.contains(text)
                                                         | UC.INN.contains(text)
                                                         | UC.OGRN.contains(text)
@@ -1575,10 +1581,7 @@ class MainWindow(QMainWindow):
 
     def tab_cert(self, text=''):
         try:
-
             self.ui.tableWidget_2.clearContents()
-
-            self.ui.pushButton_8.pressed.connect(lambda: self.ui.lineEdit_2.setText(''))
 
             icon0 = QIcon()
             pixmap_2 = QPixmap()
@@ -1646,10 +1649,8 @@ class MainWindow(QMainWindow):
 
     def tab_crl(self, text=''):
         try:
-
             self.ui.tableWidget_3.clearContents()
 
-            self.ui.pushButton_9.pressed.connect(lambda: self.ui.lineEdit_3.setText(''))
             icon9 = QIcon()
             pixmap_5 = QPixmap()
             pixmap_5.loadFromData(base64.b64decode(base64_file))
@@ -1777,12 +1778,7 @@ class MainWindow(QMainWindow):
 
     def sub_tab_watching_crl(self, text=''):
         try:
-            # self.ui.label_8.setText('Ищем: ' + text)
-            # self.ui.label_8.adjustSize()
-
             self.ui.tableWidget_4.clearContents()
-
-            self.ui.pushButton_10.pressed.connect(lambda: self.ui.lineEdit_4.setText(''))
 
             query = WatchingCRL.select().order_by(WatchingCRL.Name).where(WatchingCRL.Name.contains(text)
                                                                           | WatchingCRL.INN.contains(text)
@@ -1873,12 +1869,8 @@ class MainWindow(QMainWindow):
 
     def sub_tab_watching_custom_crl(self, text=''):
         try:
-            # self.ui.label_8.setText('Ищем: ' + text)
-            # self.ui.label_8.adjustSize()
-
             self.ui.tableWidget_5.clearContents()
 
-            self.ui.pushButton_11.pressed.connect(lambda: self.ui.lineEdit_5.setText(''))
             self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
 
             query = WatchingCustomCRL.select().order_by(WatchingCustomCRL.Name) \
@@ -1971,12 +1963,7 @@ class MainWindow(QMainWindow):
 
     def sub_tab_watching_disabled_crl(self, text=''):
         try:
-            # self.ui.label_8.setText('Ищем: ' + text)
-            # self.ui.label_8.adjustSize()
-
             self.ui.tableWidget_6.clearContents()
-
-            self.ui.pushButton_12.pressed.connect(lambda: self.ui.lineEdit_6.setText(''))
 
             query = WatchingDeletedCRL.select().order_by(WatchingDeletedCRL.Name). \
                 where(WatchingDeletedCRL.Name.contains(text)
@@ -2088,15 +2075,10 @@ class MainWindow(QMainWindow):
             self.ui.spinBox.setValue(int(config['Logs']['dividelogsbysize']))
             if config['Logs']['dividelogsbyday'] == 'Yes':
                 self.ui.checkBox_14.setChecked(True)
-
             if config['Schedule']['allowupdatecrlbystart'] == 'Yes':
                 self.ui.checkBox_12.setChecked(True)
-            else:
-                self.ui.pushButton_12.setDisabled(True)
             if config['Schedule']['allowupdatetslbystart'] == 'Yes':
                 self.ui.checkBox_13.setChecked(True)
-            else:
-                self.ui.pushButton_13.setDisabled(True)
             # download config
             self.ui.label_13.setText(config['Folders']['crls'])
             self.ui.label_12.setText(config['Folders']['certs'])
