@@ -12,11 +12,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>E-Trust CRL Parsing v1.0.0-beta.11.3</string>
+   <string>E-Trust CRL Parsing v1.0.0-beta.12</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_12">
-    <item>
+    <item alignment="Qt::AlignTop">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
@@ -3246,77 +3246,59 @@ border-color: rgb(0, 0, 0);</string>
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_13">
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_11">
+       <attribute name="title">
+        <string>Логирование</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QTabWidget" name="tabWidget_4">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_15">
            <attribute name="title">
-            <string>Логи</string>
+            <string>Работа программы</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_61">
+           <layout class="QVBoxLayout" name="verticalLayout_24">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_60">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_46">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_65">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_9">
-                    <property name="title">
-                     <string>Логи</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_71">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_67">
-                       <item>
-                        <widget class="QTextBrowser" name="textBrowser">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_64">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_12">
-                    <property name="title">
-                     <string>Ошибки</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_73">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_69">
-                       <item>
-                        <widget class="QTextBrowser" name="textBrowser_2">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-             </layout>
+             <widget class="QTextBrowser" name="textBrowser">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
             </item>
-            <item alignment="Qt::AlignRight">
-             <widget class="QPushButton" name="pushButton_24">
-              <property name="text">
-               <string>Сохранить</string>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_16">
+           <attribute name="title">
+            <string>Скачивание</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_53">
+            <item>
+             <widget class="QTextBrowser" name="textBrowser_3"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_17">
+           <attribute name="title">
+            <string>Ошибки</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_26">
+            <item>
+             <widget class="QTextBrowser" name="textBrowser_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
              </widget>
             </item>

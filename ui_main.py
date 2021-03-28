@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainwPhmez.ui'
+## Form generated from reading UI file 'mainbMDpnM.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -1940,23 +1940,21 @@ class Ui_MainWindow(object):
         self.verticalLayout_40.addLayout(self.horizontalLayout_34)
 
         self.tabWidget_3.addTab(self.tab_12, "")
-        self.tab_13 = QWidget()
-        self.tab_13.setObjectName(u"tab_13")
-        self.verticalLayout_61 = QVBoxLayout(self.tab_13)
-        self.verticalLayout_61.setObjectName(u"verticalLayout_61")
-        self.verticalLayout_60 = QVBoxLayout()
-        self.verticalLayout_60.setObjectName(u"verticalLayout_60")
-        self.horizontalLayout_46 = QHBoxLayout()
-        self.horizontalLayout_46.setObjectName(u"horizontalLayout_46")
-        self.verticalLayout_65 = QVBoxLayout()
-        self.verticalLayout_65.setObjectName(u"verticalLayout_65")
-        self.groupBox_9 = QGroupBox(self.tab_13)
-        self.groupBox_9.setObjectName(u"groupBox_9")
-        self.verticalLayout_71 = QVBoxLayout(self.groupBox_9)
-        self.verticalLayout_71.setObjectName(u"verticalLayout_71")
-        self.verticalLayout_67 = QVBoxLayout()
-        self.verticalLayout_67.setObjectName(u"verticalLayout_67")
-        self.textBrowser = QTextBrowser(self.groupBox_9)
+
+        self.verticalLayout.addWidget(self.tabWidget_3)
+
+        self.tabWidget.addTab(self.tab_6, "")
+        self.tab_11 = QWidget()
+        self.tab_11.setObjectName(u"tab_11")
+        self.verticalLayout_9 = QVBoxLayout(self.tab_11)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.tabWidget_4 = QTabWidget(self.tab_11)
+        self.tabWidget_4.setObjectName(u"tabWidget_4")
+        self.tab_15 = QWidget()
+        self.tab_15.setObjectName(u"tab_15")
+        self.verticalLayout_24 = QVBoxLayout(self.tab_15)
+        self.verticalLayout_24.setObjectName(u"verticalLayout_24")
+        self.textBrowser = QTextBrowser(self.tab_15)
         self.textBrowser.setObjectName(u"textBrowser")
         sizePolicy5 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         sizePolicy5.setHorizontalStretch(0)
@@ -1964,57 +1962,35 @@ class Ui_MainWindow(object):
         sizePolicy5.setHeightForWidth(self.textBrowser.sizePolicy().hasHeightForWidth())
         self.textBrowser.setSizePolicy(sizePolicy5)
 
-        self.verticalLayout_67.addWidget(self.textBrowser)
+        self.verticalLayout_24.addWidget(self.textBrowser)
 
+        self.tabWidget_4.addTab(self.tab_15, "")
+        self.tab_16 = QWidget()
+        self.tab_16.setObjectName(u"tab_16")
+        self.verticalLayout_53 = QVBoxLayout(self.tab_16)
+        self.verticalLayout_53.setObjectName(u"verticalLayout_53")
+        self.textBrowser_3 = QTextBrowser(self.tab_16)
+        self.textBrowser_3.setObjectName(u"textBrowser_3")
 
-        self.verticalLayout_71.addLayout(self.verticalLayout_67)
+        self.verticalLayout_53.addWidget(self.textBrowser_3)
 
-
-        self.verticalLayout_65.addWidget(self.groupBox_9)
-
-
-        self.horizontalLayout_46.addLayout(self.verticalLayout_65)
-
-        self.verticalLayout_64 = QVBoxLayout()
-        self.verticalLayout_64.setObjectName(u"verticalLayout_64")
-        self.groupBox_12 = QGroupBox(self.tab_13)
-        self.groupBox_12.setObjectName(u"groupBox_12")
-        self.verticalLayout_73 = QVBoxLayout(self.groupBox_12)
-        self.verticalLayout_73.setObjectName(u"verticalLayout_73")
-        self.verticalLayout_69 = QVBoxLayout()
-        self.verticalLayout_69.setObjectName(u"verticalLayout_69")
-        self.textBrowser_2 = QTextBrowser(self.groupBox_12)
+        self.tabWidget_4.addTab(self.tab_16, "")
+        self.tab_17 = QWidget()
+        self.tab_17.setObjectName(u"tab_17")
+        self.verticalLayout_26 = QVBoxLayout(self.tab_17)
+        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
+        self.textBrowser_2 = QTextBrowser(self.tab_17)
         self.textBrowser_2.setObjectName(u"textBrowser_2")
         sizePolicy5.setHeightForWidth(self.textBrowser_2.sizePolicy().hasHeightForWidth())
         self.textBrowser_2.setSizePolicy(sizePolicy5)
 
-        self.verticalLayout_69.addWidget(self.textBrowser_2)
+        self.verticalLayout_26.addWidget(self.textBrowser_2)
 
+        self.tabWidget_4.addTab(self.tab_17, "")
 
-        self.verticalLayout_73.addLayout(self.verticalLayout_69)
+        self.verticalLayout_9.addWidget(self.tabWidget_4)
 
-
-        self.verticalLayout_64.addWidget(self.groupBox_12)
-
-
-        self.horizontalLayout_46.addLayout(self.verticalLayout_64)
-
-
-        self.verticalLayout_60.addLayout(self.horizontalLayout_46)
-
-
-        self.verticalLayout_61.addLayout(self.verticalLayout_60)
-
-        self.pushButton_24 = QPushButton(self.tab_13)
-        self.pushButton_24.setObjectName(u"pushButton_24")
-
-        self.verticalLayout_61.addWidget(self.pushButton_24, 0, Qt.AlignRight)
-
-        self.tabWidget_3.addTab(self.tab_13, "")
-
-        self.verticalLayout.addWidget(self.tabWidget_3)
-
-        self.tabWidget.addTab(self.tab_6, "")
+        self.tabWidget.addTab(self.tab_11, "")
         self.tab_14 = QWidget()
         self.tab_14.setObjectName(u"tab_14")
         self.verticalLayout_59 = QVBoxLayout(self.tab_14)
@@ -2027,7 +2003,7 @@ class Ui_MainWindow(object):
 
         self.tabWidget.addTab(self.tab_14, "")
 
-        self.verticalLayout_12.addWidget(self.tabWidget)
+        self.verticalLayout_12.addWidget(self.tabWidget, 0, Qt.AlignTop)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -2043,13 +2019,14 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
         self.tabWidget_3.setCurrentIndex(0)
+        self.tabWidget_4.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.11.3", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.12", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f TSL E-Trust", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0435\u0440\u0441\u0438\u044f \u0431\u0430\u0437\u044b:", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0430 \u0432\u044b\u043f\u0443\u0441\u043a\u0430 \u0431\u0430\u0437\u044b:", None))
@@ -2244,11 +2221,11 @@ class Ui_MainWindow(object):
         self.label_28.setText("")
         self.pushButton_23.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_12), QCoreApplication.translate("MainWindow", u"\u0414\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u043e\u0435", None))
-        self.groupBox_9.setTitle(QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438", None))
-        self.groupBox_12.setTitle(QCoreApplication.translate("MainWindow", u"\u041e\u0448\u0438\u0431\u043a\u0438", None))
-        self.pushButton_24.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
-        self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_13), QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438", None))
+        self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_15), QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0431\u043e\u0442\u0430 \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u044b", None))
+        self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_16), QCoreApplication.translate("MainWindow", u"\u0421\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u0435", None))
+        self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_17), QCoreApplication.translate("MainWindow", u"\u041e\u0448\u0438\u0431\u043a\u0438", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_11), QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", None))
         self.textEdit.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

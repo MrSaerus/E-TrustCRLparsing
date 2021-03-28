@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QPushButton, QWidget, QTableWidgetItem, QHeaderView, QFileDialog
 from PyQt5.QtCore import pyqtSignal, QThread
 from urllib import request
@@ -428,6 +429,10 @@ def logs(body, kind='', log_level=''):
             with open(config['Folders']['logs'] + "/error" + datetime_day + ".log", "a") as file:
                 file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
             file.close()
+        elif kind == 'download':
+            with open(config['Folders']['logs'] + "/download" + datetime_day + ".log", "a") as file:
+                file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
+            file.close()
         else:
             with open(config['Folders']['logs'] + "/log" + datetime_day + ".log", "a") as file:
                 file.write(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '    ' + body + '\n')
@@ -852,8 +857,8 @@ def check_for_import_in_uc():
             logs('Info: Copied ' + str(count) + ' count\'s CRL', 'info', '5')
             return return_list_msg
         else:
-            print('Info: Needed CRL not found')
-            logs('Info: Needed CRL not found', 'info', '5')
+            print('Info: There are no updates for CRL')
+            logs('Info: There are no updates for CRL', 'info', '5')
             return 'NaN'
     except Exception:
         print('Error: check_for_import_in_uc()')
@@ -896,7 +901,7 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
             print('Info: Download failed ' + file_url)
-            logs('Info: Download failed ' + file_url, 'info', '4')
+            logs('Info: Download failed ' + file_url, 'download', '4')
             return 'down_error'
         else:
             if set_dd == 'Yes':
@@ -912,8 +917,6 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                                                             .strftime('%Y-%m-%d %H:%M:%S')
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
-                    print('Info: Download successfully', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                # os.startfile(os.path.realpath(config['Folders']['crls'] + "/"))
             else:
                 if type_download == 'current':
                     query_update = WatchingCRL.update(download_status='Info: Download successfully'
@@ -924,7 +927,7 @@ def download_file(file_url, file_name, folder, type_download='', w_id='', set_dd
                                                             ).where(WatchingCustomCRL.ID == w_id)
                     query_update.execute()
             print('Info: Download successfully ' + file_url)
-            logs('Info: Download successfully ' + file_url, 'info', '5')
+            logs('Info: Download successfully ' + file_url, 'download', '5')
             return 'down_success'
     except Exception:
         print('Error: download_file()')
@@ -1125,8 +1128,8 @@ class CheckCRL(QObject):
                             print('Info: Copied ' + str(count) + ' count\'s CRL')
                             logs('Info: Copied ' + str(count) + ' count\'s CRL', 'info', '5')
                         else:
-                            print('Info: Needed CRL not found')
-                            logs('Info: Needed CRL not found', 'info', '5')
+                            print('Info: There are no updates for CRL')
+                            logs('Info: There are no updates for CRL', 'info', '5')
                     except Exception:
                         print('Error: check_for_import_in_uc()')
                         logs('Error: check_for_import_in_uc()', 'errors', '1')
@@ -1508,6 +1511,11 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_8.resizeColumnsToContents()
             self.ui.tableWidget_8.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
+            if config['Logs']['dividelogsbyday'] == 'Yes':
+                date_time_day = '_' + datetime.datetime.now().strftime('%Y%m%d')
+            else:
+                date_time_day = ''
+
             self.thread = QThread()
             self.thread.start()
             self.worker = MainWorker()
@@ -1515,16 +1523,25 @@ class MainWindow(QMainWindow):
 
             self.worker.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
             self.worker.threadBefore.connect(
-                lambda msg: self.ui.label_37.setText('Предыдущее обновление: : ' + str(msg)))
+                lambda msg: self.ui.label_37.setText('Предыдущее обновление: ' + str(msg)))
             self.worker.threadAfter.connect(lambda msg: self.ui.label_38.setText('Следующее обновление: ' + str(msg)))
-            self.worker.threadButtonStartD.connect(lambda x: self.ui.pushButton_19.setDisabled(True))
-            self.worker.threadButtonStopD.connect(lambda z: self.ui.pushButton_20.setDisabled(True))
-            self.worker.threadButtonStartE.connect(lambda r: self.ui.pushButton_19.setEnabled(True))
-            self.worker.threadButtonStopE.connect(lambda t: self.ui.pushButton_20.setEnabled(True))
+            self.worker.threadButtonStartD.connect(lambda: self.ui.pushButton_19.setDisabled(True))
+            self.worker.threadButtonStopD.connect(lambda: self.ui.pushButton_20.setDisabled(True))
+            self.worker.threadButtonStartE.connect(lambda: self.ui.pushButton_19.setEnabled(True))
+            self.worker.threadButtonStopE.connect(lambda: self.ui.pushButton_20.setEnabled(True))
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
             self.worker.threadMessageSender.connect(lambda msg: self.add_log_to_main_tab(msg))
+            self.worker.threadMessageSender.connect(lambda: self.ui.textBrowser.setText(
+                open(config['Folders']['logs'] + '/log' + date_time_day + '.log', 'r').read()))
+            self.worker.threadMessageSender.connect(lambda: self.ui.textBrowser_2.setText(
+                open(config['Folders']['logs'] + '/error' + date_time_day + '.log', 'r').read()))
+            self.worker.threadMessageSender.connect(lambda: self.ui.textBrowser_3.setText(
+                open(config['Folders']['logs'] + '/download' + date_time_day + '.log', 'r').read()))
+            self.worker.threadMessageSender.connect(lambda: self.ui.textBrowser.moveCursor(QTextCursor.End))
+            self.worker.threadMessageSender.connect(lambda: self.ui.textBrowser_2.moveCursor(QTextCursor.End))
+            self.worker.threadMessageSender.connect(lambda: self.ui.textBrowser_3.moveCursor(QTextCursor.End))
             self.ui.tableWidget_9.setRowCount(1)
             self.ui.tableWidget_9.setItem(0, 1, QTableWidgetItem('Info: init log system'))
             self.ui.tableWidget_9.setColumnWidth(0, 23)
@@ -1982,7 +1999,6 @@ class MainWindow(QMainWindow):
                                                           | WatchingDeletedCRL.SerialNumber.contains(text)
                                                           | WatchingDeletedCRL.UrlCRL.contains(text)). \
                 limit(config['Listing']['watch']).count()
-            # self.ui.tableWidget_6.clear()
             self.ui.tableWidget_6.setRowCount(count_all)
             count = 0
             for row in query:
@@ -2125,18 +2141,23 @@ class MainWindow(QMainWindow):
                 self.ui.textBrowser.setText(
                     open(config['Folders']['logs'] + '/log' + date_time_day + '.log', 'r').read())
             except Exception:
-                print('Error: init_settings()::Filed_open_log::logs/log' + date_time_day + '.log')
-                logs('Error: init_settings()::Filed_open_log::logs/log' + date_time_day + '.log', 'errors', '2')
+                print('Error: init_settings::Filed_open_log::logs/log' + date_time_day + '.log')
+                logs('Error: init_settings::Filed_open_log::logs/log' + date_time_day + '.log', 'errors', '2')
             try:
                 self.ui.textBrowser_2.setText(
                     open(config['Folders']['logs'] + '/error' + date_time_day + '.log', 'r').read())
             except Exception:
-                print('Error: init_settings()::Filed_open_log::logs/error' + date_time_day + '.log')
-                logs('Error: init_settings()::Filed_open_log::logs/error' + date_time_day + '.log', 'errors', '2')
+                print('Error: init_settings::Filed_open_log::logs/error' + date_time_day + '.log')
+                logs('Error: init_settings::Filed_open_log::logs/error' + date_time_day + '.log', 'errors', '2')
+            try:
+                self.ui.textBrowser_3.setText(
+                    open(config['Folders']['logs'] + '/download' + date_time_day + '.log', 'r').read())
+            except Exception:
+                print('Error: init_settings::Filed_open_log::logs/download' + date_time_day + '.log')
+                logs('Error: init_settings::Filed_open_log::logs/download' + date_time_day + '.log', 'errors', '2')
 
             self.ui.pushButton_21.pressed.connect(lambda: self.save_settings_main())
             self.ui.pushButton_23.pressed.connect(lambda: self.save_settings_sub())
-            self.ui.pushButton_24.pressed.connect(lambda: self.save_settings_logs())
         except Exception:
             print('Error: init_settings()')
             logs('Error: init_settings()', 'errors', '1')
@@ -2246,8 +2267,8 @@ class MainWindow(QMainWindow):
                 config.set('Sec', 'allowCheckButtonCRL', 'Yes')
                 self.ui.pushButton_5.setEnabled(True)
             self.ui.label_27.setText('Настройки сохранены')
-            print('Info: save_settings_main()::Saved')
-            logs('Info: save_settings_main()::Saved', 'info', '6')
+            print('Info: save_settings_main::Saved')
+            logs('Info: save_settings_main::Saved', 'info', '6')
         except Exception:
             print('Error: save_settings_main()')
             logs('Error: save_settings_main()', 'errors', '1')
@@ -2317,8 +2338,8 @@ class MainWindow(QMainWindow):
                 set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'Yes')
                 config.set('Logs', 'dividelogsbyday', 'Yes')
             self.ui.label_28.setText('Настройки сохранены')
-            print('Info: save_settings_sub()::Saved')
-            logs('Info: save_settings_sub()::Saved', 'info', '6')
+            print('Info: save_settings_sub::Saved')
+            logs('Info: save_settings_sub::Saved', 'info', '6')
         except Exception:
             print('Error: save_settings_sub()')
             logs('Error: save_settings_sub()', 'errors', '1')
@@ -2608,16 +2629,16 @@ class MainWindow(QMainWindow):
                     add_to_watching_crl.save()
                     self.ui.label_24.setText('Проводится проверка')
                     if check_crl(add_to_watching_crl.ID, row.Name, keyid, url_crl) == 'down_error':
-                        print('Warning: add_watch_current_crl()::crl_added_error:down_error:' + keyid)
-                        logs('Warning: add_watch_current_crl()::crl_added_error:down_error:' + keyid, 'warn', '4')
+                        print('Warning: add_watch_current_crl::crl_added_error:down_error:' + keyid)
+                        logs('Warning: add_watch_current_crl::crl_added_error:down_error:' + keyid, 'warn', '4')
                         self.ui.label_24.setText('Ошибка добавления, невозможно скачать файл, проверьте источник')
                     else:
-                        print('Info: add_watch_current_crl()::crl_added:' + keyid)
-                        logs('Info: add_watch_current_crl()::crl_added:' + keyid, 'info', '7')
+                        print('Info: add_watch_current_crl::crl_added:' + keyid)
+                        logs('Info: add_watch_current_crl::crl_added:' + keyid, 'info', '7')
                         self.ui.label_24.setText('CRL ' + keyid + ' добавлен в список отлеживания')
             else:
-                print('Info: add_watch_current_crl()::crl_exist:' + keyid)
-                logs('Info: add_watch_current_crl()::crl_exist:' + keyid, 'info', '7')
+                print('Info: add_watch_current_crl::crl_exist:' + keyid)
+                logs('Info: add_watch_current_crl::crl_exist:' + keyid, 'info', '7')
                 self.ui.label_24.setText('CRL ' + keyid + ' уже находится в списке отслеживания')
         except Exception:
             print('Error: add_watch_current_crl()')
@@ -2636,11 +2657,11 @@ class MainWindow(QMainWindow):
                                                         UrlCRL=url_crl)
                 add_to_watching_crl.save()
                 self.counter_added_custom = self.counter_added_custom + 1
-                print('Info: add_watch_custom_crl()::crl_added:' + url_crl)
-                logs('Info: add_watch_custom_crl()::crl_added:' + url_crl, 'info', '7')
+                print('Info: add_watch_custom_crl::crl_added:' + url_crl)
+                logs('Info: add_watch_custom_crl::crl_added:' + url_crl, 'info', '7')
             else:
-                print('Info: add_watch_custom_crl()::crl_exist:' + url_crl)
-                logs('Info: add_watch_custom_crl()::crl_exist:' + url_crl, 'info', '7')
+                print('Info: add_watch_custom_crl::crl_exist:' + url_crl)
+                logs('Info: add_watch_custom_crl::crl_exist:' + url_crl, 'info', '7')
                 self.counter_added_exist = self.counter_added_exist + 1
             self.on_changed_find_watching_crl('')
         except Exception:
@@ -2714,11 +2735,11 @@ class MainWindow(QMainWindow):
                 WatchingCustomCRL.delete_by_id(id_var)
                 self.sub_tab_watching_custom_crl()
                 self.sub_tab_watching_disabled_crl()
-                print('Info: move_watching_to_passed()::moving_success_custom:')
-                logs('Info: move_watching_to_passed()::moving_success_custom:', 'info', '7')
+                print('Info: move_watching_to_passed::moving_success_custom:')
+                logs('Info: move_watching_to_passed::moving_success_custom:', 'info', '7')
             else:
-                print('Error: move_watching_to_passed()::Error_Moving')
-                logs('Error: move_watching_to_passed()::Error_Moving', 'errors', '2')
+                print('Error: move_watching_to_passed::Error_Moving')
+                logs('Error: move_watching_to_passed::Error_Moving', 'errors', '2')
         except Exception:
             print('Error: move_watching_to_passed()')
             logs('Error: move_watching_to_passed()', 'errors', '1')
@@ -2765,11 +2786,11 @@ class MainWindow(QMainWindow):
                     WatchingDeletedCRL.delete_by_id(id_var)
                     self.sub_tab_watching_disabled_crl()
                     self.sub_tab_watching_custom_crl()
-                    print('Info: move_passed_to_watching()::moving_success_custom:')
-                    logs('Info: move_passed_to_watching()::moving_success_custom:', 'info', '7')
+                    print('Info: move_passed_to_watching::moving_success_custom:')
+                    logs('Info: move_passed_to_watching::moving_success_custom:', 'info', '7')
                 else:
-                    print('Error: move_passed_to_watching()::error_moving')
-                    logs('Error: move_passed_to_watching()::error_moving', 'errors', '2')
+                    print('Error: move_passed_to_watching::error_moving')
+                    logs('Error: move_passed_to_watching::error_moving', 'errors', '2')
         except Exception:
             print('Error: move_passed_to_watching()')
             logs('Error: move_passed_to_watching()', 'errors', '1')
@@ -2976,11 +2997,11 @@ class UcWindow(QWidget):
                 self.ui.tableWidget.setColumnWidth(3, 150)
                 self.ui.tableWidget.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
             except Exception:
-                print('Error: UcWindow()::init()::query_to_row')
-                logs('Error: UcWindow()::init()::query_to_row', 'errors', '2')
+                print('Error: UcWindow::init::query_to_row')
+                logs('Error: UcWindow::init::query_to_row', 'errors', '2')
         except Exception:
-            print('Error: UcWindow()::init()')
-            logs('Error: UcWindow()::init()', 'errors', '1')
+            print('Error: UcWindow::init')
+            logs('Error: UcWindow::init', 'errors', '1')
 
 
 class CRLWindow(QWidget):
@@ -3009,8 +3030,8 @@ class CRLWindow(QWidget):
                 self.ui_crl.lineEdit_10.setText(str(wc.next_update))
 
         except Exception:
-            print('Error: CRLWindow()::init()')
-            logs('Error: CRLWindow()::init()', 'errors', '1')
+            print('Error: CRLWindow::init')
+            logs('Error: CRLWindow::init', 'errors', '1')
 
 
 class AddCRLWindow(QWidget):
@@ -3025,8 +3046,8 @@ class AddCRLWindow(QWidget):
             self.ui_add.pushButton_2.pressed.connect(self.query_fields)
             self.init()
         except Exception:
-            print('Error: AddCRLWindow()::__init__()', 'errors')
-            logs('Error: AddCRLWindow()::__init__()', 'errors', '1')
+            print('Error: AddCRLWindow::__init__', 'errors')
+            logs('Error: AddCRLWindow::__init__', 'errors', '1')
 
     def init(self, text=''):
         try:
@@ -3039,8 +3060,8 @@ class AddCRLWindow(QWidget):
             for row in query:
                 self.ui_add.comboBox.addItem(row.Name, row.KeyId)
         except Exception:
-            print('Error: AddCRLWindow()::init()', 'errors')
-            logs('Error: AddCRLWindow()::init()', 'errors', '2')
+            print('Error: AddCRLWindow::init', 'errors')
+            logs('Error: AddCRLWindow::init', 'errors', '2')
 
     def set_fields(self):
         try:
@@ -3059,8 +3080,8 @@ class AddCRLWindow(QWidget):
                 self.ui_add.lineEdit_7.setText(str(row_uc.INN))
                 self.ui_add.lineEdit_2.setText(str(row_uc.OGRN))
         except Exception:
-            print('Error: AddCRLWindow()::set_fields()', 'errors')
-            logs('Error: AddCRLWindow()::set_fields()', 'errors', '2')
+            print('Error: AddCRLWindow::set_fields', 'errors')
+            logs('Error: AddCRLWindow::set_fields', 'errors', '2')
 
     def query_fields(self):
         try:
@@ -3133,8 +3154,8 @@ class AddCRLWindow(QWidget):
                 logs('Warning: Cert not found', 'warn', '4')
                 self.ui_add.label_10.setText('Не найден квалифицированный сертификат УЦ')
         except Exception:
-            print('Error: AddCRLWindow()::query_fields()')
-            logs('Error: AddCRLWindow()::query_fields()', 'errors', '2')
+            print('Error: AddCRLWindow::query_fields')
+            logs('Error: AddCRLWindow::query_fields', 'errors', '2')
 
 
 if __name__ == "__main__":
