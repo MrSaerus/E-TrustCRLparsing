@@ -1299,14 +1299,16 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_disabled_crl)
 
         self.thread = QThread()
-        self.thread.start()
-        self.worker = MainWorker()
         self.thread_2 = QThread()
-        self.thread_2.start()
-        self.worker_2 = CheckCRL()
         self.thread_3 = QThread()
-        self.thread_3.start()
+
+        self.worker = MainWorker()
+        self.worker_2 = CheckCRL()
         self.worker_3 = DownloadAllCRL()
+
+        self.thread.start()
+        self.thread_2.start()
+        self.thread_3.start()
 
         self.init_settings()
         self.init_schedule()
