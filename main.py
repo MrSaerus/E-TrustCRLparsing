@@ -349,7 +349,10 @@ else:
                        'password': ''}
     config['Update'] = {'priority': 'custom',
                         'advancedChecking': 'Yes',
-                        'viewingCRLlastNextUpdate': 'Yes'}
+                        'viewingCRLlastNextUpdate': 'Yes',
+                        'allowupdatecrlbystart': 'No',
+                        'allowupdatetslbystart': 'No',
+                        'deltaupdateinday': '10'}
     config['Backup'] = {'backUPbyStart': 'Yes'}
     config['Tabs'] = {'ucLimit': '500',
                       'ucAllowDelete': 'No',
@@ -422,6 +425,7 @@ else:
 
 open(config['Folders']['logs'] + "/error" + datetime_day + ".log", "a").write('')
 open(config['Folders']['logs'] + "/log" + datetime_day + ".log", "a").write('')
+open(config['Folders']['logs'] + "/download" + datetime_day + ".log", "a").write('')
 
 
 def logs(body, kind='', log_level=''):
@@ -780,7 +784,8 @@ def check_for_import_in_uc():
     folder = config['Folders']['crls']
     current_datetimes = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     current_datetime = datetime.datetime.strptime(current_datetimes, '%Y-%m-%d %H:%M:%S')
-    before_current_date = datetime.datetime.now() - datetime.timedelta(days=10)
+    days = int(config['Update']['deltaupdateinday'])
+    before_current_date = datetime.datetime.now() - datetime.timedelta(days=days)
     query_1 = WatchingCRL.select()
     query_2 = WatchingCustomCRL.select()
     count = 0
