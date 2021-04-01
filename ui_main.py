@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainbMDpnM.ui'
+## Form generated from reading UI file 'mainSjcTFn.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -465,7 +465,6 @@ class Ui_MainWindow(object):
         __qtablewidgetitem13 = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem13)
         self.tableWidget.setObjectName(u"tableWidget")
-        self.tableWidget.setSortingEnabled(True)
         self.tableWidget.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_18.addWidget(self.tableWidget)
@@ -545,7 +544,6 @@ class Ui_MainWindow(object):
         __qtablewidgetitem19 = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(5, __qtablewidgetitem19)
         self.tableWidget_2.setObjectName(u"tableWidget_2")
-        self.tableWidget_2.setSortingEnabled(True)
         self.tableWidget_2.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_23.addWidget(self.tableWidget_2)
@@ -629,7 +627,6 @@ class Ui_MainWindow(object):
         __qtablewidgetitem27 = QTableWidgetItem()
         self.tableWidget_3.setHorizontalHeaderItem(7, __qtablewidgetitem27)
         self.tableWidget_3.setObjectName(u"tableWidget_3")
-        self.tableWidget_3.setSortingEnabled(True)
         self.tableWidget_3.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_22.addWidget(self.tableWidget_3)
@@ -737,7 +734,6 @@ class Ui_MainWindow(object):
         __qtablewidgetitem36 = QTableWidgetItem()
         self.tableWidget_4.setHorizontalHeaderItem(8, __qtablewidgetitem36)
         self.tableWidget_4.setObjectName(u"tableWidget_4")
-        self.tableWidget_4.setSortingEnabled(True)
         self.tableWidget_4.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_21.addWidget(self.tableWidget_4)
@@ -821,7 +817,6 @@ class Ui_MainWindow(object):
         __qtablewidgetitem45 = QTableWidgetItem()
         self.tableWidget_5.setHorizontalHeaderItem(8, __qtablewidgetitem45)
         self.tableWidget_5.setObjectName(u"tableWidget_5")
-        self.tableWidget_5.setSortingEnabled(True)
         self.tableWidget_5.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_20.addWidget(self.tableWidget_5)
@@ -881,7 +876,6 @@ class Ui_MainWindow(object):
         __qtablewidgetitem52 = QTableWidgetItem()
         self.tableWidget_6.setHorizontalHeaderItem(6, __qtablewidgetitem52)
         self.tableWidget_6.setObjectName(u"tableWidget_6")
-        self.tableWidget_6.setSortingEnabled(True)
         self.tableWidget_6.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_19.addWidget(self.tableWidget_6)

@@ -743,9 +743,6 @@ border-color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QTableWidget" name="tableWidget">
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
           <attribute name="horizontalHeaderMinimumSectionSize">
            <number>16</number>
           </attribute>
@@ -876,9 +873,6 @@ border-color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QTableWidget" name="tableWidget_2">
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
           <attribute name="horizontalHeaderMinimumSectionSize">
            <number>16</number>
           </attribute>
@@ -1019,9 +1013,6 @@ border-color: rgb(0, 0, 0);</string>
         </item>
         <item>
          <widget class="QTableWidget" name="tableWidget_3">
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
           <attribute name="horizontalHeaderMinimumSectionSize">
            <number>16</number>
           </attribute>
@@ -1201,9 +1192,6 @@ border-color: rgb(0, 0, 0);</string>
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget_4">
-              <property name="sortingEnabled">
-               <bool>true</bool>
-              </property>
               <attribute name="horizontalHeaderMinimumSectionSize">
                <number>16</number>
               </attribute>
@@ -1370,9 +1358,6 @@ border-color: rgb(0, 0, 0);</string>
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget_5">
-              <property name="sortingEnabled">
-               <bool>true</bool>
-              </property>
               <attribute name="horizontalHeaderMinimumSectionSize">
                <number>16</number>
               </attribute>
@@ -1484,9 +1469,6 @@ border-color: rgb(0, 0, 0);</string>
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget_6">
-              <property name="sortingEnabled">
-               <bool>true</bool>
-              </property>
               <attribute name="horizontalHeaderMinimumSectionSize">
                <number>16</number>
               </attribute>
