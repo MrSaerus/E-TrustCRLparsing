@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainAZdnsA.ui'
+## Form generated from reading UI file 'mainHDlTlQ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -216,7 +216,6 @@ class Ui_MainWindow(object):
         self.tableWidget_7.setHorizontalHeaderItem(3, __qtablewidgetitem5)
         self.tableWidget_7.setObjectName(u"tableWidget_7")
         self.tableWidget_7.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.tableWidget_7.setSortingEnabled(True)
         self.tableWidget_7.verticalHeader().setVisible(False)
         self.tableWidget_7.verticalHeader().setDefaultSectionSize(23)
 
@@ -242,7 +241,6 @@ class Ui_MainWindow(object):
         self.tableWidget_8.setHorizontalHeaderItem(3, __qtablewidgetitem9)
         self.tableWidget_8.setObjectName(u"tableWidget_8")
         self.tableWidget_8.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.tableWidget_8.setSortingEnabled(True)
         self.tableWidget_8.verticalHeader().setVisible(False)
         self.tableWidget_8.verticalHeader().setDefaultSectionSize(23)
 
@@ -454,6 +452,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_18.addLayout(self.horizontalLayout_74)
 
         self.horizontalLayout_83 = QHBoxLayout()
+        self.horizontalLayout_83.setSpacing(0)
         self.horizontalLayout_83.setObjectName(u"horizontalLayout_83")
         self.pushButton_61 = QPushButton(self.tab_2)
         self.pushButton_61.setObjectName(u"pushButton_61")
@@ -476,8 +475,8 @@ class Ui_MainWindow(object):
 
         self.pushButton_62 = QPushButton(self.tab_2)
         self.pushButton_62.setObjectName(u"pushButton_62")
-        self.pushButton_62.setMinimumSize(QSize(30, 0))
-        self.pushButton_62.setMaximumSize(QSize(30, 16777215))
+        self.pushButton_62.setMinimumSize(QSize(47, 0))
+        self.pushButton_62.setMaximumSize(QSize(47, 16777215))
         self.pushButton_62.setFlat(True)
 
         self.horizontalLayout_83.addWidget(self.pushButton_62)
@@ -497,6 +496,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem13 = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem13)
         self.tableWidget.setObjectName(u"tableWidget")
+        self.tableWidget.horizontalHeader().setVisible(False)
         self.tableWidget.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_18.addWidget(self.tableWidget)
@@ -533,6 +533,7 @@ class Ui_MainWindow(object):
 
         self.pushButton_22 = QPushButton(self.frame_5)
         self.pushButton_22.setObjectName(u"pushButton_22")
+        self.pushButton_22.setFlat(True)
 
         self.horizontalLayout_8.addWidget(self.pushButton_22)
 
@@ -561,6 +562,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_23.addLayout(self.horizontalLayout_75)
 
         self.horizontalLayout_82 = QHBoxLayout()
+        self.horizontalLayout_82.setSpacing(0)
         self.horizontalLayout_82.setObjectName(u"horizontalLayout_82")
         self.pushButton_58 = QPushButton(self.tab_3)
         self.pushButton_58.setObjectName(u"pushButton_58")
@@ -569,23 +571,29 @@ class Ui_MainWindow(object):
 
         self.pushButton_57 = QPushButton(self.tab_3)
         self.pushButton_57.setObjectName(u"pushButton_57")
+        self.pushButton_57.setMinimumSize(QSize(150, 0))
+        self.pushButton_57.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_82.addWidget(self.pushButton_57)
 
         self.pushButton_56 = QPushButton(self.tab_3)
         self.pushButton_56.setObjectName(u"pushButton_56")
+        self.pushButton_56.setMinimumSize(QSize(150, 0))
+        self.pushButton_56.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_82.addWidget(self.pushButton_56)
 
         self.pushButton_55 = QPushButton(self.tab_3)
         self.pushButton_55.setObjectName(u"pushButton_55")
+        self.pushButton_55.setMinimumSize(QSize(150, 0))
+        self.pushButton_55.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_82.addWidget(self.pushButton_55)
 
         self.pushButton_54 = QPushButton(self.tab_3)
         self.pushButton_54.setObjectName(u"pushButton_54")
-        self.pushButton_54.setMinimumSize(QSize(30, 0))
-        self.pushButton_54.setMaximumSize(QSize(30, 16777215))
+        self.pushButton_54.setMinimumSize(QSize(78, 0))
+        self.pushButton_54.setMaximumSize(QSize(78, 16777215))
         self.pushButton_54.setFlat(True)
 
         self.horizontalLayout_82.addWidget(self.pushButton_54)
@@ -609,6 +617,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem19 = QTableWidgetItem()
         self.tableWidget_2.setHorizontalHeaderItem(5, __qtablewidgetitem19)
         self.tableWidget_2.setObjectName(u"tableWidget_2")
+        self.tableWidget_2.horizontalHeader().setVisible(False)
         self.tableWidget_2.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_23.addWidget(self.tableWidget_2)
@@ -645,6 +654,7 @@ class Ui_MainWindow(object):
 
         self.pushButton_26 = QPushButton(self.frame_6)
         self.pushButton_26.setObjectName(u"pushButton_26")
+        self.pushButton_26.setFlat(True)
 
         self.horizontalLayout_9.addWidget(self.pushButton_26)
 
@@ -673,6 +683,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_22.addLayout(self.horizontalLayout_77)
 
         self.horizontalLayout_47 = QHBoxLayout()
+        self.horizontalLayout_47.setSpacing(0)
         self.horizontalLayout_47.setObjectName(u"horizontalLayout_47")
         self.pushButton_51 = QPushButton(self.tab_4)
         self.pushButton_51.setObjectName(u"pushButton_51")
@@ -681,26 +692,37 @@ class Ui_MainWindow(object):
 
         self.pushButton_50 = QPushButton(self.tab_4)
         self.pushButton_50.setObjectName(u"pushButton_50")
+        self.pushButton_50.setMinimumSize(QSize(150, 0))
+        self.pushButton_50.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_47.addWidget(self.pushButton_50)
 
         self.pushButton_49 = QPushButton(self.tab_4)
         self.pushButton_49.setObjectName(u"pushButton_49")
+        self.pushButton_49.setMinimumSize(QSize(150, 0))
+        self.pushButton_49.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_47.addWidget(self.pushButton_49)
 
         self.pushButton_48 = QPushButton(self.tab_4)
         self.pushButton_48.setObjectName(u"pushButton_48")
+        self.pushButton_48.setMinimumSize(QSize(150, 0))
+        self.pushButton_48.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_47.addWidget(self.pushButton_48)
 
         self.pushButton_53 = QPushButton(self.tab_4)
         self.pushButton_53.setObjectName(u"pushButton_53")
+        self.pushButton_53.setMinimumSize(QSize(150, 0))
+        self.pushButton_53.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_47.addWidget(self.pushButton_53)
 
         self.pushButton_52 = QPushButton(self.tab_4)
         self.pushButton_52.setObjectName(u"pushButton_52")
+        self.pushButton_52.setMinimumSize(QSize(107, 0))
+        self.pushButton_52.setMaximumSize(QSize(107, 16777215))
+        self.pushButton_52.setFlat(True)
 
         self.horizontalLayout_47.addWidget(self.pushButton_52)
 
@@ -727,6 +749,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem27 = QTableWidgetItem()
         self.tableWidget_3.setHorizontalHeaderItem(7, __qtablewidgetitem27)
         self.tableWidget_3.setObjectName(u"tableWidget_3")
+        self.tableWidget_3.horizontalHeader().setVisible(False)
         self.tableWidget_3.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_22.addWidget(self.tableWidget_3)
@@ -750,6 +773,7 @@ class Ui_MainWindow(object):
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.pushButton_27.sizePolicy().hasHeightForWidth())
         self.pushButton_27.setSizePolicy(sizePolicy3)
+        self.pushButton_27.setFlat(True)
 
         self.horizontalLayout.addWidget(self.pushButton_27)
 
@@ -1069,6 +1093,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_19.addLayout(self.verticalLayout_27)
 
         self.horizontalLayout_46 = QHBoxLayout()
+        self.horizontalLayout_46.setSpacing(0)
         self.horizontalLayout_46.setObjectName(u"horizontalLayout_46")
         self.pushButton_44 = QPushButton(self.tab_9)
         self.pushButton_44.setObjectName(u"pushButton_44")
@@ -1077,31 +1102,44 @@ class Ui_MainWindow(object):
 
         self.pushButton_43 = QPushButton(self.tab_9)
         self.pushButton_43.setObjectName(u"pushButton_43")
+        self.pushButton_43.setMinimumSize(QSize(100, 0))
+        self.pushButton_43.setMaximumSize(QSize(100, 16777215))
 
         self.horizontalLayout_46.addWidget(self.pushButton_43)
 
         self.pushButton_42 = QPushButton(self.tab_9)
         self.pushButton_42.setObjectName(u"pushButton_42")
+        self.pushButton_42.setMinimumSize(QSize(150, 0))
+        self.pushButton_42.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_46.addWidget(self.pushButton_42)
 
         self.pushButton_41 = QPushButton(self.tab_9)
         self.pushButton_41.setObjectName(u"pushButton_41")
+        self.pushButton_41.setMinimumSize(QSize(150, 0))
+        self.pushButton_41.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_46.addWidget(self.pushButton_41)
 
         self.pushButton_47 = QPushButton(self.tab_9)
         self.pushButton_47.setObjectName(u"pushButton_47")
+        self.pushButton_47.setMinimumSize(QSize(150, 0))
+        self.pushButton_47.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_46.addWidget(self.pushButton_47)
 
         self.pushButton_46 = QPushButton(self.tab_9)
         self.pushButton_46.setObjectName(u"pushButton_46")
+        self.pushButton_46.setMinimumSize(QSize(150, 0))
+        self.pushButton_46.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_46.addWidget(self.pushButton_46)
 
         self.pushButton_45 = QPushButton(self.tab_9)
         self.pushButton_45.setObjectName(u"pushButton_45")
+        self.pushButton_45.setMinimumSize(QSize(32, 0))
+        self.pushButton_45.setMaximumSize(QSize(32, 16777215))
+        self.pushButton_45.setFlat(True)
 
         self.horizontalLayout_46.addWidget(self.pushButton_45)
 
@@ -1126,6 +1164,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem52 = QTableWidgetItem()
         self.tableWidget_6.setHorizontalHeaderItem(6, __qtablewidgetitem52)
         self.tableWidget_6.setObjectName(u"tableWidget_6")
+        self.tableWidget_6.horizontalHeader().setVisible(False)
         self.tableWidget_6.horizontalHeader().setMinimumSectionSize(16)
 
         self.verticalLayout_19.addWidget(self.tableWidget_6)
@@ -1378,6 +1417,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_53.setObjectName(u"horizontalLayout_53")
         self.verticalLayout_79 = QVBoxLayout()
         self.verticalLayout_79.setObjectName(u"verticalLayout_79")
+        self.horizontalLayout_81 = QHBoxLayout()
+        self.horizontalLayout_81.setObjectName(u"horizontalLayout_81")
         self.groupBox_21 = QGroupBox(self.tab_10)
         self.groupBox_21.setObjectName(u"groupBox_21")
         self.horizontalLayout_80 = QHBoxLayout(self.groupBox_21)
@@ -1493,11 +1534,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_57.addLayout(self.horizontalLayout_39)
 
-        self.horizontalLayout_37 = QHBoxLayout()
-        self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
-
-        self.verticalLayout_57.addLayout(self.horizontalLayout_37)
-
 
         self.horizontalLayout_79.addLayout(self.verticalLayout_57)
 
@@ -1505,7 +1541,139 @@ class Ui_MainWindow(object):
         self.horizontalLayout_80.addWidget(self.frame_23, 0, Qt.AlignLeft)
 
 
-        self.verticalLayout_79.addWidget(self.groupBox_21)
+        self.horizontalLayout_81.addWidget(self.groupBox_21)
+
+        self.groupBox_8 = QGroupBox(self.tab_10)
+        self.groupBox_8.setObjectName(u"groupBox_8")
+        self.verticalLayout_55 = QVBoxLayout(self.groupBox_8)
+        self.verticalLayout_55.setObjectName(u"verticalLayout_55")
+        self.verticalLayout_54 = QVBoxLayout()
+        self.verticalLayout_54.setObjectName(u"verticalLayout_54")
+        self.horizontalLayout_84 = QHBoxLayout()
+        self.horizontalLayout_84.setObjectName(u"horizontalLayout_84")
+        self.frame_33 = QFrame(self.groupBox_8)
+        self.frame_33.setObjectName(u"frame_33")
+        sizePolicy1.setHeightForWidth(self.frame_33.sizePolicy().hasHeightForWidth())
+        self.frame_33.setSizePolicy(sizePolicy1)
+        self.frame_33.setFrameShape(QFrame.NoFrame)
+        self.frame_33.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_88 = QHBoxLayout(self.frame_33)
+        self.horizontalLayout_88.setObjectName(u"horizontalLayout_88")
+        self.horizontalLayout_88.setContentsMargins(0, 0, 0, 0)
+        self.label_39 = QLabel(self.frame_33)
+        self.label_39.setObjectName(u"label_39")
+        self.label_39.setMinimumSize(QSize(150, 0))
+        self.label_39.setMaximumSize(QSize(150, 16777215))
+
+        self.horizontalLayout_88.addWidget(self.label_39)
+
+        self.lineEdit_23 = QLineEdit(self.frame_33)
+        self.lineEdit_23.setObjectName(u"lineEdit_23")
+        self.lineEdit_23.setMaximumSize(QSize(100, 16777215))
+
+        self.horizontalLayout_88.addWidget(self.lineEdit_23)
+
+
+        self.horizontalLayout_84.addWidget(self.frame_33, 0, Qt.AlignLeft)
+
+
+        self.verticalLayout_54.addLayout(self.horizontalLayout_84)
+
+        self.horizontalLayout_85 = QHBoxLayout()
+        self.horizontalLayout_85.setObjectName(u"horizontalLayout_85")
+        self.frame_34 = QFrame(self.groupBox_8)
+        self.frame_34.setObjectName(u"frame_34")
+        self.frame_34.setFrameShape(QFrame.NoFrame)
+        self.frame_34.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_89 = QHBoxLayout(self.frame_34)
+        self.horizontalLayout_89.setObjectName(u"horizontalLayout_89")
+        self.horizontalLayout_89.setContentsMargins(0, 0, 0, 0)
+        self.label_40 = QLabel(self.frame_34)
+        self.label_40.setObjectName(u"label_40")
+        self.label_40.setMinimumSize(QSize(150, 0))
+        self.label_40.setMaximumSize(QSize(150, 16777215))
+
+        self.horizontalLayout_89.addWidget(self.label_40)
+
+        self.lineEdit_24 = QLineEdit(self.frame_34)
+        self.lineEdit_24.setObjectName(u"lineEdit_24")
+        self.lineEdit_24.setMaximumSize(QSize(100, 16777215))
+
+        self.horizontalLayout_89.addWidget(self.lineEdit_24)
+
+
+        self.horizontalLayout_85.addWidget(self.frame_34, 0, Qt.AlignLeft)
+
+
+        self.verticalLayout_54.addLayout(self.horizontalLayout_85)
+
+        self.horizontalLayout_86 = QHBoxLayout()
+        self.horizontalLayout_86.setObjectName(u"horizontalLayout_86")
+        self.frame_35 = QFrame(self.groupBox_8)
+        self.frame_35.setObjectName(u"frame_35")
+        self.frame_35.setFrameShape(QFrame.NoFrame)
+        self.frame_35.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_90 = QHBoxLayout(self.frame_35)
+        self.horizontalLayout_90.setObjectName(u"horizontalLayout_90")
+        self.horizontalLayout_90.setContentsMargins(0, 0, 0, 0)
+        self.label_45 = QLabel(self.frame_35)
+        self.label_45.setObjectName(u"label_45")
+        self.label_45.setEnabled(True)
+        self.label_45.setMinimumSize(QSize(150, 0))
+        self.label_45.setMaximumSize(QSize(150, 16777215))
+
+        self.horizontalLayout_90.addWidget(self.label_45)
+
+        self.lineEdit_25 = QLineEdit(self.frame_35)
+        self.lineEdit_25.setObjectName(u"lineEdit_25")
+        self.lineEdit_25.setEnabled(False)
+        self.lineEdit_25.setMaximumSize(QSize(100, 16777215))
+
+        self.horizontalLayout_90.addWidget(self.lineEdit_25)
+
+
+        self.horizontalLayout_86.addWidget(self.frame_35, 0, Qt.AlignLeft)
+
+
+        self.verticalLayout_54.addLayout(self.horizontalLayout_86)
+
+        self.horizontalLayout_37 = QHBoxLayout()
+        self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
+        self.frame_36 = QFrame(self.groupBox_8)
+        self.frame_36.setObjectName(u"frame_36")
+        self.frame_36.setFrameShape(QFrame.NoFrame)
+        self.frame_36.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_87 = QHBoxLayout(self.frame_36)
+        self.horizontalLayout_87.setObjectName(u"horizontalLayout_87")
+        self.horizontalLayout_87.setContentsMargins(0, 0, 0, 0)
+        self.label_46 = QLabel(self.frame_36)
+        self.label_46.setObjectName(u"label_46")
+        self.label_46.setMinimumSize(QSize(150, 0))
+        self.label_46.setMaximumSize(QSize(150, 16777215))
+
+        self.horizontalLayout_87.addWidget(self.label_46)
+
+        self.lineEdit_26 = QLineEdit(self.frame_36)
+        self.lineEdit_26.setObjectName(u"lineEdit_26")
+        self.lineEdit_26.setEnabled(False)
+        self.lineEdit_26.setMaximumSize(QSize(100, 16777215))
+
+        self.horizontalLayout_87.addWidget(self.lineEdit_26)
+
+
+        self.horizontalLayout_37.addWidget(self.frame_36, 0, Qt.AlignLeft)
+
+
+        self.verticalLayout_54.addLayout(self.horizontalLayout_37)
+
+
+        self.verticalLayout_55.addLayout(self.verticalLayout_54)
+
+
+        self.horizontalLayout_81.addWidget(self.groupBox_8)
+
+
+        self.verticalLayout_79.addLayout(self.horizontalLayout_81)
 
         self.groupBox_14 = QGroupBox(self.tab_10)
         self.groupBox_14.setObjectName(u"groupBox_14")
@@ -2082,7 +2250,7 @@ class Ui_MainWindow(object):
         self.frame_28 = QFrame(self.groupBox_10)
         self.frame_28.setObjectName(u"frame_28")
         self.frame_28.setEnabled(True)
-        self.frame_28.setFrameShape(QFrame.StyledPanel)
+        self.frame_28.setFrameShape(QFrame.NoFrame)
         self.frame_28.setFrameShadow(QFrame.Raised)
         self.verticalLayout_100 = QVBoxLayout(self.frame_28)
         self.verticalLayout_100.setObjectName(u"verticalLayout_100")
@@ -2260,7 +2428,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
         self.tabWidget_3.setCurrentIndex(0)
         self.tabWidget_4.setCurrentIndex(0)
@@ -2270,7 +2438,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.12", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"E-Trust CRL Parsing v1.0.0-beta.14", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f TSL E-Trust", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0435\u0440\u0441\u0438\u044f \u0431\u0430\u0437\u044b:", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0430\u0442\u0430 \u0432\u044b\u043f\u0443\u0441\u043a\u0430 \u0431\u0430\u0437\u044b:", None))
@@ -2340,12 +2508,12 @@ class Ui_MainWindow(object):
         self.pushButton_9.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
         self.pushButton_26.setText("")
         self.label_24.setText("")
-        self.pushButton_51.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_50.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_49.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_48.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_53.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_52.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.pushButton_51.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None))
+        self.pushButton_50.setText(QCoreApplication.translate("MainWindow", u"\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u043a\u043b\u044e\u0447\u0430", None))
+        self.pushButton_49.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0442\u043f\u0435\u0447\u0430\u0442\u043e\u043a", None))
+        self.pushButton_48.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0435\u0440\u0438\u0439\u043d\u044b\u0439 \u043d\u043e\u043c\u0435\u0440", None))
+        self.pushButton_53.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441 \u0432 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442\u0435", None))
+        self.pushButton_52.setText("")
         ___qtablewidgetitem15 = self.tableWidget_3.horizontalHeaderItem(0)
         ___qtablewidgetitem15.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None));
         ___qtablewidgetitem16 = self.tableWidget_3.horizontalHeaderItem(1)
@@ -2406,13 +2574,13 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"C\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None));
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_8), QCoreApplication.translate("MainWindow", u"\u0421\u0432\u043e\u0438 CRL", None))
         self.pushButton_12.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
-        self.pushButton_44.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_43.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_42.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_41.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_47.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_46.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.pushButton_45.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.pushButton_44.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None))
+        self.pushButton_43.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0413\u0420\u041d", None))
+        self.pushButton_42.setText(QCoreApplication.translate("MainWindow", u"\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u043a\u043b\u044e\u0447\u0430", None))
+        self.pushButton_41.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0442\u043f\u0435\u0447\u0430\u0442\u043e\u043a", None))
+        self.pushButton_47.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0435\u0440\u0438\u0439\u043d\u044b\u0435 \u043d\u043e\u043c\u0435\u0440", None))
+        self.pushButton_46.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441 CRL", None))
+        self.pushButton_45.setText("")
         ___qtablewidgetitem32 = self.tableWidget_6.horizontalHeaderItem(0)
         ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None));
         ___qtablewidgetitem33 = self.tableWidget_6.horizontalHeaderItem(1)
@@ -2445,6 +2613,11 @@ class Ui_MainWindow(object):
         self.label_23.setText(QCoreApplication.translate("MainWindow", u"\u0428\u0438\u0440\u0438\u043d\u0430 \u043e\u043a\u043d\u0430:", None))
         self.checkBox_3.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u0435 \u0440\u0430\u0437\u043c\u0435\u0440\u0430 \u043e\u043a\u043d\u0430", None))
         self.checkBox_2.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0442\u044c \u0440\u0430\u0437\u043c\u0435\u0440 \u043e\u043a\u043d\u0430 \u043f\u0440\u0438 \u0432\u044b\u0445\u043e\u0434\u0435", None))
+        self.groupBox_8.setTitle(QCoreApplication.translate("MainWindow", u"\u041c\u043e\u043d\u0438\u0442\u043e\u0440\u0438\u043d\u0433", None))
+        self.label_39.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043b\u0435\u0434\u0438\u0442\u044c \u0432 \u043f\u0440\u0435\u0434\u0435\u043b\u0430\u0445 \u0434\u043d\u0435\u0439", None))
+        self.label_40.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u043e\u0432\u0435\u0440\u044f\u0442\u044c CRL \u0434\u043e \u0438\u0441\u0442\u0435\u0447\u0435\u043d\u0438\u044f", None))
+        self.label_45.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0413\u0420\u041d \u0423\u0426 \u0421\u0432\u043e\u0439", None))
+        self.label_46.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0413\u0420\u041d \u0423\u0426 \u041c\u0438\u043d\u043a\u043e\u043c\u0441\u0432\u044f\u0437\u044c", None))
         self.groupBox_14.setTitle(QCoreApplication.translate("MainWindow", u"\u0418\u043c\u043f\u043e\u0440\u0442 / \u042d\u043a\u0441\u043f\u043e\u0440\u0442 CRL'\u043e\u0432", None))
         self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"\u0418\u043c\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0441\u043f\u0438\u0441\u043e\u043a CRL", None))
         self.pushButton_13.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c CRL \u043b\u0438\u0441\u0442", None))
