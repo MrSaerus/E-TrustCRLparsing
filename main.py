@@ -8,7 +8,7 @@ from ui_sub_main import Ui_Form
 from ui_sub_main_crl import Ui_Form_crl
 from ui_sub_main_add import Ui_Form_add
 from ui_main import Ui_MainWindow
-from peewee import Model, CharField, SqliteDatabase, DateTimeField, IntegerField, DateField, Ordering
+from peewee import Model, CharField, SqliteDatabase, DateTimeField, IntegerField, DateField
 import OpenSSL
 import base64
 import configparser
@@ -2919,18 +2919,13 @@ class MainWindow(QMainWindow):
         self.ui.pushButton.setEnabled(False)
         self.ui.pushButton_2.setEnabled(False)
         self._download = Downloader('https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0', 'tsl.xml')
-        # Устанавливаем максимальный размер данных
         self._download.pre_progress.connect(lambda x: self.ui.progressBar.setMaximum(x))
-        # Промежуточный/скачанный размер
         self._download.progress.connect(lambda y: self.ui.progressBar.setValue(y))
-        # говорим что всё скачано
         self._download.downloading.connect(lambda z: self.ui.label_7.setText(z))
         self._download.done.connect(lambda z: self.ui.label_7.setText(z))
         self._download.done.connect(lambda hint1: self.ui.pushButton.setEnabled(True))
         self._download.done.connect(lambda hint2: self.ui.pushButton_2.setEnabled(True))
-        # self._download.done.connect(lambda hint3: self.on_changed_find_uc(''))
-        # self._download.done.connect(lambda hint4: self.on_changed_find_cert(''))
-        # self._download.done.connect(lambda hint5: self.on_changed_find_crl(''))
+
         self._download.start()
 
     def download_all_crls(self):
