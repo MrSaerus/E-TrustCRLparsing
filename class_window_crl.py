@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QIcon
 from ui_sub_main_crl import Ui_Form_crl
-from models import WatchingCRL, WatchingCustomCRL
+from main_models import WatchingCRL, WatchingCustomCRL
 
 
 class CRLWindow(QWidget):

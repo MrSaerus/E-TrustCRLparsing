@@ -1,10 +1,12 @@
 from PyQt5.QtCore import pyqtSignal, QThread
 from lxml import etree
-from models import UC, CRL, CERT, Settings, db
-from log_system import logs
+from main_models import UC, CRL, CERT, Settings, db
+from main_log_system import logs
 import math
 import os
 import threading
+import peewee
+import time
 
 
 class InitXML(QThread):
@@ -53,6 +55,7 @@ class InitXML(QThread):
                 current_version = 'Unknown'
                 last_update = 'Unknown'
                 for appt in root.getchildren():
+                    print("InitXML runer id", threading.get_ident(), ' name ', threading.currentThread().getName())
                     address_code = ''
                     address_name = ''
                     address_index = ''
@@ -148,22 +151,29 @@ class InitXML(QThread):
                     if registration_number != '':
                         self.current_uc.emit('Обрабатываем данные: ' + name)
                         logs('Info: Processing - UC:' + name, 'info', '6')
-                        print(threading.get_ident(), "save UC")
-                        with db.transaction('exclusive'):
-                            (UC(Registration_Number=registration_number,
-                                INN=inn,
-                                OGRN=ogrn,
-                                Full_Name=full_name,
-                                Email=email,
-                                Name=name,
-                                URL=url,
-                                AddresCode=address_code,
-                                AddresName=address_name,
-                                AddresIndex=address_index,
-                                AddresAddres=address_address,
-                                AddresStreet=address_street,
-                                AddresTown=address_town)
-                             .save())
+                        while True:
+                            try:
+                                with db.transaction('exclusive'):
+                                    (UC(Registration_Number=registration_number,
+                                        INN=inn,
+                                        OGRN=ogrn,
+                                        Full_Name=full_name,
+                                        Email=email,
+                                        Name=name,
+                                        URL=url,
+                                        AddresCode=address_code,
+                                        AddresName=address_name,
+                                        AddresIndex=address_index,
+                                        AddresAddres=address_address,
+                                        AddresStreet=address_street,
+                                        AddresTown=address_town)
+                                     .save())
+                            except peewee.OperationalError:
+                                print('OperationalError')
+                                time.sleep(5)
+                            else:
+                                break
+
                         for cert in cert_data:
                             if type(cert_data) == list:
                                 for data in cert:
@@ -181,24 +191,36 @@ class InitXML(QThread):
                                     if type(data) == list:
                                         for dats in data:
                                             url_crl = dats
-                                            print(threading.get_ident(), "save CRL")
-                                            with db.transaction('exclusive'):
-                                                (CRL(Registration_Number=registration_number,
-                                                     Name=name,
-                                                     KeyId=key_id,
-                                                     Stamp=stamp,
-                                                     SerialNumber=serial_number,
-                                                     UrlCRL=url_crl)
-                                                 .save())
-                            print(threading.get_ident(), "save CERT")
-                            with db.transaction('exclusive'):
-                                (CERT(Registration_Number=registration_number,
-                                      Name=name,
-                                      KeyId=key_id,
-                                      Stamp=stamp,
-                                      SerialNumber=serial_number,
-                                      Data=cert_base64)
-                                 .save())
+                                            while True:
+                                                try:
+                                                    with db.transaction('exclusive'):
+                                                        (CRL(Registration_Number=registration_number,
+                                                             Name=name,
+                                                             KeyId=key_id,
+                                                             Stamp=stamp,
+                                                             SerialNumber=serial_number,
+                                                             UrlCRL=url_crl)
+                                                         .save())
+                                                except peewee.OperationalError:
+                                                    print('OperationalError')
+                                                    time.sleep(5)
+                                                else:
+                                                    break
+                            while True:
+                                try:
+                                    with db.transaction('exclusive'):
+                                        (CERT(Registration_Number=registration_number,
+                                              Name=name,
+                                              KeyId=key_id,
+                                              Stamp=stamp,
+                                              SerialNumber=serial_number,
+                                              Data=cert_base64)
+                                         .save())
+                                except peewee.OperationalError:
+                                    print('OperationalError')
+                                    time.sleep(5)
+                                else:
+                                    break
                             crl_percent_step = int(math.floor(100 / (crl_count_all / crl_count)))
                             self.progressbar.emit(crl_percent_step)
                 self.done_ver.emit(" Версия базы: " + current_version)
@@ -206,11 +228,24 @@ class InitXML(QThread):
                 self.done_all_uc.emit(" Всего УЦ: " + str(uc_count))
                 self.done_all_cert.emit(" Всего Сертификатов: " + str(cert_count))
                 self.done_all_crl.emit(" Всего CRL: " + str(crl_count))
-                with db.transaction('exclusive'):
-                    Settings.update(value=current_version).where(Settings.name == 'ver').execute()
-                with db.transaction('exclusive'):
-                    Settings.update(value=last_update).where(Settings.name == 'data_update').execute()
-
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            Settings.update(value=current_version).where(Settings.name == 'ver').execute()
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(5)
+                    else:
+                        break
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            Settings.update(value=last_update).where(Settings.name == 'data_update').execute()
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(5)
+                    else:
+                        break
                 self.current_uc.emit('Обработка завершена.')
                 print('Info: Processing successful done')
                 logs('Info: Processing successful done', 'info', '6')

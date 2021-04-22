@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal, QThread
-from config import config
-from log_system import logs
+from main_settings import config
+from main_log_system import logs
 from class_main_downloader import MainDownloader
 import datetime
 import time

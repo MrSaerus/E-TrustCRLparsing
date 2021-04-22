@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtGui import QIcon
 from ui_sub_main import Ui_Form
-from models import CRL, UC
+from main_models import CRL, UC
 
 
 class UcWindow(QWidget):

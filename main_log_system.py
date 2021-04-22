@@ -1,4 +1,4 @@
-from config import config, datetime_day
+from main_settings import config, datetime_day
 import datetime
 
 

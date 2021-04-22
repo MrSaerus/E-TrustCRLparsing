@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal, QThread
-from models import WatchingCRL, WatchingCustomCRL
-from config import config
+from main_models import WatchingCRL, WatchingCustomCRL
+from main_settings import config
 from main_moduls import download_loop_guard, download_update
 from urllib import request
 import datetime

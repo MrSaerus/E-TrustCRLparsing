@@ -1,23 +1,23 @@
 from peewee import Model, CharField, SqliteDatabase, DateTimeField, IntegerField, DateField
-from log_system import logs
-from config import *
+from main_log_system import logs
+from main_settings import *
 import datetime
-import sqlite3
+import threading
 import shutil
 import os
+
+
+db = SqliteDatabase(config['Bd']['name'])
+
 
 bd_backup_name = str('cert_crl.db_') + datetime.datetime.now().strftime('%Y%m%d') + '.bkp'
 if os.path.isfile(bd_backup_name):
     print('Info: ' + bd_backup_name + ' exist')
     logs('Info: ' + bd_backup_name + ' exist', 'info', '7')
-    connect = sqlite3.connect(config['Bd']['name'])
-    db = SqliteDatabase(config['Bd']['name'])
 else:
     shutil.copy2('cert_crl.db', bd_backup_name)
     print('Info: ' + bd_backup_name + ' created')
     logs('Info: ' + bd_backup_name + ' created', 'info', '6')
-    connect = sqlite3.connect(config['Bd']['name'])
-    db = SqliteDatabase(config['Bd']['name'])
 
 
 class UC(Model):

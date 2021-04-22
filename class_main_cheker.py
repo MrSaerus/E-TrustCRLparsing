@@ -1,12 +1,13 @@
 from PyQt5.QtCore import pyqtSignal, QThread
-from models import WatchingCRL, WatchingCustomCRL, UC, db
-from log_system import logs
-from config import config
+from main_models import WatchingCRL, WatchingCustomCRL, UC, db
+from main_log_system import logs
+from main_settings import config
 import datetime
 import time
 import OpenSSL
 import os
 import threading
+import peewee
 
 
 class MainChecker(QThread):
@@ -78,15 +79,25 @@ class MainChecker(QThread):
                 query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
                 for uc_data in query_uc:
                     name = uc_data.Name
-                print(threading.get_ident(), "check_custom_crl")
-                with db.transaction('exclusive'):
-                    (WatchingCustomCRL
-                     .update(INN=issuer['INN'], OGRN=issuer['OGRN'],
-                             status='Info: Filetype good',
-                             last_update=cryptography.last_update + datetime.timedelta(hours=5),
-                             next_update=cryptography.next_update + datetime.timedelta(hours=5))
-                     .where(WatchingCustomCRL.ID == id_custom_crl)
-                     .execute())
+                print("check_custom_crl runner id",
+                      threading.get_ident(),
+                      ' name ',
+                      threading.currentThread().getName())
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            (WatchingCustomCRL
+                             .update(INN=issuer['INN'], OGRN=issuer['OGRN'],
+                                     status='Info: Filetype good',
+                                     last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                                     next_update=cryptography.next_update + datetime.timedelta(hours=5))
+                             .where(WatchingCustomCRL.ID == id_custom_crl)
+                             .execute())
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(5)
+                    else:
+                        break
                 issuer['INN'] = 'Unknown'
                 issuer['OGRN'] = 'Unknown'
             except OpenSSL.crypto.Error:
@@ -110,14 +121,25 @@ class MainChecker(QThread):
                     OpenSSL.crypto.FILETYPE_ASN1,
                     open(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl', 'rb').read())
                 cryptography = crl.to_cryptography()
-                print(threading.get_ident(), "check_current_crl")
-                with db.transaction('exclusive'):
-                    (WatchingCRL
-                     .update(status='Info: Filetype good',
-                            last_update=cryptography.last_update + datetime.timedelta(hours=5),
-                            next_update=cryptography.next_update + datetime.timedelta(hours=5))
-                     .where(WatchingCRL.ID == id_wc)
-                     .execute())
+                print("check_current_crl runer id",
+                      threading.get_ident(),
+                      ' name ',
+                      threading.currentThread().getName())
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            (WatchingCRL
+                             .update(status='Info: Filetype good',
+                                    last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                                    next_update=cryptography.next_update + datetime.timedelta(hours=5))
+                             .where(WatchingCRL.ID == id_wc)
+                             .execute())
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(5)
+                    else:
+                        break
+
                 print('Info: check_current_crl:success ' + name_wc + ' next update in ' +
                       str(cryptography.next_update + datetime.timedelta(hours=5)))
                 logs('Info: check_current_crl:success ' + name_wc, 'info', '5')

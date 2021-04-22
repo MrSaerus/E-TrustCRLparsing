@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QIcon
 from ui_sub_main_add import Ui_Form_add
-from config import config
-from log_system import logs
-from models import UC, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL
+from main_settings import config
+from main_log_system import logs
+from main_models import UC, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL
 
 
 class AddCRLWindow(QWidget):

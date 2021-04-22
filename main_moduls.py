@@ -1,6 +1,6 @@
-from models import CERT, WatchingCRL, WatchingCustomCRL, db
-from config import config
-from log_system import logs
+from main_models import CERT, WatchingCRL, WatchingCustomCRL, db
+from main_settings import config
+from main_log_system import logs
 from lxml import etree
 import configparser
 import datetime
@@ -8,6 +8,8 @@ import shutil
 import base64
 import os
 import threading
+import peewee
+import time
 
 
 def get_info_xlm(type_data, xml_file='tsl.xml'):
@@ -98,64 +100,116 @@ def download_update(set_dd, type_download, w_id, dc=0):
     dc = int(dc)
     if dc == 10:
         next_update = current_datetime + datetime.timedelta(days=1)
-    print(threading.get_ident(), "download_update")
-    if type_download == 'current':
-        with db.transaction('exclusive'):
-            (WatchingCRL
-             .update(last_download=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-             .where(WatchingCRL.ID == w_id).execute())
+    print("download_update runer id", threading.get_ident(), ' name ', threading.currentThread().getName())
+    #if type_download == 'current':
+    #    with db.transaction('exclusive'):
+    #        (WatchingCRL
+    #         .update(last_download=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    #         .where(WatchingCRL.ID == w_id).execute())
 
-    elif type_download == 'custom':
-        with db.transaction('exclusive'):
-            (WatchingCustomCRL
-             .update(last_download=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-             .where(WatchingCustomCRL.ID == w_id).execute())
+    #elif type_download == 'custom':
+    #    with db.transaction('exclusive'):
+    #        (WatchingCustomCRL
+    #         .update(last_download=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    #         .where(WatchingCustomCRL.ID == w_id).execute())
 
-    #if set_dd == 'Yes':
-    #    if dc < 10:
-    #        if type_download == 'current':
-    #            query_update = WatchingCRL.update(download_status='Info: Download successfully',
-    #                                              download_count=dc,
-    #                                              last_download=datetime.datetime.now()
-    #                                              .strftime('%Y-%m-%d %H:%M:%S')
-    #                                              ).where(WatchingCRL.ID == w_id)
-    #            query_update.execute()
-    #        elif type_download == 'custom':
-    #            query_update = WatchingCustomCRL.update(download_status='Info: Download successfully',
-    #                                                    download_count=dc,
-    #                                                    last_download=datetime.datetime.now()
-    #                                                    .strftime('%Y-%m-%d %H:%M:%S')
-    #                                                    ).where(WatchingCustomCRL.ID == w_id)
-    #            query_update.execute()
-    #    else:
-    #        if type_download == 'current':
-    #            query_update = WatchingCRL.update(download_status='Info: Download successfully',
-    #                                              download_count=dc,
-    #                                              next_update=next_update,
-    #                                              last_download=datetime.datetime.now()
-    #                                              .strftime('%Y-%m-%d %H:%M:%S')
-    #                                              ).where(WatchingCRL.ID == w_id)
-    #            query_update.execute()
-    #        elif type_download == 'custom':
-    #            query_update = WatchingCustomCRL.update(download_status='Info: Download successfully',
-    #                                                    download_count=dc,
-    #                                                    next_update=next_update,
-    #                                                    last_download=datetime.datetime.now()
-    #                                                    .strftime('%Y-%m-%d %H:%M:%S')
-    #                                                    ).where(WatchingCustomCRL.ID == w_id)
-    #            query_update.execute()
-    #else:
-    #    if type_download == 'current':
-    #        query_update = WatchingCRL.update(download_status='Error: Download failed',
-    #                                          download_count=dc,
-    #                                          ).where(WatchingCRL.ID == w_id)
-    #        query_update.execute()
-    #    elif type_download == 'custom':
-    #
-    #        query_update = WatchingCustomCRL.update(download_status='Error: Download failed',
-    #                                                download_count=dc,
-    #                                                ).where(WatchingCustomCRL.ID == w_id)
-    #        query_update.execute()
+    if set_dd == 'Yes':
+        if dc < 10:
+            if type_download == 'current':
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            (WatchingCRL.update(download_status='Info: Download successfully',
+                                                download_count=dc,
+                                                last_download=datetime.datetime.now()
+                                                .strftime('%Y-%m-%d %H:%M:%S'))
+                             .where(WatchingCRL.ID == w_id)
+                             .execute())
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+
+            elif type_download == 'custom':
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            (WatchingCustomCRL.update(download_status='Info: Download successfully',
+                                                      download_count=dc,
+                                                      last_download=datetime.datetime.now()
+                                                      .strftime('%Y-%m-%d %H:%M:%S'))
+                             .where(WatchingCustomCRL.ID == w_id)
+                             .execute())
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+
+        else:
+            if type_download == 'current':
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            (WatchingCRL.update(download_status='Info: Download successfully',
+                                                download_count=dc,
+                                                next_update=next_update,
+                                                last_download=datetime.datetime.now()
+                                                .strftime('%Y-%m-%d %H:%M:%S'))
+                             .where(WatchingCRL.ID == w_id)
+                             .execute())
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+
+            elif type_download == 'custom':
+                while True:
+                    try:
+                        with db.transaction('exclusive'):
+                            (WatchingCustomCRL.update(download_status='Info: Download successfully',
+                                                      download_count=dc,
+                                                      next_update=next_update,
+                                                      last_download=datetime.datetime.now()
+                                                      .strftime('%Y-%m-%d %H:%M:%S'))
+                             .where(WatchingCustomCRL.ID == w_id)
+                             .execute())
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+
+    else:
+        if type_download == 'current':
+            while True:
+                try:
+                    with db.transaction('exclusive'):
+                        (WatchingCRL.update(download_status='Error: Download failed',
+                                            download_count=dc)
+                         .where(WatchingCRL.ID == w_id)
+                         .execute())
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
+
+        elif type_download == 'custom':
+            while True:
+                try:
+                    with db.transaction('exclusive'):
+                        (WatchingCustomCRL.update(download_status='Error: Download failed',
+                                                  download_count=dc)
+                         .where(WatchingCustomCRL.ID == w_id)
+                         .execute())
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
 
 
 def download_loop_guard(download_count, last_download, next_update):
