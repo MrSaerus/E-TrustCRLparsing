@@ -12,7 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>E-Trust CRL Parsing v1.0.0-beta.14</string>
+   <string>E-Trust CRL Parsing v1.0.0-RC1</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -67,7 +67,7 @@
                       </size>
                      </property>
                      <property name="title">
-                      <string>Информация TSL E-Trust</string>
+                      <string>Информация о TSL E-Trust</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_14">
                       <item>
@@ -148,13 +148,6 @@
                       <widget class="QLabel" name="label_36">
                        <property name="text">
                         <string>Время в работе:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label_15">
-                       <property name="text">
-                        <string>Таймер:</string>
                        </property>
                       </widget>
                      </item>
@@ -1387,7 +1380,7 @@ border-color: rgb(0, 0, 0);</string>
              </size>
             </property>
             <property name="text">
-             <string>Скачать все CRL'ы</string>
+             <string>Скачать все CRL</string>
             </property>
            </widget>
           </item>
@@ -1408,12 +1401,12 @@ border-color: rgb(0, 0, 0);</string>
            <widget class="QPushButton" name="pushButton_3">
             <property name="maximumSize">
              <size>
-              <width>150</width>
+              <width>230</width>
               <height>16777215</height>
              </size>
             </property>
             <property name="text">
-             <string>Копировать CRL для УЦ</string>
+             <string>Проверить наличие новых CRL для УЦ</string>
             </property>
            </widget>
           </item>
@@ -3834,7 +3827,7 @@ border-color: rgb(0, 0, 0);</string>
                      <bool>true</bool>
                     </property>
                     <property name="title">
-                     <string>При запуске программы (может замедлить запуск программы)</string>
+                     <string>При запуске программы</string>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_50">
                      <item alignment="Qt::AlignLeft|Qt::AlignTop">
@@ -3883,13 +3876,15 @@ border-color: rgb(0, 0, 0);</string>
                            </layout>
                           </item>
                           <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_30"/>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_29"/>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_28"/>
+                           <layout class="QHBoxLayout" name="horizontalLayout_30">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_15">
+                              <property name="text">
+                               <string>Запускать мониторинг CRL</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
                           </item>
                          </layout>
                         </item>
