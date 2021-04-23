@@ -15,3 +15,5 @@ crl_list.txt
 cert_crl.db-*
 cert_crl.db_*
 *.log
+*.db
+*.xml
