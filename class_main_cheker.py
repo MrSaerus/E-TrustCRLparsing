@@ -6,12 +6,10 @@ import datetime
 import time
 import OpenSSL
 import os
-import threading
 import peewee
 
 
 class MainChecker(QThread):
-    print(threading.get_ident(), "MainChecker")
     current_message = pyqtSignal(str)
     done = pyqtSignal(str)
 
@@ -21,7 +19,6 @@ class MainChecker(QThread):
         self.modeWork = modes
 
     def run(self):
-        print(threading.get_ident(), "MainChecker run")
         if self.modeWork == 'all':
             print('mode all')
         elif self.modeWork == 'check_all':
@@ -79,10 +76,6 @@ class MainChecker(QThread):
                 query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
                 for uc_data in query_uc:
                     name = uc_data.Name
-                print("check_custom_crl runner id",
-                      threading.get_ident(),
-                      ' name ',
-                      threading.currentThread().getName())
                 while True:
                     try:
                         with db.transaction('exclusive'):
@@ -121,10 +114,6 @@ class MainChecker(QThread):
                     OpenSSL.crypto.FILETYPE_ASN1,
                     open(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl', 'rb').read())
                 cryptography = crl.to_cryptography()
-                print("check_current_crl runer id",
-                      threading.get_ident(),
-                      ' name ',
-                      threading.currentThread().getName())
                 while True:
                     try:
                         with db.transaction('exclusive'):
@@ -147,7 +136,6 @@ class MainChecker(QThread):
                 print('errors: OpenSSL not supported this filetype ' + name_wc)
                 logs('errors: OpenSSL not supported this filetype ' + name_wc, 'errors', '4')
                 self.current_message.emit('Проверка завершена c ошибкой')
-                self.done.emit('Проверка завершена c ошибкой')
             else:
                 print('Info: check_custom_crl()::success ' + name_wc + ' next update in ' +
                       str(cryptography.next_update + datetime.timedelta(hours=5)))

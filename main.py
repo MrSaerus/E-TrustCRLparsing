@@ -1,11 +1,11 @@
-from PyQt5.QtGui import QTextCursor, QIcon, QPixmap, QColor, QBrush
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
 from PyQt5.QtWidgets import QPushButton, QWidget, QTableWidgetItem, QHeaderView, QFileDialog, QMainWindow, QApplication
 from PyQt5.Qt import Qt
 from ui_main import Ui_MainWindow
-from main_images import base64_import, base64_icon, base64_info, base64_inbox, base64_file, base64_export, base64_diskette, \
-    base64_black_list, base64_white_list
+from main_images import base64_import, base64_icon, base64_info, base64_inbox, base64_file, base64_export, \
+     base64_diskette, base64_black_list, base64_white_list
 from main_moduls import save_cert, set_value_in_property_file, copy_crl_to_uc, get_info_xlm, export_all_watching_crl
-from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, Settings, db
+from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, Settings
 from class_main_worker import MainWorker
 from class_main_downloader import MainDownloader, download_file
 from class_main_dbquerying import DBQuerying
@@ -21,13 +21,11 @@ import base64
 import datetime
 import os
 import sys
-import threading
+import peewee
+import time
 
 
 class MainWindow(QMainWindow):
-    # _db_query = DBQuerying()
-    # _db_query.start()
-    print(threading.get_ident(), "MainWindow")
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
@@ -203,9 +201,9 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_9.setItem(0, 1, QTableWidgetItem('Info: init log system'))
         self.ui.tableWidget_9.setColumnWidth(0, 23)
         self.ui.tableWidget_9.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.ui.pushButton_20.clicked.connect(lambda: self._squirrel.stop())
+        self.ui.pushButton_20.clicked.connect(self.main_worker_stop)
         self.ui.pushButton_20.setToolTip('Остановить мониторинг CRL')
-        self.ui.pushButton_19.clicked.connect(lambda:  self.main_worker())
+        self.ui.pushButton_19.clicked.connect(self.main_worker)
         self.ui.pushButton_19.setToolTip('Запустить мониторинг CRL')
 
     def tab_uc(self, text='', order_by='Full_Name', sort=''):
@@ -1242,30 +1240,54 @@ class MainWindow(QMainWindow):
             self.ui.label_9.setText(input_dir)
 
     def add_watch_current_crl(self, registration_number, keyid, stamp, serial_number, url_crl):
-        count = WatchingCRL.select().where(WatchingCRL.Stamp.contains(stamp)
-                                           | WatchingCRL.SerialNumber.contains(serial_number)).count()
+        while True:
+            try:
+                count = WatchingCRL.select().where(WatchingCRL.Stamp.contains(stamp)
+                                                   | WatchingCRL.SerialNumber.contains(serial_number)).count()
+            except peewee.OperationalError:
+                print('OperationalError')
+                time.sleep(1)
+            else:
+                break
+
         if count < 1:
-            select_uc = UC.select().where(UC.Registration_Number == registration_number)
+            while True:
+                try:
+                    select_uc = UC.select().where(UC.Registration_Number == registration_number)
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
+
             for row in select_uc:
-                add_to_watching_crl = WatchingCRL(Name=row.Name,
-                                                  INN=row.INN,
-                                                  OGRN=row.OGRN,
-                                                  KeyId=keyid,
-                                                  Stamp=stamp,
-                                                  SerialNumber=serial_number,
-                                                  UrlCRL=url_crl,
-                                                  status='Unknown',
-                                                  download_status='Unknown',
-                                                  download_count='0',
-                                                  last_download='1970-01-01 00:00:00',
-                                                  last_update='1970-01-01 00:00:00',
-                                                  next_update='1970-01-01 00:00:00'
-                                                  )
-                add_to_watching_crl.save()
+                while True:
+                    try:
+                        add_to_watching_crl = WatchingCRL(Name=row.Name,
+                                                          INN=row.INN,
+                                                          OGRN=row.OGRN,
+                                                          KeyId=keyid,
+                                                          Stamp=stamp,
+                                                          SerialNumber=serial_number,
+                                                          UrlCRL=url_crl,
+                                                          status='Unknown',
+                                                          download_status='Unknown',
+                                                          download_count='0',
+                                                          last_download='1970-01-01 00:00:00',
+                                                          last_update='1970-01-01 00:00:00',
+                                                          next_update='1970-01-01 00:00:00'
+                                                          )
+                        add_to_watching_crl.save()
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+
                 added_id = add_to_watching_crl.ID
                 # self.ui.label_24.setText('Добавляем в список скачивания')
                 # download(self, file_url, file_name, file_type, file_id, dc=0):
-                _download_crl = MainDownloader('single',
+                _download_crl = MainDownloader('MainDownloader_single_2', 'single',
                                                url_crl,
                                                config['Folders']['crls'] + '/' + keyid + '.crl',
                                                'current',
@@ -1281,16 +1303,30 @@ class MainWindow(QMainWindow):
             self.ui.label_24.setText('CRL ' + keyid + ' уже находится в списке отслеживания')
 
     def add_watch_custom_crl(self, url_crl):
-        count = WatchingCustomCRL.select().where(WatchingCustomCRL.UrlCRL.contains(url_crl)).count()
+        while True:
+            try:
+                count = WatchingCustomCRL.select().where(WatchingCustomCRL.UrlCRL.contains(url_crl)).count()
+            except peewee.OperationalError:
+                print('OperationalError')
+                time.sleep(1)
+            else:
+                break
+
         if count < 1:
-            add_to_watching_crl = WatchingCustomCRL(Name='Unknown',
-                                                    INN='0',
-                                                    OGRN='0',
-                                                    KeyId='Unknown',
-                                                    Stamp='Unknown',
-                                                    SerialNumber='Unknown',
-                                                    UrlCRL=url_crl)
-            add_to_watching_crl.save()
+            while True:
+                try:
+                    WatchingCustomCRL(Name='Unknown',
+                                      NN='0',
+                                      GRN='0',
+                                      eyId='Unknown',
+                                      tamp='Unknown',
+                                      erialNumber='Unknown',
+                                      rlCRL=url_crl).save()
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
             self.counter_added_custom = self.counter_added_custom + 1
             print('Info: add_watch_custom_crl::crl_added:' + url_crl)
             logs('Info: add_watch_custom_crl::crl_added:' + url_crl, 'info', '7')
@@ -1323,63 +1359,91 @@ class MainWindow(QMainWindow):
 
     def move_watching_to_passed(self, id_var, from_var):
         if from_var == 'current':
-            from_bd = WatchingCRL.select().where(WatchingCRL.ID == id_var)
+            while True:
+                try:
+                    from_bd = WatchingCRL.select().where(WatchingCRL.ID == id_var)
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
+
             for row in from_bd:
                 while True:
                     try:
-                        to_bd = WatchingDeletedCRL(Name=row.Name,
-                                                   INN=row.INN,
-                                                   OGRN=row.OGRN,
-                                                   KeyId=row.KeyId,
-                                                   Stamp=row.Stamp,
-                                                   SerialNumber=row.SerialNumber,
-                                                   UrlCRL=row.UrlCRL,
-                                                   status=row.status,
-                                                   download_status=row.download_status,
-                                                   download_count=row.download_count,
-                                                   last_download=row.last_download,
-                                                   last_update=row.last_update,
-                                                   next_update=row.next_update,
-                                                   moved_from='current')
-                        to_bd.save()
+                        WatchingDeletedCRL(Name=row.Name,
+                                           INN=row.INN,
+                                           OGRN=row.OGRN,
+                                           KeyId=row.KeyId,
+                                           Stamp=row.Stamp,
+                                           SerialNumber=row.SerialNumber,
+                                           UrlCRL=row.UrlCRL,
+                                           status=row.status,
+                                           download_status=row.download_status,
+                                           download_count=row.download_count,
+                                           last_download=row.last_download,
+                                           last_update=row.last_update,
+                                           next_update=row.next_update,
+                                           moved_from='current').save()
                     except peewee.OperationalError:
                         print('OperationalError')
                         time.sleep(1)
                     else:
                         break
+            while True:
+                try:
+                    WatchingCRL.delete_by_id(id_var)
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
 
-            WatchingCRL.delete_by_id(id_var)
             self.sub_tab_watching_crl()
             self.sub_tab_watching_disabled_crl()
             print('Info: move_watching_to_passed()::moving_success_current:')
             logs('Info: move_watching_to_passed()::moving_success_current:', 'info', '7')
         elif from_var == 'custom':
-            from_bd = WatchingCustomCRL.select().where(WatchingCustomCRL.ID == id_var)
+            while True:
+                try:
+                    from_bd = WatchingCustomCRL.select().where(WatchingCustomCRL.ID == id_var)
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
+
             for row in from_bd:
                 while True:
                     try:
-                        to_bd = WatchingDeletedCRL(Name=row.Name,
-                                                   INN=row.INN,
-                                                   OGRN=row.OGRN,
-                                                   KeyId=row.KeyId,
-                                                   Stamp=row.Stamp,
-                                                   SerialNumber=row.SerialNumber,
-                                                   UrlCRL=row.UrlCRL,
-                                                   status=row.status,
-                                                   download_status=row.download_status,
-                                                   download_count=row.download_count,
-                                                   last_download=row.last_download,
-                                                   last_update=row.last_update,
-                                                   next_update=row.next_update,
-                                                   moved_from='custom')
-                        to_bd.save()
+                        WatchingDeletedCRL(Name=row.Name,
+                                           INN=row.INN,
+                                           OGRN=row.OGRN,
+                                           KeyId=row.KeyId,
+                                           Stamp=row.Stamp,
+                                           SerialNumber=row.SerialNumber,
+                                           UrlCRL=row.UrlCRL,
+                                           status=row.status,
+                                           download_status=row.download_status,
+                                           download_count=row.download_count,
+                                           last_download=row.last_download,
+                                           last_update=row.last_update,
+                                           next_update=row.next_update,
+                                           moved_from='custom').save()
                     except peewee.OperationalError:
                         print('OperationalError')
                         time.sleep(1)
                     else:
                         break
+            while True:
+                try:
+                    WatchingCustomCRL.delete_by_id(id_var)
+                except peewee.OperationalError:
+                    print('OperationalError')
+                    time.sleep(1)
+                else:
+                    break
 
-            WatchingCustomCRL.delete_by_id(id_var)
             self.sub_tab_watching_custom_crl()
             self.sub_tab_watching_disabled_crl()
             print('Info: move_watching_to_passed::moving_success_custom:')
@@ -1389,32 +1453,46 @@ class MainWindow(QMainWindow):
             logs('Error: move_watching_to_passed::Error_Moving', 'errors', '2')
 
     def move_passed_to_watching(self, id_var):
-        from_bd = WatchingDeletedCRL.select().where(WatchingDeletedCRL.ID == id_var)
+        while True:
+            try:
+                from_bd = WatchingDeletedCRL.select().where(WatchingDeletedCRL.ID == id_var)
+            except peewee.OperationalError:
+                print('OperationalError')
+                time.sleep(1)
+            else:
+                break
+
         for row in from_bd:
             if row.moved_from == 'current':
                 while True:
                     try:
-                        to_current = WatchingCRL(Name=row.Name,
-                                                 INN=row.INN,
-                                                 OGRN=row.OGRN,
-                                                 KeyId=row.KeyId,
-                                                 Stamp=row.Stamp,
-                                                 SerialNumber=row.SerialNumber,
-                                                 UrlCRL=row.UrlCRL,
-                                                 status=row.status,
-                                                 download_status=row.download_status,
-                                                 download_count=row.download_count,
-                                                 last_download=row.last_download,
-                                                 last_update=row.last_update,
-                                                 next_update=row.next_update)
-                        to_current.save()
+                        WatchingCRL(Name=row.Name,
+                                    INN=row.INN,
+                                    OGRN=row.OGRN,
+                                    KeyId=row.KeyId,
+                                    Stamp=row.Stamp,
+                                    SerialNumber=row.SerialNumber,
+                                    UrlCRL=row.UrlCRL,
+                                    status=row.status,
+                                    download_status=row.download_status,
+                                    download_count=row.download_count,
+                                    last_download=row.last_download,
+                                    last_update=row.last_update,
+                                    next_update=row.next_update).save()
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+                while True:
+                    try:
+                        WatchingDeletedCRL.delete_by_id(id_var)
                     except peewee.OperationalError:
                         print('OperationalError')
                         time.sleep(1)
                     else:
                         break
 
-                WatchingDeletedCRL.delete_by_id(id_var)
                 self.sub_tab_watching_disabled_crl()
                 self.sub_tab_watching_crl()
                 print('Info: move_passed_to_watching()::moving_success_current:')
@@ -1422,27 +1500,33 @@ class MainWindow(QMainWindow):
             elif row.moved_from == 'custom':
                 while True:
                     try:
-                        to_custom = WatchingCustomCRL(Name=row.Name,
-                                                      INN=row.INN,
-                                                      OGRN=row.OGRN,
-                                                      KeyId=row.KeyId,
-                                                      Stamp=row.Stamp,
-                                                      SerialNumber=row.SerialNumber,
-                                                      UrlCRL=row.UrlCRL,
-                                                      status=row.status,
-                                                      download_status=row.download_status,
-                                                      download_count=row.download_count,
-                                                      last_download=row.last_download,
-                                                      last_update=row.last_update,
-                                                      next_update=row.next_update)
-                        to_custom.save()
+                        WatchingCustomCRL(Name=row.Name,
+                                          INN=row.INN,
+                                          OGRN=row.OGRN,
+                                          KeyId=row.KeyId,
+                                          Stamp=row.Stamp,
+                                          SerialNumber=row.SerialNumber,
+                                          UrlCRL=row.UrlCRL,
+                                          status=row.status,
+                                          download_status=row.download_status,
+                                          download_count=row.download_count,
+                                          last_download=row.last_download,
+                                          last_update=row.last_update,
+                                          next_update=row.next_update).save()
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+                while True:
+                    try:
+                        WatchingDeletedCRL.delete_by_id(id_var)
                     except peewee.OperationalError:
                         print('OperationalError')
                         time.sleep(1)
                     else:
                         break
 
-                WatchingDeletedCRL.delete_by_id(id_var)
                 self.sub_tab_watching_disabled_crl()
                 self.sub_tab_watching_custom_crl()
                 print('Info: move_passed_to_watching::moving_success_custom:')
@@ -1477,7 +1561,7 @@ class MainWindow(QMainWindow):
         self.ui.label_7.adjustSize()
         self.ui.pushButton.setEnabled(False)
         self.ui.pushButton_2.setEnabled(False)
-        self._download = MainDownloader('single',
+        self._download = MainDownloader('MainDownloader_single_1', 'single',
                                         'https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0',
                                         'tsl.xml')
         self._download.stage_progress_total.connect(lambda x: self.ui.progressBar.setMaximum(x))
@@ -1492,7 +1576,15 @@ class MainWindow(QMainWindow):
         self._download.start()
 
     def xml_check(self, ver_from_tsl):
-        query_get_settings = Settings.select()
+        while True:
+            try:
+                query_get_settings = Settings.select()
+            except peewee.OperationalError:
+                print('OperationalError')
+                time.sleep(1)
+            else:
+                break
+
         ver = 0
         for settings in query_get_settings:
             ver = settings.value
@@ -1518,8 +1610,24 @@ class MainWindow(QMainWindow):
             for crl_url in crl_lists:
                 crl_url = crl_url.replace("\n", "")
                 print(crl_url)
-                count = CRL.select().where(CRL.UrlCRL.contains(crl_url)).count()
-                data = CRL.select().where(CRL.UrlCRL.contains(crl_url))
+                while True:
+                    try:
+                        count = CRL.select().where(CRL.UrlCRL.contains(crl_url)).count()
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+                while True:
+                    try:
+                        data = CRL.select().where(CRL.UrlCRL.contains(crl_url))
+                    except peewee.OperationalError:
+                        print('OperationalError')
+                        time.sleep(1)
+                    else:
+                        break
+
+
                 if count > 0:
                     for row in data:
                         print(row.Registration_Number)
@@ -1540,7 +1648,7 @@ class MainWindow(QMainWindow):
         self.ui.label_7.setText('Файл сгенерирован')
 
     def downloader(self, mode):
-        self._down = MainDownloader(mode)
+        self._down = MainDownloader('MainDownloader_main', mode)
         self._down.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
         self.ui.pushButton_3.setDisabled(True)
         self.ui.pushButton_4.setDisabled(True)
@@ -1579,9 +1687,12 @@ class MainWindow(QMainWindow):
         # self._woof.push.connect(lambda: self.ui.textBrowser_3.moveCursor(QTextCursor.End))
         self._woof.start()
 
+    def main_worker_stop(self):
+        self._squirrel.stop()
+
     def main_worker(self):
-        self._squirrel = MainWorker()
-        self._squirrel.setObjectName('Worker')
+        self._squirrel = MainWorker('MainWorker')
+        self._squirrel.setTerminationEnabled(True)
         self._squirrel.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
         self._squirrel.threadBefore.connect(
             lambda msg: self.ui.label_37.setText('Предыдущее обновление: ' + str(msg)))
@@ -1605,6 +1716,10 @@ class MainWindow(QMainWindow):
         self._squirrel.threadMessageSender.connect(lambda msg: print(msg))
         self._squirrel.start()
 
+    # def db_query(self, table, query, operator, where, group_by, order):
+    #     _db_query = DBQuerying()
+    #     _db_query.start()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -1615,5 +1730,5 @@ if __name__ == "__main__":
         main_app.xml_download()
     if config['Schedule']['allowmonitoringcrlbystart'] == 'Yes':
         main_app.main_worker()
-    # main_app.watchdog()
+    main_app.watchdog()
     sys.exit(app.exec_())

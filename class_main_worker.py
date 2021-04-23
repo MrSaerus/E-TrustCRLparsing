@@ -6,11 +6,9 @@ import datetime
 import time
 import math
 import re
-import threading
 
 
 class MainWorker(QThread):
-    print(threading.get_ident(), "MainWorker")
     threadMessageSender = pyqtSignal(str)
     threadTimerSender = pyqtSignal(str)
     threadButtonStartE = pyqtSignal(str)
@@ -21,8 +19,9 @@ class MainWorker(QThread):
     threadBefore = pyqtSignal(str)
     threadAfter = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, name):
         QThread.__init__(self)
+        self.name = name
         self._step = 0
         self._seconds = 0
         self._minutes = 0
@@ -31,7 +30,6 @@ class MainWorker(QThread):
         self._isRunning = True
 
     def run(self):
-        print(threading.get_ident(), "MainWorker run")
         timer_getting = config['Schedule']['timeUpdate']
         r = re.compile(r"([0-9]+)([a-zA-Z]+)")
         m = r.match(timer_getting)
@@ -137,16 +135,17 @@ class MainWorker(QThread):
                 self._step = 0
             sec_start -= 1
             time.sleep(1)
-        print('Info: Monitoring is stopped')
-        logs('Info: Monitoring is stopped', 'info', '6')
-        self.threadInfoMessage.emit('Мониторинг CRL остановлен')
-        self.threadButtonStartE.emit('True')
-        self.threadButtonStopD.emit('True')
 
     def downloader(self, mode):
-        self._download = MainDownloader(mode)
+        self._download = MainDownloader('MainDownloader_work' ,mode)
         self._download.download_message.connect(lambda: print('test'))
         self._download.start()
 
     def stop(self):
         self._isRunning = False
+        print('Info: Monitoring is stopped')
+        logs('Info: Monitoring is stopped', 'info', '6')
+        self.threadInfoMessage.emit('Мониторинг CRL остановлен')
+        self.threadButtonStartE.emit('True')
+        self.threadButtonStopD.emit('True')
+        self.terminate()

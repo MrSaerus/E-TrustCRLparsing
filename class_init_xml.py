@@ -4,13 +4,11 @@ from main_models import UC, CRL, CERT, Settings, db
 from main_log_system import logs
 import math
 import os
-import threading
 import peewee
 import time
 
 
 class InitXML(QThread):
-    print(threading.get_ident(), "InitXML")
     progressbar = pyqtSignal(int)
     current_uc = pyqtSignal(str)
     done_ver = pyqtSignal(str)
@@ -29,7 +27,6 @@ class InitXML(QThread):
         logs('Info: Init TLS started', 'info', '5')
 
     def run(self):
-        print(threading.get_ident(), "InitXML run")
         UC.drop_table()
         CRL.drop_table()
         CERT.drop_table()
@@ -55,7 +52,6 @@ class InitXML(QThread):
                 current_version = 'Unknown'
                 last_update = 'Unknown'
                 for appt in root.getchildren():
-                    print("InitXML runer id", threading.get_ident(), ' name ', threading.currentThread().getName())
                     address_code = ''
                     address_name = ''
                     address_index = ''

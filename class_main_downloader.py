@@ -6,11 +6,9 @@ from urllib import request
 import datetime
 import shutil
 import os
-import threading
 
 
 class MainDownloader(QThread):
-    print(threading.get_ident(), "MainDownloader")
     main_progress_total = pyqtSignal(int)
     main_progress_current = pyqtSignal(int)
     stage_progress_total = pyqtSignal(int)
@@ -20,8 +18,9 @@ class MainDownloader(QThread):
     current_message = pyqtSignal(str)
     download_message = pyqtSignal(str)
 
-    def __init__(self, modes, url='', path='', type_download='', id=''):
+    def __init__(self, name, modes, url='', path='', type_download='', id=''):
         QThread.__init__(self)
+        self.name = name
         self._init = False
         self.modeWork = modes
         self.FileURL = url
@@ -30,7 +29,6 @@ class MainDownloader(QThread):
         self.FileID = id
 
     def run(self):
-        print(threading.get_ident(), "MainDownloader run")
         if self.modeWork == 'all':
             print('mode all')
         elif self.modeWork == 'all_mon':
@@ -43,6 +41,7 @@ class MainDownloader(QThread):
             print('mode all')
         elif self.modeWork == 'single':
             self.download(self.FileURL, self.FilePath, self.FileType, self.FileID)
+            self.done.emit('Загрузка завершена')
         else:
             print('else')
 
@@ -141,7 +140,6 @@ class MainDownloader(QThread):
             self.stage_progress_total.emit(size_tls)
             self.stage_progress_current.emit(size_tls)
             self.stage_progress_total.emit(-1)
-            self.done.emit('Загрузка завершена')
             return 'down_success'
 
     def _progress(self, block_num, block_size, total_size):
@@ -158,5 +156,5 @@ class MainDownloader(QThread):
 
 def download_file(file_url, file_name, folder, file_type='', file_id='', set_dd='No'):
     file_path = folder + '/' + file_name
-    _downloader = MainDownloader('single', file_url, file_path, file_type, file_id)
+    _downloader = MainDownloader('MainDownloader_single_3', 'single', file_url, file_path, file_type, file_id)
     _downloader.start()

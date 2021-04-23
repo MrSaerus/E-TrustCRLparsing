@@ -2,7 +2,6 @@ from peewee import Model, CharField, SqliteDatabase, DateTimeField, IntegerField
 from main_log_system import logs
 from main_settings import *
 import datetime
-import threading
 import shutil
 import os
 

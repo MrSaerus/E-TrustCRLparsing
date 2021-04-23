@@ -7,7 +7,6 @@ import datetime
 import shutil
 import base64
 import os
-import threading
 import peewee
 import time
 
@@ -100,7 +99,6 @@ def download_update(set_dd, type_download, w_id, dc=0):
     dc = int(dc)
     if dc == 10:
         next_update = current_datetime + datetime.timedelta(days=1)
-    print("download_update runer id", threading.get_ident(), ' name ', threading.currentThread().getName())
     #if type_download == 'current':
     #    with db.transaction('exclusive'):
     #        (WatchingCRL
