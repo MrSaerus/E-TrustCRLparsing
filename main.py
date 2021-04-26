@@ -4,7 +4,8 @@ from PyQt5.Qt import Qt
 from ui_main import Ui_MainWindow
 from main_images import base64_import, base64_icon, base64_info, base64_inbox, base64_file, base64_export, \
      base64_diskette, base64_black_list, base64_white_list
-from main_moduls import save_cert, set_value_in_property_file, copy_crl_to_uc, get_info_xlm, export_all_watching_crl, \
+from main_settings_system import set_value_in_property_file
+from main_moduls import save_cert, copy_crl_to_uc, get_info_xlm, export_all_watching_crl, \
      uc_sorting, cert_sorting, crl_sorting, watching_crl_sorting, watching_custom_crl_sorting, \
      watching_disabled_crl_sorting
 from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, Settings
@@ -782,110 +783,110 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_23.pressed.connect(lambda: self.save_settings_sub())
 
     def save_settings_main(self):
-        set_value_in_property_file('settings.ini', 'Tabs', 'ucLimit', self.ui.lineEdit_13.text())
+        set_value_in_property_file('settings.ini', 'Tabs', 'ucLimit', self.ui.lineEdit_13.text(), config)
         config.set('Tabs', 'ucLimit', self.ui.lineEdit_13.text())
-        set_value_in_property_file('settings.ini', 'Tabs', 'certLimit', self.ui.lineEdit_18.text())
+        set_value_in_property_file('settings.ini', 'Tabs', 'certLimit', self.ui.lineEdit_18.text(), config)
         config.set('Tabs', 'certLimit', self.ui.lineEdit_18.text())
-        set_value_in_property_file('settings.ini', 'Tabs', 'crlLimit', self.ui.lineEdit_17.text())
+        set_value_in_property_file('settings.ini', 'Tabs', 'crlLimit', self.ui.lineEdit_17.text(), config)
         config.set('Tabs', 'crlLimit', self.ui.lineEdit_17.text())
-        set_value_in_property_file('settings.ini', 'Tabs', 'wcLimit', self.ui.lineEdit_16.text())
+        set_value_in_property_file('settings.ini', 'Tabs', 'wcLimit', self.ui.lineEdit_16.text(), config)
         config.set('Tabs', 'wcLimit', self.ui.lineEdit_16.text())
-        set_value_in_property_file('settings.ini', 'Tabs', 'wccLimit', self.ui.lineEdit_15.text())
+        set_value_in_property_file('settings.ini', 'Tabs', 'wccLimit', self.ui.lineEdit_15.text(), config)
         config.set('Tabs', 'wccLimit', self.ui.lineEdit_15.text())
-        set_value_in_property_file('settings.ini', 'Tabs', 'wcdLimit', self.ui.lineEdit_14.text())
+        set_value_in_property_file('settings.ini', 'Tabs', 'wcdLimit', self.ui.lineEdit_14.text(), config)
         config.set('Tabs', 'wcdLimit', self.ui.lineEdit_14.text())
-        set_value_in_property_file('settings.ini', 'MainWindow', 'height', self.ui.lineEdit_12.text())
+        set_value_in_property_file('settings.ini', 'MainWindow', 'height', self.ui.lineEdit_12.text(), config)
         config.set('MainWindow', 'height', self.ui.lineEdit_12.text())
-        set_value_in_property_file('settings.ini', 'MainWindow', 'width', self.ui.lineEdit_11.text())
+        set_value_in_property_file('settings.ini', 'MainWindow', 'width', self.ui.lineEdit_11.text(), config)
         config.set('MainWindow', 'width', self.ui.lineEdit_11.text())
-        set_value_in_property_file('settings.ini', 'XMPP', 'server', self.ui.lineEdit_19.text())
+        set_value_in_property_file('settings.ini', 'XMPP', 'server', self.ui.lineEdit_19.text(), config)
         config.set('XMPP', 'server', self.ui.lineEdit_19.text())
-        set_value_in_property_file('settings.ini', 'XMPP', 'login', self.ui.lineEdit_20.text())
+        set_value_in_property_file('settings.ini', 'XMPP', 'login', self.ui.lineEdit_20.text(), config)
         config.set('XMPP', 'login', self.ui.lineEdit_20.text())
-        set_value_in_property_file('settings.ini', 'XMPP', 'password', self.ui.lineEdit_21.text())
+        set_value_in_property_file('settings.ini', 'XMPP', 'password', self.ui.lineEdit_21.text(), config)
         config.set('XMPP', 'password', self.ui.lineEdit_21.text())
-        set_value_in_property_file('settings.ini', 'XMPP', 'tosend', self.ui.lineEdit_22.text())
+        set_value_in_property_file('settings.ini', 'XMPP', 'tosend', self.ui.lineEdit_22.text(), config)
         config.set('XMPP', 'tosend', self.ui.lineEdit_22.text())
-        set_value_in_property_file('settings.ini', 'Update', 'deltaupdateinday', self.ui.lineEdit_23.text())
+        set_value_in_property_file('settings.ini', 'Update', 'deltaupdateinday', self.ui.lineEdit_23.text(), config)
         config.set('Update', 'deltaupdateinday', self.ui.lineEdit_23.text())
-        set_value_in_property_file('settings.ini', 'Update', 'timebeforeupdate', self.ui.lineEdit_24.text())
+        set_value_in_property_file('settings.ini', 'Update', 'timebeforeupdate', self.ui.lineEdit_24.text(), config)
         config.set('Update', 'timebeforeupdate', self.ui.lineEdit_24.text())
 
         if self.ui.checkBox_10.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'No')
+            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'No', config)
             config.set('XMPP', 'sendinfoerr', 'No')
         elif self.ui.checkBox_10.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'Yes')
+            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfoerr', 'Yes', config)
             config.set('XMPP', 'sendinfoerr', 'Yes')
         if self.ui.checkBox_9.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'No')
+            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'No', config)
             config.set('XMPP', 'sendinfonewcrl', 'No')
         elif self.ui.checkBox_9.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'Yes')
+            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewcrl', 'Yes', config)
             config.set('XMPP', 'sendinfonewcrl', 'Yes')
         if self.ui.checkBox_11.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'No')
+            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'No', config)
             config.set('XMPP', 'sendinfonewtsl', 'No')
         elif self.ui.checkBox_11.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'Yes')
+            set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'Yes', config)
             config.set('XMPP', 'sendinfonewtsl', 'Yes')
 
         if self.ui.checkBox_3.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No')
+            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No', config)
             config.set('MainWindow', 'allowresize', 'Yes')
             self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
             self.setMinimumSize(0, 0)
             self.setMaximumSize(16777215, 16777215)
         elif self.ui.checkBox_3.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes')
+            set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'Yes', config)
             config.set('MainWindow', 'allowresize', 'No')
             self.resize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
             self.setMinimumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
             self.setMaximumSize(int(config['MainWindow']['width']), int(config['MainWindow']['height']))
 
         if self.ui.checkBox_2.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes')
+            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'Yes', config)
             config.set('MainWindow', 'savewidth', 'No')
         elif self.ui.checkBox_2.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No')
+            set_value_in_property_file('settings.ini', 'MainWindow', 'savewidth', 'No', config)
             config.set('MainWindow', 'savewidth', 'Yes')
 
         if self.ui.checkBox_4.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'No')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'No', config)
             config.set('Sec', 'allowImportCRL', 'No')
             self.ui.pushButton_6.setDisabled(True)
         elif self.ui.checkBox_4.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'Yes')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowImportCRL', 'Yes', config)
             config.set('Sec', 'allowImportCRL', 'Yes')
             self.ui.pushButton_6.setEnabled(True)
         if self.ui.checkBox_5.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'No')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'No', config)
             config.set('Sec', 'allowExportCRL', 'No')
             self.ui.pushButton_13.setDisabled(True)
         elif self.ui.checkBox_5.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'Yes')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowExportCRL', 'Yes', config)
             config.set('Sec', 'allowExportCRL', 'Yes')
             self.ui.pushButton_13.setEnabled(True)
         if self.ui.checkBox_6.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'No')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'No', config)
             config.set('Sec', 'allowDeleteWatchingCRL', 'No')
         elif self.ui.checkBox_6.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'Yes')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowDeleteWatchingCRL', 'Yes', config)
             config.set('Sec', 'allowDeleteWatchingCRL', 'Yes')
         if self.ui.checkBox_7.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'No')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'No', config)
             config.set('Sec', 'allowDownloadButtonCRL', 'No')
             self.ui.pushButton_4.setDisabled(True)
         elif self.ui.checkBox_7.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'Yes')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowDownloadButtonCRL', 'Yes', config)
             config.set('Sec', 'allowDownloadButtonCRL', 'Yes')
             self.ui.pushButton_4.setEnabled(True)
         if self.ui.checkBox_8.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'No')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'No', config)
             config.set('Sec', 'allowCheckButtonCRL', 'No')
             self.ui.pushButton_5.setDisabled(True)
         elif self.ui.checkBox_8.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'Yes')
+            set_value_in_property_file('settings.ini', 'Sec', 'allowCheckButtonCRL', 'Yes', config)
             config.set('Sec', 'allowCheckButtonCRL', 'Yes')
             self.ui.pushButton_5.setEnabled(True)
         self.ui.label_27.setText('Настройки сохранены')
@@ -893,73 +894,73 @@ class MainWindow(QMainWindow):
         logs('Info: save_settings_main::Saved', 'info', '6')
 
     def save_settings_sub(self):
-        set_value_in_property_file('settings.ini', 'Folders', 'certs', self.ui.label_12.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'certs', self.ui.label_12.text(), config)
         config.set('Folders', 'certs', self.ui.label_12.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'crls', self.ui.label_13.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'crls', self.ui.label_13.text(), config)
         config.set('Folders', 'crls', self.ui.label_13.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'tmp', self.ui.label_10.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'tmp', self.ui.label_10.text(), config)
         config.set('Folders', 'tmp', self.ui.label_10.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'uc', self.ui.label_11.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'uc', self.ui.label_11.text(), config)
         config.set('Folders', 'uc', self.ui.label_11.text())
-        set_value_in_property_file('settings.ini', 'Folders', 'to_uc', self.ui.label_9.text())
+        set_value_in_property_file('settings.ini', 'Folders', 'to_uc', self.ui.label_9.text(), config)
         config.set('Folders', 'to_uc', self.ui.label_9.text())
 
-        set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text(), config)
         config['Proxy']['ip'] = self.ui.lineEdit_7.text()
         config.set('Proxy', 'ip', self.ui.lineEdit_7.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text(), config)
         config['Proxy']['port'] = self.ui.lineEdit_8.text()
         config.set('Proxy', 'port', self.ui.lineEdit_8.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text(), config)
         config['Proxy']['login'] = self.ui.lineEdit_9.text()
         config.set('Proxy', 'login', self.ui.lineEdit_9.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text(), config)
         config['Proxy']['password'] = self.ui.lineEdit_10.text()
         config.set('Proxy', 'password', self.ui.lineEdit_10.text())
 
         if self.ui.checkBox_12.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'No')
+            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'No', config)
             config.set('Schedule', 'allowupdatecrlbystart', 'No')
         elif self.ui.checkBox_12.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'Yes')
+            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'Yes', config)
             config.set('Schedule', 'allowupdatecrlbystart', 'Yes')
         if self.ui.checkBox_13.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'No')
+            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'No', config)
             config.set('Schedule', 'allowupdatetslbystart', 'No')
         elif self.ui.checkBox_13.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'Yes')
+            set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatetslbystart', 'Yes', config)
             config.set('Schedule', 'allowupdatetslbystart', 'Yes')
         if self.ui.checkBox_15.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Schedule', 'allowmonitoringcrlbystart', 'No')
+            set_value_in_property_file('settings.ini', 'Schedule', 'allowmonitoringcrlbystart', 'No', config)
             config.set('Schedule', 'allowmonitoringcrlbystart', 'No')
         elif self.ui.checkBox_15.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Schedule', 'allowmonitoringcrlbystart', 'Yes')
+            set_value_in_property_file('settings.ini', 'Schedule', 'allowmonitoringcrlbystart', 'Yes', config)
             config.set('Schedule', 'allowmonitoringcrlbystart', 'Yes')
 
         if self.ui.checkBox.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No')
+            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No', config)
             config.set('Proxy', 'proxyon', 'No')
             self.ui.lineEdit_7.setDisabled(True)
             self.ui.lineEdit_8.setDisabled(True)
             self.ui.lineEdit_9.setDisabled(True)
             self.ui.lineEdit_10.setDisabled(True)
         elif self.ui.checkBox.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes')
+            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes', config)
             config.set('Proxy', 'proxyon', 'Yes')
             self.ui.lineEdit_7.setEnabled(True)
             self.ui.lineEdit_8.setEnabled(True)
             self.ui.lineEdit_9.setEnabled(True)
             self.ui.lineEdit_10.setEnabled(True)
 
-        set_value_in_property_file('settings.ini', 'Logs', 'loglevel', self.ui.comboBox.currentText())
+        set_value_in_property_file('settings.ini', 'Logs', 'loglevel', self.ui.comboBox.currentText(), config)
         config.set('Logs', 'loglevel', self.ui.comboBox.currentText())
-        set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbysize', str(self.ui.spinBox.value()))
+        set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbysize', str(self.ui.spinBox.value()), config)
         config.set('Logs', 'dividelogsbysize', str(self.ui.spinBox.value()))
         if self.ui.checkBox_14.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'No')
+            set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'No', config)
             config.set('Logs', 'dividelogsbyday', 'No')
         elif self.ui.checkBox_14.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'Yes')
+            set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'Yes', config)
             config.set('Logs', 'dividelogsbyday', 'Yes')
         self.ui.label_28.setText('Настройки сохранены')
         print('Info: save_settings_sub::Saved')

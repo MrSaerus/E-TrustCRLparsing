@@ -239,16 +239,6 @@ def export_all_watching_crl():
 #         if WatchingCustomCRL.select().where(WatchingCustomCRL.KeyId == row.KeyId).count() > 0:
 #             print(row.KeyId, ' exist')
 
-
-def set_value_in_property_file(file_path, section, key, value):
-    set_config = configparser.ConfigParser()
-    set_config.read(file_path)
-    set_config.set(section, key, value)
-    config_file = open(file_path, 'w')
-    set_config.write(config_file, space_around_delimiters=False)
-    config_file.close()
-
-
 def uc_sorting(order_by):
     if order_by == 'Full_Name':
         if main_settings.tab_uc_sorting == 'asc':
