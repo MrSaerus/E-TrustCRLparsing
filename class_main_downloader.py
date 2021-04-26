@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSignal, QThread
 from main_models import WatchingCRL, WatchingCustomCRL
 from main_settings import config
-from main_moduls import download_loop_guard, download_update
+from main_moduls import download_loop_guard, download_update, logs
 from urllib import request
 import datetime
 import shutil
@@ -61,8 +61,13 @@ class MainDownloader(QThread):
             self.current_message.emit(
                 str(counter_watching_crl) + ' из ' + str(counter_watching_crl_all) + ' Загружаем: ' + str(
                     wc.Name) + ' ' + str(wc.KeyId))
-            print('Download ' + file_url)
-            self.download(file_url, folder + '/' + file_name, 'current', wc.ID)
+
+            if self.download(file_url, folder + '/' + file_name, 'current', wc.ID) == 'down_success':
+                print('Info: Downloaded: ' + wc.Name + ' ' + wc.UrlCRL)
+                logs('Info: Downloaded: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '5')
+            else:
+                print('Warn: Download error: ' + wc.Name + ' ' + wc.UrlCRL)
+                logs('Warn: Download error: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '4')
 
         for wcc in query_2:
             counter_watching_custom_crl = counter_watching_custom_crl + 1
@@ -71,8 +76,12 @@ class MainDownloader(QThread):
             self.current_message.emit(
                 str(counter_watching_custom_crl) + ' из ' + str(watching_custom_crl_all) + ' Загружаем: ' + str(
                     wcc.Name) + ' ' + str(wcc.KeyId))
-            print('Download ' + file_url)
-            self.download(file_url, folder + '/' + file_name, 'custom', wcc.ID)
+            if self.download(file_url, folder + '/' + file_name, 'custom', wcc.ID) == 'down_success':
+                print('Info: Downloaded: ' + wcc.Name + ' ' + wcc.UrlCRL)
+                logs('Info: Downloaded: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '5')
+            else:
+                print('Warn: Download error: ' + wcc.Name + ' ' + wcc.UrlCRL)
+                logs('Warn: Download error: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '4')
         self.current_message.emit('Загрузка закончена')
         self.done.emit('Загрузка завершена')
 
@@ -94,10 +103,14 @@ class MainDownloader(QThread):
                 file_path_2 = config['Folders']['to_uc'] + '/' + 'current_' + wc.KeyId + '.crl'
                 self.current_message.emit('Скачиваем и проверяем ' + wc.Name + ' ' + wc.KeyId)
                 if self.download(wc.UrlCRL, file_path, 'current', wc.ID, download_counter) == 'down_success':
-                    print('Downloaded ' + wc.UrlCRL)
+                    print('Info: Downloaded: ' + wc.Name + ' ' + wc.UrlCRL)
+                    logs('Info: Downloaded: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '5')
                     shutil.copy2(file_path, file_path_2)
                     return_list_msg = return_list_msg + ';' + wc.KeyId + ' : ' + wc.Name
                     count = count + 1
+                else:
+                    print('Warn: Download error: ' + wc.Name + ' ' + wc.UrlCRL)
+                    logs('Warn: Download error: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '4')
         for wcc in query_2:
             download_counter = download_loop_guard(int(wcc.download_count), wcc.last_download, wcc.next_update)
             if current_datetime > wcc.next_update > before_current_date:
@@ -105,10 +118,14 @@ class MainDownloader(QThread):
                 file_path_2 = config['Folders']['to_uc'] + '/' + 'custom_' + wcc.KeyId + '.crl'
                 self.current_message.emit('Скачиваем и проверяем ' + wcc.Name + ' ' + wcc.KeyId)
                 if self.download(wcc.UrlCRL, file_path, 'custom', wcc.ID, download_counter) == 'down_success':
-                    print('Downloaded ' + wcc.UrlCRL)
+                    print('Info: Downloaded: ' + wcc.Name + ' ' + wcc.UrlCRL)
+                    logs('Info: Downloaded: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '5')
                     shutil.copy2(file_path, file_path_2)
                     return_list_msg = return_list_msg + ';' + wcc.KeyId + ' : ' + wcc.Name
                     count = count + 1
+                else:
+                    print('Warn: Download error: ' + wcc.Name + ' ' + wcc.UrlCRL)
+                    logs('Warn: Download error: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '4')
         self.current_message.emit('Готово')
         self.done.emit('Загрузка завершена')
         if count > 0:

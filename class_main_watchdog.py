@@ -20,15 +20,15 @@ class Watchdog(QThread):
         while self._isRunning:
             self._step += 1
             # print('---------------------------------------------------------------------')
-            print(threading.active_count(), "количество живых потоков")
+            # print(threading.active_count(), "количество живых потоков")
             # print(threading.current_thread(), "текущий поток")
             # print(threading.get_ident(), "Watchdog runer")
-            print(threading.enumerate(), "список объектов всех живых потоков")
+            # print(threading.enumerate(), "список объектов всех живых потоков")
             # print(threading.main_thread(), "объект основной потока")
             # print('---------------------------------------------------------------------')
             # print("Watchdog runer id", threading.get_ident(), ' name ', threading.currentThread().getName())
             self.push.emit('')
-            time.sleep(1)
+            time.sleep(10)
 
     def stop(self):
         self._isRunning = False

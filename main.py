@@ -1,14 +1,16 @@
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QBrush, QTextCursor
 from PyQt5.QtWidgets import QPushButton, QWidget, QTableWidgetItem, QHeaderView, QFileDialog, QMainWindow, QApplication
 from PyQt5.Qt import Qt
 from ui_main import Ui_MainWindow
 from main_images import base64_import, base64_icon, base64_info, base64_inbox, base64_file, base64_export, \
      base64_diskette, base64_black_list, base64_white_list
-from main_moduls import save_cert, set_value_in_property_file, copy_crl_to_uc, get_info_xlm, export_all_watching_crl
+from main_moduls import save_cert, set_value_in_property_file, copy_crl_to_uc, get_info_xlm, export_all_watching_crl, \
+     uc_sorting, cert_sorting, crl_sorting, watching_crl_sorting, watching_custom_crl_sorting, \
+     watching_disabled_crl_sorting
 from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, Settings
 from class_main_worker import MainWorker
 from class_main_downloader import MainDownloader, download_file
-from class_main_dbquerying import DBQuerying
+# from class_main_dbquerying import DBQuerying
 from class_main_cheker import MainChecker
 from class_window_uc import UcWindow
 from class_window_crl import CRLWindow
@@ -17,6 +19,7 @@ from class_init_xml import InitXML
 from class_main_watchdog import Watchdog
 from main_log_system import logs
 from main_settings import config
+from asyncio import Queue
 import base64
 import datetime
 import os
@@ -28,6 +31,8 @@ import time
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        download_queue = Queue()
+        sql_queue = Queue()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         ico = QIcon()
@@ -53,59 +58,59 @@ class MainWindow(QMainWindow):
         self.sub_tab_watching_custom_crl_sorting = 'asc'
         self.sub_tab_watching_disabled_crl_sorting = 'asc'
 
-        self.ui.pushButton_61.pressed.connect(lambda: self.tab_uc(self.ui.lineEdit.text(), 'Full_Name', 'sort'))
-        self.ui.pushButton_60.pressed.connect(lambda: self.tab_uc(self.ui.lineEdit.text(), 'INN', 'sort'))
-        self.ui.pushButton_59.pressed.connect(lambda: self.tab_uc(self.ui.lineEdit.text(), 'OGRN', 'sort'))
+        self.ui.pushButton_61.pressed.connect(lambda: self.tab_uc(self.ui.lineEdit.text(), 'Full_Name'))
+        self.ui.pushButton_60.pressed.connect(lambda: self.tab_uc(self.ui.lineEdit.text(), 'INN'))
+        self.ui.pushButton_59.pressed.connect(lambda: self.tab_uc(self.ui.lineEdit.text(), 'OGRN'))
 
-        self.ui.pushButton_58.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'Name', 'sort'))
-        self.ui.pushButton_57.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'KeyId', 'sort'))
-        self.ui.pushButton_56.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'Stamp', 'sort'))
-        self.ui.pushButton_55.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'SerialNumber', 'sort'))
+        self.ui.pushButton_58.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'Name'))
+        self.ui.pushButton_57.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'KeyId'))
+        self.ui.pushButton_56.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'Stamp'))
+        self.ui.pushButton_55.pressed.connect(lambda: self.tab_cert(self.ui.lineEdit_2.text(), 'SerialNumber'))
 
-        self.ui.pushButton_51.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'Name', 'sort'))
-        self.ui.pushButton_50.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'KeyId', 'sort'))
-        self.ui.pushButton_49.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'Stamp', 'sort'))
-        self.ui.pushButton_48.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'SerialNumber', 'sort'))
-        self.ui.pushButton_53.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'UrlCRL', 'sort'))
+        self.ui.pushButton_51.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'Name'))
+        self.ui.pushButton_50.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'KeyId'))
+        self.ui.pushButton_49.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'Stamp'))
+        self.ui.pushButton_48.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'SerialNumber'))
+        self.ui.pushButton_53.pressed.connect(lambda: self.tab_crl(self.ui.lineEdit_3.text(), 'UrlCRL'))
 
         self.ui.pushButton_29.pressed.connect(
-            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'Name', 'sort'))
+            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'Name'))
         self.ui.pushButton_28.pressed.connect(
-            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'OGRN', 'sort'))
+            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'OGRN'))
         self.ui.pushButton_24.pressed.connect(
-            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'KeyId', 'sort'))
+            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'KeyId'))
         self.ui.pushButton_32.pressed.connect(
-            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'UrlCRL', 'sort'))
+            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'UrlCRL'))
         self.ui.pushButton_31.pressed.connect(
-            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'last_download', 'sort'))
+            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'last_download'))
         self.ui.pushButton_30.pressed.connect(
-            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'next_update', 'sort'))
+            lambda: self.sub_tab_watching_crl(self.ui.lineEdit_4.text(), 'next_update'))
 
         self.ui.pushButton_37.pressed.connect(
-            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'Name', 'sort'))
+            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'Name'))
         self.ui.pushButton_36.pressed.connect(
-            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'OGRN', 'sort'))
+            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'OGRN'))
         self.ui.pushButton_35.pressed.connect(
-            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'KeyId', 'sort'))
+            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'KeyId'))
         self.ui.pushButton_34.pressed.connect(
-            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'UrlCRL', 'sort'))
+            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'UrlCRL'))
         self.ui.pushButton_40.pressed.connect(
-            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'last_download', 'sort'))
+            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'last_download'))
         self.ui.pushButton_39.pressed.connect(
-            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'next_update', 'sort'))
+            lambda: self.sub_tab_watching_custom_crl(self.ui.lineEdit_5.text(), 'next_update'))
 
         self.ui.pushButton_44.pressed.connect(
-            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'Name', 'sort'))
+            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'Name'))
         self.ui.pushButton_43.pressed.connect(
-            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'OGRN', 'sort'))
+            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'OGRN'))
         self.ui.pushButton_42.pressed.connect(
-            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'KeyId', 'sort'))
+            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'KeyId'))
         self.ui.pushButton_41.pressed.connect(
-            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'Stamp', 'sort'))
+            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'Stamp'))
         self.ui.pushButton_47.pressed.connect(
-            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'SerialNumber', 'sort'))
+            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'SerialNumber'))
         self.ui.pushButton_46.pressed.connect(
-            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'UrlCRL', 'sort'))
+            lambda: self.sub_tab_watching_disabled_crl(self.ui.lineEdit_6.text(), 'UrlCRL'))
 
         self.ui.lineEdit.textChanged[str].connect(self.tab_uc)
         self.ui.lineEdit_2.textChanged[str].connect(self.tab_cert)
@@ -206,36 +211,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_19.clicked.connect(self.main_worker)
         self.ui.pushButton_19.setToolTip('Запустить мониторинг CRL')
 
-    def tab_uc(self, text='', order_by='Full_Name', sort=''):
-        if sort == 'sort':
-            if order_by == 'Full_Name':
-                if self.tab_uc_sorting == 'asc':
-                    order = UC.Full_Name.asc()
-                    self.tab_uc_sorting = 'desc'
-                else:
-                    order = UC.Full_Name.desc()
-                    self.tab_uc_sorting = 'asc'
-            elif order_by == 'INN':
-                if self.tab_uc_sorting == 'asc':
-                    order = UC.INN.asc()
-                    self.tab_uc_sorting = 'desc'
-                else:
-                    order = UC.INN.desc()
-                    self.tab_uc_sorting = 'asc'
-            elif order_by == 'OGRN':
-                if self.tab_uc_sorting == 'asc':
-                    order = UC.OGRN.asc()
-                    self.tab_uc_sorting = 'desc'
-                else:
-                    order = UC.OGRN.desc()
-                    self.tab_uc_sorting = 'asc'
-            else:
-                order = UC.Full_Name.asc()
-        else:
-            order = UC.Full_Name.asc()
-
-        # order = exec('UC.'+order_by+'.'+sort+'()')
-
+    def tab_uc(self, text='', order_by='Full_Name'):
+        order = uc_sorting(order_by)
         self.ui.tableWidget.clearContents()
         query = UC.select().order_by(order).where(UC.Registration_Number.contains(text)
                                                   | UC.INN.contains(text)
@@ -274,41 +251,8 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setColumnWidth(3, 31)
         self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
-    def tab_cert(self, text='', order_by='Name', sort=''):
-        if sort == 'sort':
-            if order_by == 'Name':
-                if self.tab_cert_sorting == 'asc':
-                    order = CERT.Name.asc()
-                    self.tab_cert_sorting = 'desc'
-                else:
-                    order = CERT.Name.desc()
-                    self.tab_cert_sorting = 'asc'
-            elif order_by == 'KeyId':
-                if self.tab_cert_sorting == 'asc':
-                    order = CERT.KeyId.asc()
-                    self.tab_cert_sorting = 'desc'
-                else:
-                    order = CERT.KeyId.desc()
-                    self.tab_cert_sorting = 'asc'
-            elif order_by == 'Stamp':
-                if self.tab_cert_sorting == 'asc':
-                    order = CERT.Stamp.asc()
-                    self.tab_cert_sorting = 'desc'
-                else:
-                    order = CERT.Stamp.desc()
-                    self.tab_cert_sorting = 'asc'
-            elif order_by == 'SerialNumber':
-                if self.tab_cert_sorting == 'asc':
-                    order = CERT.SerialNumber.asc()
-                    self.tab_cert_sorting = 'desc'
-                else:
-                    order = CERT.SerialNumber.desc()
-                    self.tab_cert_sorting = 'asc'
-            else:
-                order = CERT.Name.asc()
-        else:
-            order = CERT.Name.asc()
-
+    def tab_cert(self, text='', order_by='Name'):
+        order = cert_sorting(order_by)
         self.ui.tableWidget_2.clearContents()
 
         icon0 = QIcon()
@@ -372,48 +316,8 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_2.setColumnWidth(5, 31)
         self.ui.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
-    def tab_crl(self, text='', order_by='Full_Name', sort=''):
-        if sort == 'sort':
-            if order_by == 'Name':
-                if self.tab_crl_sorting == 'asc':
-                    order = CRL.Name.asc()
-                    self.tab_crl_sorting = 'desc'
-                else:
-                    order = CRL.Name.desc()
-                    self.tab_crl_sorting = 'asc'
-            elif order_by == 'KeyId':
-                if self.tab_crl_sorting == 'asc':
-                    order = CRL.KeyId.asc()
-                    self.tab_crl_sorting = 'desc'
-                else:
-                    order = CRL.KeyId.desc()
-                    self.tab_crl_sorting = 'asc'
-            elif order_by == 'Stamp':
-                if self.tab_crl_sorting == 'asc':
-                    order = CRL.Stamp.asc()
-                    self.tab_crl_sorting = 'desc'
-                else:
-                    order = CRL.Stamp.desc()
-                    self.tab_crl_sorting = 'asc'
-            elif order_by == 'SerialNumber':
-                if self.tab_crl_sorting == 'asc':
-                    order = CRL.SerialNumber.asc()
-                    self.tab_crl_sorting = 'desc'
-                else:
-                    order = CRL.SerialNumber.desc()
-                    self.tab_crl_sorting = 'asc'
-            elif order_by == 'UrlCRL':
-                if self.tab_crl_sorting == 'asc':
-                    order = CRL.UrlCRL.asc()
-                    self.tab_crl_sorting = 'desc'
-                else:
-                    order = CRL.UrlCRL.desc()
-                    self.tab_crl_sorting = 'asc'
-            else:
-                order = CRL.Name.asc()
-        else:
-            order = CRL.Name.asc()
-
+    def tab_crl(self, text='', order_by='Full_Name'):
+        order = crl_sorting(order_by)
         self.ui.tableWidget_3.clearContents()
 
         icon9 = QIcon()
@@ -521,56 +425,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_27.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
         self.ui.pushButton_27.setToolTip('Открыть папку с CRL')
 
-
-    def sub_tab_watching_crl(self, text='', order_by='Full_Name', sort=''):
-        if sort == 'sort':
-            if order_by == 'Name':
-                if self.sub_tab_watching_crl_sorting == 'asc':
-                    order = WatchingCRL.Name.asc()
-                    self.sub_tab_watching_crl_sorting = 'desc'
-                else:
-                    order = WatchingCRL.Name.desc()
-                    self.sub_tab_watching_crl_sorting = 'asc'
-            elif order_by == 'OGRN':
-                if self.sub_tab_watching_crl_sorting == 'asc':
-                    order = WatchingCRL.OGRN.asc()
-                    self.sub_tab_watching_crl_sorting = 'desc'
-                else:
-                    order = WatchingCRL.OGRN.desc()
-                    self.sub_tab_watching_crl_sorting = 'asc'
-            elif order_by == 'KeyId':
-                if self.sub_tab_watching_crl_sorting == 'asc':
-                    order = WatchingCRL.KeyId.asc()
-                    self.sub_tab_watching_crl_sorting = 'desc'
-                else:
-                    order = WatchingCRL.KeyId.desc()
-                    self.sub_tab_watching_crl_sorting = 'asc'
-            elif order_by == 'UrlCRL':
-                if self.sub_tab_watching_crl_sorting == 'asc':
-                    order = WatchingCRL.UrlCRL.asc()
-                    self.sub_tab_watching_crl_sorting = 'desc'
-                else:
-                    order = WatchingCRL.UrlCRL.desc()
-                    self.sub_tab_watching_crl_sorting = 'asc'
-            elif order_by == 'last_download':
-                if self.sub_tab_watching_crl_sorting == 'asc':
-                    order = WatchingCRL.last_download.asc()
-                    self.sub_tab_watching_crl_sorting = 'desc'
-                else:
-                    order = WatchingCRL.last_download.desc()
-                    self.sub_tab_watching_crl_sorting = 'asc'
-            elif order_by == 'next_update':
-                if self.sub_tab_watching_crl_sorting == 'asc':
-                    order = WatchingCRL.next_update.asc()
-                    self.sub_tab_watching_crl_sorting = 'desc'
-                else:
-                    order = WatchingCRL.next_update.desc()
-                    self.sub_tab_watching_crl_sorting = 'asc'
-            else:
-                order = WatchingCRL.Name.asc()
-        else:
-            order = WatchingCRL.Name.asc()
-
+    def sub_tab_watching_crl(self, text='', order_by='Full_Name'):
+        order = watching_crl_sorting(order_by)
         self.ui.tableWidget_4.clearContents()
 
         query = WatchingCRL.select().order_by(order).where(WatchingCRL.Name.contains(text)
@@ -656,59 +512,10 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_4.setColumnWidth(8, 31)
         self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
-    def sub_tab_watching_custom_crl(self, text='', order_by='Full_Name', sort=''):
-        if sort == 'sort':
-            if order_by == 'Name':
-                if self.sub_tab_watching_custom_crl_sorting == 'asc':
-                    order = WatchingCustomCRL.Name.asc()
-                    self.sub_tab_watching_custom_crl_sorting = 'desc'
-                else:
-                    order = WatchingCustomCRL.Name.desc()
-                    self.sub_tab_watching_custom_crl_sorting = 'asc'
-            elif order_by == 'OGRN':
-                if self.sub_tab_watching_custom_crl_sorting == 'asc':
-                    order = WatchingCustomCRL.OGRN.asc()
-                    self.sub_tab_watching_custom_crl_sorting = 'desc'
-                else:
-                    order = WatchingCustomCRL.OGRN.desc()
-                    self.sub_tab_watching_custom_crl_sorting = 'asc'
-            elif order_by == 'KeyId':
-                if self.sub_tab_watching_custom_crl_sorting == 'asc':
-                    order = WatchingCustomCRL.KeyId.asc()
-                    self.sub_tab_watching_custom_crl_sorting = 'desc'
-                else:
-                    order = WatchingCustomCRL.KeyId.desc()
-                    self.sub_tab_watching_custom_crl_sorting = 'asc'
-            elif order_by == 'UrlCRL':
-                if self.sub_tab_watching_custom_crl_sorting == 'asc':
-                    order = WatchingCustomCRL.UrlCRL.asc()
-                    self.sub_tab_watching_custom_crl_sorting = 'desc'
-                else:
-                    order = WatchingCustomCRL.UrlCRL.desc()
-                    self.sub_tab_watching_custom_crl_sorting = 'asc'
-            elif order_by == 'last_download':
-                if self.sub_tab_watching_custom_crl_sorting == 'asc':
-                    order = WatchingCustomCRL.last_download.asc()
-                    self.sub_tab_watching_custom_crl_sorting = 'desc'
-                else:
-                    order = WatchingCustomCRL.last_download.desc()
-                    self.sub_tab_watching_custom_crl_sorting = 'asc'
-            elif order_by == 'next_update':
-                if self.sub_tab_watching_custom_crl_sorting == 'asc':
-                    order = WatchingCustomCRL.next_update.asc()
-                    self.sub_tab_watching_custom_crl_sorting = 'desc'
-                else:
-                    order = WatchingCustomCRL.next_update.desc()
-                    self.sub_tab_watching_custom_crl_sorting = 'asc'
-            else:
-                order = WatchingCustomCRL.Name.asc()
-        else:
-            order = WatchingCustomCRL.Name.asc()
-
+    def sub_tab_watching_custom_crl(self, text='', order_by='Full_Name'):
+        order = watching_custom_crl_sorting(order_by)
         self.ui.tableWidget_5.clearContents()
-
         self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
-
         query = WatchingCustomCRL.select().order_by(order) \
             .where(WatchingCustomCRL.Name.contains(text)
                    | WatchingCustomCRL.INN.contains(text)
@@ -798,57 +605,9 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_5.setColumnWidth(8, 31)
         self.ui.tableWidget_5.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
-    def sub_tab_watching_disabled_crl(self, text='', order_by='Full_Name', sort=''):
-        if sort == 'sort':
-            if order_by == 'Name':
-                if self.sub_tab_watching_disabled_crl_sorting == 'asc':
-                    order = WatchingDeletedCRL.Name.asc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'desc'
-                else:
-                    order = WatchingDeletedCRL.Name.desc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'asc'
-            elif order_by == 'OGRN':
-                if self.sub_tab_watching_disabled_crl_sorting == 'asc':
-                    order = WatchingDeletedCRL.OGRN.asc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'desc'
-                else:
-                    order = WatchingDeletedCRL.OGRN.desc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'asc'
-            elif order_by == 'KeyId':
-                if self.sub_tab_watching_disabled_crl_sorting == 'asc':
-                    order = WatchingDeletedCRL.KeyId.asc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'desc'
-                else:
-                    order = WatchingDeletedCRL.KeyId.desc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'asc'
-            elif order_by == 'Stamp':
-                if self.sub_tab_watching_disabled_crl_sorting == 'asc':
-                    order = WatchingDeletedCRL.Stamp.asc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'desc'
-                else:
-                    order = WatchingDeletedCRL.Stamp.desc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'asc'
-            elif order_by == 'SerialNumber':
-                if self.sub_tab_watching_disabled_crl_sorting == 'asc':
-                    order = WatchingDeletedCRL.SerialNumber.asc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'desc'
-                else:
-                    order = WatchingDeletedCRL.SerialNumber.desc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'asc'
-            elif order_by == 'UrlCRL':
-                if self.sub_tab_watching_disabled_crl_sorting == 'asc':
-                    order = WatchingDeletedCRL.UrlCRL.asc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'desc'
-                else:
-                    order = WatchingDeletedCRL.UrlCRL.desc()
-                    self.sub_tab_watching_disabled_crl_sorting = 'asc'
-            else:
-                order = WatchingDeletedCRL.Name.asc()
-        else:
-            order = WatchingDeletedCRL.Name.asc()
-
+    def sub_tab_watching_disabled_crl(self, text='', order_by='Full_Name'):
+        order = watching_disabled_crl_sorting(order_by)
         self.ui.tableWidget_6.clearContents()
-
         query = WatchingDeletedCRL.select().order_by(order). \
             where(WatchingDeletedCRL.Name.contains(text)
                   | WatchingDeletedCRL.INN.contains(text)
@@ -962,6 +721,10 @@ class MainWindow(QMainWindow):
             self.ui.checkBox_12.setChecked(True)
         if config['Schedule']['allowupdatetslbystart'] == 'Yes':
             self.ui.checkBox_13.setChecked(True)
+        if config['Schedule']['allowmonitoringcrlbystart'] == 'Yes':
+            self.ui.checkBox_15.setChecked(True)
+        else:
+            self.ui.pushButton_20.setDisabled(True)
         # download config
         self.ui.label_13.setText(config['Folders']['crls'])
         self.ui.label_12.setText(config['Folders']['certs'])
@@ -1561,7 +1324,8 @@ class MainWindow(QMainWindow):
         self.ui.label_7.adjustSize()
         self.ui.pushButton.setEnabled(False)
         self.ui.pushButton_2.setEnabled(False)
-        self._download = MainDownloader('MainDownloader_single_1', 'single',
+        self._download = MainDownloader('MainDownloader_single_1',
+                                        'single',
                                         'https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0',
                                         'tsl.xml')
         self._download.stage_progress_total.connect(lambda x: self.ui.progressBar.setMaximum(x))
@@ -1584,7 +1348,6 @@ class MainWindow(QMainWindow):
                 time.sleep(1)
             else:
                 break
-
         ver = 0
         for settings in query_get_settings:
             ver = settings.value
@@ -1626,7 +1389,6 @@ class MainWindow(QMainWindow):
                         time.sleep(1)
                     else:
                         break
-
 
                 if count > 0:
                     for row in data:
@@ -1676,15 +1438,15 @@ class MainWindow(QMainWindow):
         else:
             date_time_day = ''
         self._woof = Watchdog()
-        # self._woof.push.connect(lambda: open(config['Folders']['logs'] +
-        #                                      '/log' + date_time_day + '.log', 'r').read())
-        # self._woof.push.connect(lambda: open(config['Folders']['logs'] +
-        #                                      '/error' + date_time_day + '.log', 'r').read())
-        # self._woof.push.connect(lambda: open(config['Folders']['logs'] +
-        #                                      '/download' + date_time_day + '.log', 'r').read())
-        # self._woof.push.connect(lambda: self.ui.textBrowser.moveCursor(QTextCursor.End))
-        # self._woof.push.connect(lambda: self.ui.textBrowser_2.moveCursor(QTextCursor.End))
-        # self._woof.push.connect(lambda: self.ui.textBrowser_3.moveCursor(QTextCursor.End))
+        self._woof.push.connect(lambda: open(config['Folders']['logs'] +
+                                             '/log' + date_time_day + '.log', 'r').read())
+        self._woof.push.connect(lambda: open(config['Folders']['logs'] +
+                                             '/error' + date_time_day + '.log', 'r').read())
+        self._woof.push.connect(lambda: open(config['Folders']['logs'] +
+                                             '/download' + date_time_day + '.log', 'r').read())
+        self._woof.push.connect(lambda: self.ui.textBrowser.moveCursor(QTextCursor.End))
+        self._woof.push.connect(lambda: self.ui.textBrowser_2.moveCursor(QTextCursor.End))
+        self._woof.push.connect(lambda: self.ui.textBrowser_3.moveCursor(QTextCursor.End))
         self._woof.start()
 
     def main_worker_stop(self):
@@ -1692,7 +1454,6 @@ class MainWindow(QMainWindow):
 
     def main_worker(self):
         self._squirrel = MainWorker('MainWorker')
-        self._squirrel.setTerminationEnabled(True)
         self._squirrel.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
         self._squirrel.threadBefore.connect(
             lambda msg: self.ui.label_37.setText('Предыдущее обновление: ' + str(msg)))

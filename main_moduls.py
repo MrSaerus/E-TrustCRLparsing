@@ -1,5 +1,5 @@
-from main_models import CERT, WatchingCRL, WatchingCustomCRL, db
-from main_settings import config
+from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, db
+import main_settings
 from main_log_system import logs
 from lxml import etree
 import configparser
@@ -35,21 +35,21 @@ def save_cert(key_id, folder):
     for certs in CERT.select().where(CERT.KeyId == key_id):
         with open(folder + "/" + certs.KeyId + ".cer", "wb") as file:
             file.write(base64.decodebytes(certs.Data.encode()))
-        if folder == config['Folders']['certs']:
-            os.startfile(os.path.realpath(config['Folders']['certs']))
-            print(os.path.realpath(config['Folders']['certs']))
-        elif folder == config['Folders']['to_uc']:
-            os.startfile(os.path.realpath(config['Folders']['to_uc']))
-            print(os.path.realpath(config['Folders']['to_uc']))
+        if folder == main_settings.config['Folders']['certs']:
+            os.startfile(os.path.realpath(main_settings.config['Folders']['certs']))
+            print(os.path.realpath(main_settings.config['Folders']['certs']))
+        elif folder == main_settings.config['Folders']['to_uc']:
+            os.startfile(os.path.realpath(main_settings.config['Folders']['to_uc']))
+            print(os.path.realpath(main_settings.config['Folders']['to_uc']))
 
 
 def copy_crl_to_uc(rki):
-    if os.path.exists(config['Folders']['crls'] + '/' + rki + '.crl'):
-        shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl', config['Folders']['to_uc'] + '/' + rki + '.crl')
-        print('Found ' + config['Folders']['crls'] + '/' + rki + '.crl, copy.')
+    if os.path.exists(main_settings.config['Folders']['crls'] + '/' + rki + '.crl'):
+        shutil.copy2(main_settings.config['Folders']['crls'] + '/' + rki + '.crl', main_settings.config['Folders']['to_uc'] + '/' + rki + '.crl')
+        print('Found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl, copy.')
     else:
-        print('Not found ' + config['Folders']['crls'] + '/' + rki + '.crl')
-        logs('Info: Not found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
+        print('Not found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl')
+        logs('Info: Not found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
 
 
 def open_file(file_name, file_type, url='None'):
@@ -81,11 +81,11 @@ def open_file(file_name, file_type, url='None'):
         folder = 'strs'
 
     run_dll = "%SystemRoot%\\System32\\rundll32.exe cryptext.dll," + type_crypto_dll
-    path = os.path.realpath(config['Folders'][folder] + "/" + file_name + "." + file_type)
+    path = os.path.realpath(main_settings.config['Folders'][folder] + "/" + file_name + "." + file_type)
     print(path)
     if not os.path.exists(path):
         if file_type == 'cer':
-            save_cert(file_name, config['Folders']['certs'])
+            save_cert(file_name, main_settings.config['Folders']['certs'])
         # elif file_type == 'crl':
         #     download_file(url, file_name + '.crl', config['Folders']['crls'])
     else:
@@ -99,17 +99,6 @@ def download_update(set_dd, type_download, w_id, dc=0):
     dc = int(dc)
     if dc == 10:
         next_update = current_datetime + datetime.timedelta(days=1)
-    #if type_download == 'current':
-    #    with db.transaction('exclusive'):
-    #        (WatchingCRL
-    #         .update(last_download=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    #         .where(WatchingCRL.ID == w_id).execute())
-
-    #elif type_download == 'custom':
-    #    with db.transaction('exclusive'):
-    #        (WatchingCustomCRL
-    #         .update(last_download=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    #         .where(WatchingCustomCRL.ID == w_id).execute())
 
     if set_dd == 'Yes':
         if dc < 10:
@@ -144,7 +133,6 @@ def download_update(set_dd, type_download, w_id, dc=0):
                         time.sleep(1)
                     else:
                         break
-
         else:
             if type_download == 'current':
                 while True:
@@ -213,8 +201,8 @@ def download_update(set_dd, type_download, w_id, dc=0):
 def download_loop_guard(download_count, last_download, next_update):
     current_datetimes = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     current_datetime = datetime.datetime.strptime(current_datetimes, '%Y-%m-%d %H:%M:%S')
-    minuts = int(config['Update']['timebeforeupdate'])
-    days = int(config['Update']['deltaupdateinday'])
+    minuts = int(main_settings.config['Update']['timebeforeupdate'])
+    days = int(main_settings.config['Update']['deltaupdateinday'])
     current_datetime = current_datetime + datetime.timedelta(minutes=minuts)
 
     delta_day = next_update + datetime.timedelta(days=1)
@@ -259,3 +247,255 @@ def set_value_in_property_file(file_path, section, key, value):
     config_file = open(file_path, 'w')
     set_config.write(config_file, space_around_delimiters=False)
     config_file.close()
+
+
+def uc_sorting(order_by):
+    if order_by == 'Full_Name':
+        if main_settings.tab_uc_sorting == 'asc':
+            order = UC.Full_Name.asc()
+            main_settings.tab_uc_sorting = 'desc'
+        else:
+            order = UC.Full_Name.desc()
+            main_settings.tab_uc_sorting = 'asc'
+    elif order_by == 'INN':
+        if main_settings.tab_uc_sorting == 'asc':
+            order = UC.INN.asc()
+            main_settings.tab_uc_sorting = 'desc'
+        else:
+            order = UC.INN.desc()
+            main_settings.tab_uc_sorting = 'asc'
+    elif order_by == 'OGRN':
+        if main_settings.tab_uc_sorting == 'asc':
+            order = UC.OGRN.asc()
+            main_settings.tab_uc_sorting = 'desc'
+        else:
+            order = UC.OGRN.desc()
+            main_settings.tab_uc_sorting = 'asc'
+    else:
+        order = UC.Full_Name.asc()
+
+    return order
+
+
+def cert_sorting(order_by):
+    if order_by == 'Name':
+        if main_settings.tab_cert_sorting == 'asc':
+            order = CERT.Name.asc()
+            main_settings.tab_cert_sorting = 'desc'
+        else:
+            order = CERT.Name.desc()
+            main_settings.tab_cert_sorting = 'asc'
+    elif order_by == 'KeyId':
+        if main_settings.tab_cert_sorting == 'asc':
+            order = CERT.KeyId.asc()
+            main_settings.tab_cert_sorting = 'desc'
+        else:
+            order = CERT.KeyId.desc()
+            main_settings.tab_cert_sorting = 'asc'
+    elif order_by == 'Stamp':
+        if main_settings.tab_cert_sorting == 'asc':
+            order = CERT.Stamp.asc()
+            main_settings.tab_cert_sorting = 'desc'
+        else:
+            order = CERT.Stamp.desc()
+            main_settings.tab_cert_sorting = 'asc'
+    elif order_by == 'SerialNumber':
+        if main_settings.tab_cert_sorting == 'asc':
+            order = CERT.SerialNumber.asc()
+            main_settings.tab_cert_sorting = 'desc'
+        else:
+            order = CERT.SerialNumber.desc()
+            main_settings.tab_cert_sorting = 'asc'
+    else:
+        order = CERT.Name.asc()
+
+    return order
+
+
+def crl_sorting(order_by):
+    if order_by == 'Name':
+        if main_settings.tab_crl_sorting == 'asc':
+            order = CRL.Name.asc()
+            main_settings.tab_crl_sorting = 'desc'
+        else:
+            order = CRL.Name.desc()
+            main_settings.tab_crl_sorting = 'asc'
+    elif order_by == 'KeyId':
+        if main_settings.tab_crl_sorting == 'asc':
+            order = CRL.KeyId.asc()
+            main_settings.tab_crl_sorting = 'desc'
+        else:
+            order = CRL.KeyId.desc()
+            main_settings.tab_crl_sorting = 'asc'
+    elif order_by == 'Stamp':
+        if main_settings.tab_crl_sorting == 'asc':
+            order = CRL.Stamp.asc()
+            main_settings.tab_crl_sorting = 'desc'
+        else:
+            order = CRL.Stamp.desc()
+            main_settings.tab_crl_sorting = 'asc'
+    elif order_by == 'SerialNumber':
+        if main_settings.tab_crl_sorting == 'asc':
+            order = CRL.SerialNumber.asc()
+            main_settings.tab_crl_sorting = 'desc'
+        else:
+            order = CRL.SerialNumber.desc()
+            main_settings.tab_crl_sorting = 'asc'
+    elif order_by == 'UrlCRL':
+        if main_settings.tab_crl_sorting == 'asc':
+            order = CRL.UrlCRL.asc()
+            main_settings.tab_crl_sorting = 'desc'
+        else:
+            order = CRL.UrlCRL.desc()
+            main_settings.tab_crl_sorting = 'asc'
+    else:
+        order = CRL.Name.asc()
+
+    return order
+
+
+def watching_crl_sorting(order_by):
+    if order_by == 'Name':
+        if main_settings.sub_tab_watching_crl_sorting == 'asc':
+            order = WatchingCRL.Name.asc()
+            main_settings.sub_tab_watching_crl_sorting = 'desc'
+        else:
+            order = WatchingCRL.Name.desc()
+            main_settings.sub_tab_watching_crl_sorting = 'asc'
+    elif order_by == 'OGRN':
+        if main_settings.sub_tab_watching_crl_sorting == 'asc':
+            order = WatchingCRL.OGRN.asc()
+            main_settings.sub_tab_watching_crl_sorting = 'desc'
+        else:
+            order = WatchingCRL.OGRN.desc()
+            main_settings.sub_tab_watching_crl_sorting = 'asc'
+    elif order_by == 'KeyId':
+        if main_settings.sub_tab_watching_crl_sorting == 'asc':
+            order = WatchingCRL.KeyId.asc()
+            main_settings.sub_tab_watching_crl_sorting = 'desc'
+        else:
+            order = WatchingCRL.KeyId.desc()
+            main_settings.sub_tab_watching_crl_sorting = 'asc'
+    elif order_by == 'UrlCRL':
+        if main_settings.sub_tab_watching_crl_sorting == 'asc':
+            order = WatchingCRL.UrlCRL.asc()
+            main_settings.sub_tab_watching_crl_sorting = 'desc'
+        else:
+            order = WatchingCRL.UrlCRL.desc()
+            main_settings.sub_tab_watching_crl_sorting = 'asc'
+    elif order_by == 'last_download':
+        if main_settings.sub_tab_watching_crl_sorting == 'asc':
+            order = WatchingCRL.last_download.asc()
+            main_settings.sub_tab_watching_crl_sorting = 'desc'
+        else:
+            order = WatchingCRL.last_download.desc()
+            main_settings.sub_tab_watching_crl_sorting = 'asc'
+    elif order_by == 'next_update':
+        if main_settings.sub_tab_watching_crl_sorting == 'asc':
+            order = WatchingCRL.next_update.asc()
+            main_settings.sub_tab_watching_crl_sorting = 'desc'
+        else:
+            order = WatchingCRL.next_update.desc()
+            main_settings.sub_tab_watching_crl_sorting = 'asc'
+    else:
+        order = WatchingCRL.Name.asc()
+
+    return order
+
+
+def watching_custom_crl_sorting(order_by):
+    if order_by == 'Name':
+        if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
+            order = WatchingCustomCRL.Name.asc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+        else:
+            order = WatchingCustomCRL.Name.desc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+    elif order_by == 'OGRN':
+        if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
+            order = WatchingCustomCRL.OGRN.asc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+        else:
+            order = WatchingCustomCRL.OGRN.desc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+    elif order_by == 'KeyId':
+        if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
+            order = WatchingCustomCRL.KeyId.asc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+        else:
+            order = WatchingCustomCRL.KeyId.desc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+    elif order_by == 'UrlCRL':
+        if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
+            order = WatchingCustomCRL.UrlCRL.asc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+        else:
+            order = WatchingCustomCRL.UrlCRL.desc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+    elif order_by == 'last_download':
+        if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
+            order = WatchingCustomCRL.last_download.asc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+        else:
+            order = WatchingCustomCRL.last_download.desc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+    elif order_by == 'next_update':
+        if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
+            order = WatchingCustomCRL.next_update.asc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+        else:
+            order = WatchingCustomCRL.next_update.desc()
+            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+    else:
+        order = WatchingCustomCRL.Name.asc()
+
+    return order
+
+
+def watching_disabled_crl_sorting(order_by):
+    if order_by == 'Name':
+        if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
+            order = WatchingDeletedCRL.Name.asc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+        else:
+            order = WatchingDeletedCRL.Name.desc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+    elif order_by == 'OGRN':
+        if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
+            order = WatchingDeletedCRL.OGRN.asc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+        else:
+            order = WatchingDeletedCRL.OGRN.desc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+    elif order_by == 'KeyId':
+        if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
+            order = WatchingDeletedCRL.KeyId.asc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+        else:
+            order = WatchingDeletedCRL.KeyId.desc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+    elif order_by == 'Stamp':
+        if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
+            order = WatchingDeletedCRL.Stamp.asc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+        else:
+            order = WatchingDeletedCRL.Stamp.desc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+    elif order_by == 'SerialNumber':
+        if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
+            order = WatchingDeletedCRL.SerialNumber.asc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+        else:
+            order = WatchingDeletedCRL.SerialNumber.desc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+    elif order_by == 'UrlCRL':
+        if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
+            order = WatchingDeletedCRL.UrlCRL.asc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+        else:
+            order = WatchingDeletedCRL.UrlCRL.desc()
+            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+    else:
+        order = WatchingDeletedCRL.Name.asc()
+
+    return order
