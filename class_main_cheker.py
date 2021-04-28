@@ -41,10 +41,12 @@ class MainChecker(QThread):
         query_2 = WatchingCustomCRL.select()
         for wc in query_1:
             if current_datetime > wc.next_update > before_current_date:
-                self.check_current_crl(wc.ID, wc.Name, wc.KeyId)
+                # check_current_crl(wc.ID, wc.Name, wc.KeyId)
+                self.current_message.emit(check_current_crl(wc.ID, wc.Name, wc.KeyId))
         for wcc in query_2:
             if current_datetime > wcc.next_update > before_current_date:
-                self.check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+                # check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+                self.current_message.emit(check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId))
         time.sleep(1)
         self.current_message.emit('Проверка завершена')
         self.done.emit('Проверка завершена')
@@ -54,94 +56,84 @@ class MainChecker(QThread):
         query_2 = WatchingCustomCRL.select()
         self.current_message.emit('Проверяем основной список CRL')
         for wc in query_1:
-            self.check_current_crl(wc.ID, wc.Name, wc.KeyId)
+            # check_current_crl(wc.ID, wc.Name, wc.KeyId)
+            self.current_message.emit(check_current_crl(wc.ID, wc.Name, wc.KeyId))
         self.current_message.emit('Проверяем свой список CRL')
         for wcc in query_2:
-            self.check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+            # check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
+            self.current_message.emit(check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId))
         self.current_message.emit('Готово')
         self.done.emit('Проверка завершена')
 
-    def check_custom_crl(self, id_custom_crl, name, id_key):
-        issuer = {}
-        if os.path.isfile(config['Folders']['crls'] + '/' + str(id_key) + '.crl'):
-            try:
-                crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
-                                              open('crls/' + str(id_key) + '.crl', 'rb').read())
-                crl_crypto = crl.get_issuer()
-                cryptography = crl.to_cryptography()
 
-                for var, data in crl_crypto.get_components():
-                    issuer[var.decode("utf-8")] = data.decode("utf-8")
+def check_custom_crl(id_custom_crl, name, id_key):
+    issuer = {}
+    if os.path.isfile(config['Folders']['crls'] + '/' + str(id_key) + '.crl'):
+        try:
+            crl = OpenSSL.crypto.load_crl(OpenSSL.crypto.FILETYPE_ASN1,
+                                          open(config['Folders']['crls'] + str(id_key) + '.crl', 'rb').read())
+            crl_crypto = crl.get_issuer()
+            cryptography = crl.to_cryptography()
 
-                query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
-                for uc_data in query_uc:
-                    name = uc_data.Name
-                while True:
-                    try:
-                        with db.transaction('exclusive'):
-                            (WatchingCustomCRL
-                             .update(INN=issuer['INN'], OGRN=issuer['OGRN'],
-                                     status='Info: Filetype good',
-                                     last_update=cryptography.last_update + datetime.timedelta(hours=5),
-                                     next_update=cryptography.next_update + datetime.timedelta(hours=5))
-                             .where(WatchingCustomCRL.ID == id_custom_crl)
-                             .execute())
-                    except peewee.OperationalError:
-                        print('OperationalError')
-                        time.sleep(5)
-                    else:
-                        break
-                issuer['INN'] = 'Unknown'
-                issuer['OGRN'] = 'Unknown'
-            except OpenSSL.crypto.Error:
-                print('Warning: OpenSSL not supported this filetype ' + name)
-                logs('Warning: OpenSSL not supported this filetype ' + name, 'errors', '4')
-                self.current_message.emit('Проверка завершена c ошибкой')
-            else:
-                print('Info: check_custom_crl()::success ' + name + ' next update in ' +
-                      str(cryptography.next_update + datetime.timedelta(hours=5)))
-                logs('Info: check_custom_crl()::success ' + name, 'info', '5')
-                self.current_message.emit('Проверяем: ' + name + ' ' + id_key)
+            for var, data in crl_crypto.get_components():
+                issuer[var.decode("utf-8")] = data.decode("utf-8")
+
+            query_uc = UC.select().where(UC.OGRN == issuer['OGRN'], UC.INN == issuer['INN'])
+            for uc_data in query_uc:
+                name = uc_data.Name
+            while True:
+                try:
+                    with db.transaction('exclusive'):
+                        (WatchingCustomCRL.update(INN=issuer['INN'], OGRN=issuer['OGRN'],
+                                                  status='Info: Filetype good',
+                                                  last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                                                  next_update=cryptography.next_update + datetime.timedelta(hours=5))
+                         .where(WatchingCustomCRL.ID == id_custom_crl)
+                         .execute())
+                except peewee.OperationalError:
+                    print('OperationalError:check_custom_crl:WatchingCustomCRL.update')
+                    time.sleep(10)
+                else:
+                    break
+            issuer['INN'] = 'Unknown'
+            issuer['OGRN'] = 'Unknown'
+        except OpenSSL.crypto.Error:
+            logs('Warning: OpenSSL not supported this filetype ' + name, 'errors', '4')
+            return 'Проверка завершена c ошибкой, этот файлов не поддерживается'
         else:
-            print('Info: check_current_crl:error ' + name + ' file not found')
-            logs('Info: check_current_crl:error ' + name + ' file not found', 'info', '5')
-            self.current_message.emit('Проверка завершена')
+            logs('Info: check_custom_crl:success ' + name, 'info', '5')
+            return str('Проверяем: ' + name + ' ' + id_key)
+    else:
+        logs('Info: check_custom_crl:error ' + name + ' file not found', 'info', '5')
+        return 'Проверка завершена с ошибкой, нет файлов'
 
-    def check_current_crl(self, id_wc, name_wc, key_id_wc):
-        if os.path.isfile(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl'):
-            try:
-                crl = OpenSSL.crypto.load_crl(
-                    OpenSSL.crypto.FILETYPE_ASN1,
-                    open(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl', 'rb').read())
-                cryptography = crl.to_cryptography()
-                while True:
-                    try:
-                        with db.transaction('exclusive'):
-                            (WatchingCRL
-                             .update(status='Info: Filetype good',
-                                    last_update=cryptography.last_update + datetime.timedelta(hours=5),
-                                    next_update=cryptography.next_update + datetime.timedelta(hours=5))
-                             .where(WatchingCRL.ID == id_wc)
-                             .execute())
-                    except peewee.OperationalError:
-                        print('OperationalError')
-                        time.sleep(5)
-                    else:
-                        break
 
-                print('Info: check_current_crl:success ' + name_wc + ' next update in ' +
-                      str(cryptography.next_update + datetime.timedelta(hours=5)))
-                logs('Info: check_current_crl:success ' + name_wc, 'info', '5')
-            except OpenSSL.crypto.Error:
-                print('errors: OpenSSL not supported this filetype ' + name_wc)
-                logs('errors: OpenSSL not supported this filetype ' + name_wc, 'errors', '4')
-                self.current_message.emit('Проверка завершена c ошибкой')
-            else:
-                print('Info: check_custom_crl()::success ' + name_wc + ' next update in ' +
-                      str(cryptography.next_update + datetime.timedelta(hours=5)))
-                logs('Info: check_custom_crl()::success ' + name_wc, 'info', '5')
-                self.current_message.emit('Проверяем: ' + name_wc + ' ' + key_id_wc)
+def check_current_crl(id_wc, name_wc, key_id_wc):
+    if os.path.isfile(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl'):
+        try:
+            crl = OpenSSL.crypto.load_crl(
+                OpenSSL.crypto.FILETYPE_ASN1,
+                open(config['Folders']['crls'] + '/' + str(key_id_wc) + '.crl', 'rb').read())
+            cryptography = crl.to_cryptography()
+            while True:
+                try:
+                    with db.transaction('exclusive'):
+                        (WatchingCRL.update(status='Info: Filetype good',
+                                            last_update=cryptography.last_update + datetime.timedelta(hours=5),
+                                            next_update=cryptography.next_update + datetime.timedelta(hours=5))
+                         .where(WatchingCRL.ID == id_wc)
+                         .execute())
+                except peewee.OperationalError:
+                    print('OperationalError:check_current_crl:WatchingCRL.update')
+                    time.sleep(10)
+                else:
+                    break
+        except OpenSSL.crypto.Error:
+            logs('errors: OpenSSL not supported this filetype ' + name_wc, 'errors', '4')
+            return 'Проверка завершена c ошибкой, этот файлов не поддерживается'
         else:
-            print('Info: check_current_crl:error ' + name_wc + ' file not found')
-            logs('Info: check_current_crl:error ' + name_wc + ' file not found', 'info', '5')
-            self.current_message.emit('Проверка завершена')
+            logs('Info: check_current_crl:success ' + name_wc, 'info', '5')
+            return str('Проверяем: ' + name_wc + ' ' + key_id_wc)
+    else:
+        logs('Info: check_current_crl:error ' + name_wc + ' file not found', 'info', '5')
+        return 'Проверка завершена с ошибкой, нет файлов'

@@ -46,9 +46,8 @@ def save_cert(key_id, folder):
 def copy_crl_to_uc(rki):
     if os.path.exists(main_settings.config['Folders']['crls'] + '/' + rki + '.crl'):
         shutil.copy2(main_settings.config['Folders']['crls'] + '/' + rki + '.crl', main_settings.config['Folders']['to_uc'] + '/' + rki + '.crl')
-        print('Found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl, copy.')
+        logs('Info: found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
     else:
-        print('Not found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl')
         logs('Info: Not found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
 
 
@@ -113,8 +112,8 @@ def download_update(set_dd, type_download, w_id, dc=0):
                              .where(WatchingCRL.ID == w_id)
                              .execute())
                     except peewee.OperationalError:
-                        print('OperationalError')
-                        time.sleep(1)
+                        print('OperationalError:download_update:WatchingCRL.update')
+                        time.sleep(20)
                     else:
                         break
 
@@ -129,8 +128,8 @@ def download_update(set_dd, type_download, w_id, dc=0):
                              .where(WatchingCustomCRL.ID == w_id)
                              .execute())
                     except peewee.OperationalError:
-                        print('OperationalError')
-                        time.sleep(1)
+                        print('OperationalError:download_update:WatchingCustomCRL.update')
+                        time.sleep(20)
                     else:
                         break
         else:
@@ -146,8 +145,8 @@ def download_update(set_dd, type_download, w_id, dc=0):
                              .where(WatchingCRL.ID == w_id)
                              .execute())
                     except peewee.OperationalError:
-                        print('OperationalError')
-                        time.sleep(1)
+                        print('OperationalError:download_update:WatchingCRL.update')
+                        time.sleep(20)
                     else:
                         break
 
@@ -163,8 +162,8 @@ def download_update(set_dd, type_download, w_id, dc=0):
                              .where(WatchingCustomCRL.ID == w_id)
                              .execute())
                     except peewee.OperationalError:
-                        print('OperationalError')
-                        time.sleep(1)
+                        print('OperationalError:download_update:WatchingCustomCRL.update')
+                        time.sleep(20)
                     else:
                         break
 
@@ -178,8 +177,8 @@ def download_update(set_dd, type_download, w_id, dc=0):
                          .where(WatchingCRL.ID == w_id)
                          .execute())
                 except peewee.OperationalError:
-                    print('OperationalError')
-                    time.sleep(1)
+                    print('OperationalError:download_update:WatchingCRL.update')
+                    time.sleep(20)
                 else:
                     break
 
@@ -192,8 +191,8 @@ def download_update(set_dd, type_download, w_id, dc=0):
                          .where(WatchingCustomCRL.ID == w_id)
                          .execute())
                 except peewee.OperationalError:
-                    print('OperationalError')
-                    time.sleep(1)
+                    print('OperationalError:download_update:WatchingCustomCRL.update')
+                    time.sleep(20)
                 else:
                     break
 

@@ -22,11 +22,10 @@ class InitXML(QThread):
         QThread.__init__(self)
         self._init = False
         self.fileName = xml_file
-        self.current_uc.emit('Инициализвация..')
-        print('Info: Init TLS started, ' + self.fileName)
-        logs('Info: Init TLS started', 'info', '5')
 
     def run(self):
+        self.current_uc.emit('Инициализвация..')
+        logs('Info: Init TLS started', 'info', '5')
         UC.drop_table()
         CRL.drop_table()
         CERT.drop_table()
@@ -42,7 +41,6 @@ class InitXML(QThread):
             except etree.XMLSyntaxError:
                 self.current_uc.emit('XML Файл имеет неподдерживаемую структуру, необходимо скачать заново.')
                 self.done_err.emit('XML Файл имеет неподдерживаемую структуру, необходимо скачать заново.')
-                print('Error: XMLSyntaxError ' + self.fileName)
                 logs('Error: XMLSyntaxError ' + self.fileName, 'errors', '2')
             else:
                 uc_count = 0
@@ -51,7 +49,7 @@ class InitXML(QThread):
                 crl_count_all = 3267
                 current_version = 'Unknown'
                 last_update = 'Unknown'
-                for appt in root.getchildren():
+                for element in root.getchildren():
                     address_code = ''
                     address_name = ''
                     address_index = ''
@@ -70,13 +68,13 @@ class InitXML(QThread):
                     serial_number = ''
                     cert_base64 = ''
                     cert_data = []
-                    if appt.text:
-                        if appt.tag == 'Версия':
-                            current_version = appt.text
-                    if appt.text:
-                        if appt.tag == 'Дата':
-                            last_update = appt.text
-                    for elem in appt.getchildren():
+                    if element.text:
+                        if element.tag == 'Версия':
+                            current_version = element.text
+                    if element.text:
+                        if element.tag == 'Дата':
+                            last_update = element.text
+                    for elem in element.getchildren():
                         if not elem.text:
                             for sub_elem in elem.getchildren():
                                 if not sub_elem.text:
@@ -98,7 +96,7 @@ class InitXML(QThread):
                                                                                     data_cert['stamp'] = six_elem.text
                                                                                 if six_elem.tag == 'СерийныйНомер':
                                                                                     cert_count = cert_count + 1
-                                                                                    data_cert['serrial'] = six_elem.text
+                                                                                    data_cert['serial'] = six_elem.text
                                                                                 if six_elem.tag == 'Данные':
                                                                                     data_cert['data'] = six_elem.text
                                                                     else:
@@ -179,7 +177,7 @@ class InitXML(QThread):
                                                 key_id = dats
                                             if var == 'stamp':
                                                 stamp = dats
-                                            if var == 'serrial':
+                                            if var == 'serial':
                                                 serial_number = dats
                                             if var == 'data':
                                                 cert_base64 = dats
@@ -243,9 +241,7 @@ class InitXML(QThread):
                     else:
                         break
                 self.current_uc.emit('Обработка завершена.')
-                print('Info: Processing successful done')
                 logs('Info: Processing successful done', 'info', '6')
         else:
             self.current_uc.emit('XML Файл не найден, необходимо скачать заново.')
-            print('Error: XML File not fount ' + self.fileName)
             logs('Error: XML File not fount ' + self.fileName, 'errors', '2')

@@ -28,6 +28,7 @@ class MainWorker(QThread):
         self._hour = 0
         self._day = 0
         self._isRunning = True
+        self._download = MainDownloader('MainDownloader_work', 'mon')
 
     def run(self):
         timer_getting = config['Schedule']['timeUpdate']
@@ -69,7 +70,6 @@ class MainWorker(QThread):
                     else:
                         print('error')
 
-        print('Info: Start monitoring CRL')
         logs('Info: Start monitoring CRL', 'info', '6')
         self.threadInfoMessage.emit('Мониторинг CRL запущен')
         self.threadButtonStartD.emit('True')
@@ -137,13 +137,15 @@ class MainWorker(QThread):
             time.sleep(1)
 
     def downloader(self, mode):
-        self._download = MainDownloader('MainDownloader_work' ,mode)
-        self._download.download_message.connect(lambda: print('test'))
-        self._download.start()
+        # self._download = MainDownloader('MainDownloader_work', mode)
+        if self._download.isRunning():
+            print('worker already is running')
+        if not self._download.isRunning():
+            self._download.start()
+            print('worker isn\'t running')
 
     def stop(self):
         self._isRunning = False
-        print('Info: Monitoring is stopped')
         logs('Info: Monitoring is stopped', 'info', '6')
         self.threadInfoMessage.emit('Мониторинг CRL остановлен')
         self.threadButtonStartE.emit('True')

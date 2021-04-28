@@ -11,7 +11,6 @@ from main_moduls import save_cert, copy_crl_to_uc, get_info_xlm, export_all_watc
 from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, Settings
 from class_main_worker import MainWorker
 from class_main_downloader import MainDownloader, download_file
-# from class_main_dbquerying import DBQuerying
 from class_main_cheker import MainChecker
 from class_window_uc import UcWindow
 from class_window_crl import CRLWindow
@@ -28,6 +27,11 @@ import sys
 import peewee
 import time
 
+if config['Logs']['dividelogsbyday'] == 'Yes':
+    date_time_day = '_' + datetime.datetime.now().strftime('%Y%m%d')
+else:
+    date_time_day = ''
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -36,11 +40,58 @@ class MainWindow(QMainWindow):
         sql_queue = Queue()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        ico = QIcon()
-        pixmap_0 = QPixmap()
-        pixmap_0.loadFromData(base64.b64decode(base64_icon))
-        ico.addPixmap(pixmap_0)
-        self.setWindowIcon(QIcon(ico))
+
+        # base64_import
+        # base64_icon
+        # base64_info
+        # base64_inbox
+        # base64_file
+        # base64_export
+        # base64_diskette
+        # base64_black_list
+        # base64_white_list
+
+        self.icon_import = QIcon()
+        self.icon_icon = QIcon()
+        self.icon_info = QIcon()
+        self.icon_inbox = QIcon()
+        self.icon_file = QIcon()
+        self.icon_export = QIcon()
+        self.icon_diskette = QIcon()
+        self.icon_black_list = QIcon()
+        self.icon_white_lis = QIcon()
+
+        self.pixmap_import = QPixmap()
+        self.pixmap_icon = QPixmap()
+        self.pixmap_info = QPixmap()
+        self.pixmap_inbox = QPixmap()
+        self.pixmap_file = QPixmap()
+        self.pixmap_export = QPixmap()
+        self.pixmap_diskette = QPixmap()
+        self.pixmap_black_list = QPixmap()
+        self.pixmap_white_lis = QPixmap()
+
+        self.pixmap_import.loadFromData(base64.b64decode(base64_import))
+        self.pixmap_icon.loadFromData(base64.b64decode(base64_icon))
+        self.pixmap_info.loadFromData(base64.b64decode(base64_info))
+        self.pixmap_inbox.loadFromData(base64.b64decode(base64_inbox))
+        self.pixmap_file.loadFromData(base64.b64decode(base64_file))
+        self.pixmap_export.loadFromData(base64.b64decode(base64_export))
+        self.pixmap_diskette.loadFromData(base64.b64decode(base64_diskette))
+        self.pixmap_black_list.loadFromData(base64.b64decode(base64_black_list))
+        self.pixmap_white_lis.loadFromData(base64.b64decode(base64_white_list))
+
+        self.icon_import.addPixmap(self.pixmap_import)
+        self.icon_icon.addPixmap(self.pixmap_icon)
+        self.icon_info.addPixmap(self.pixmap_info)
+        self.icon_inbox.addPixmap(self.pixmap_inbox)
+        self.icon_file.addPixmap(self.pixmap_file)
+        self.icon_export.addPixmap(self.pixmap_export)
+        self.icon_diskette.addPixmap(self.pixmap_diskette)
+        self.icon_black_list.addPixmap(self.pixmap_black_list)
+        self.icon_white_lis.addPixmap(self.pixmap_white_lis)
+
+        self.setWindowIcon(QIcon(self.icon_icon))
         self.window_uc = None
         self.window_crl = None
         self.window_add_crl = None
@@ -120,12 +171,7 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_5.textChanged[str].connect(self.sub_tab_watching_custom_crl)
         self.ui.lineEdit_6.textChanged[str].connect(self.sub_tab_watching_disabled_crl)
 
-        # self.thread = QThread()
-        # self.worker = MainWorker()
-        # self.thread.start()
-
         self.init_settings()
-        # self.init_schedule()
         self.tab_info()
         self.tab_uc()
         self.tab_cert()
@@ -134,6 +180,89 @@ class MainWindow(QMainWindow):
         self.sub_tab_watching_crl()
         self.sub_tab_watching_custom_crl()
         self.sub_tab_watching_disabled_crl()
+
+        self._squirrel = MainWorker('MainWorker')
+        self._squirrel.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
+        self._squirrel.threadBefore.connect(
+            lambda msg: self.ui.label_37.setText('Предыдущее обновление: ' + str(msg)))
+        self._squirrel.threadAfter.connect(lambda msg: self.ui.label_38.setText('Следующее обновление: ' + str(msg)))
+        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_19.setDisabled(True))
+        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_20.setDisabled(True))
+        self._squirrel.threadButtonStartE.connect(lambda: self.ui.pushButton_19.setEnabled(True))
+        self._squirrel.threadButtonStopE.connect(lambda: self.ui.pushButton_20.setEnabled(True))
+        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton.setDisabled(True))
+        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_2.setDisabled(True))
+        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_3.setDisabled(True))
+        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_4.setDisabled(True))
+        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_5.setDisabled(True))
+        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton.setEnabled(True))
+        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_2.setEnabled(True))
+        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_3.setEnabled(True))
+        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_4.setEnabled(True))
+        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_5.setEnabled(True))
+
+        self._squirrel.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
+        self._squirrel.threadMessageSender.connect(lambda msg: print(msg))
+
+        self._woof = Watchdog()
+        self._woof.push.connect(lambda: self.ui.textBrowser.setText(
+            open(config['Folders']['logs'] + '/log' + date_time_day + '.log', 'r').read()))
+        self._woof.push.connect(lambda: self.ui.textBrowser_2.setText(
+            open(config['Folders']['logs'] + '/error' + date_time_day + '.log', 'r').read()))
+        self._woof.push.connect(lambda: self.ui.textBrowser_3.setText(
+            open(config['Folders']['logs'] + '/download' + date_time_day + '.log', 'r').read()))
+        self._woof.push.connect(lambda: self.ui.textBrowser.moveCursor(QTextCursor.End))
+        self._woof.push.connect(lambda: self.ui.textBrowser_2.moveCursor(QTextCursor.End))
+        self._woof.push.connect(lambda: self.ui.textBrowser_3.moveCursor(QTextCursor.End))
+
+        self._checker = MainChecker('check_all')
+        self._checker.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
+        self.ui.pushButton_3.setDisabled(True)
+        self.ui.pushButton_4.setDisabled(True)
+        self.ui.pushButton_5.setDisabled(True)
+        self._checker.done.connect(lambda: self.ui.pushButton_3.setEnabled(True))
+        self._checker.done.connect(lambda: self.ui.pushButton_4.setEnabled(True))
+        self._checker.done.connect(lambda: self.ui.pushButton_5.setEnabled(True))
+
+        self._down = MainDownloader('MainDownloader_main', 'all_mon')
+        self._down.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
+        self.ui.pushButton_3.setDisabled(True)
+        self.ui.pushButton_4.setDisabled(True)
+        self.ui.pushButton_5.setDisabled(True)
+        self._down.done.connect(lambda: self.ui.pushButton_3.setEnabled(True))
+        self._down.done.connect(lambda: self.ui.pushButton_4.setEnabled(True))
+        self._down.done.connect(lambda: self.ui.pushButton_5.setEnabled(True))
+        self._down.download_message.connect(lambda msg: self.add_log_to_main_tab(msg))
+
+        self._init_xml = InitXML('tsl.xml')
+        self._init_xml.progressbar.connect(lambda y: self.ui.progressBar_2.setValue(y))
+        self._init_xml.current_uc.connect(lambda uc: self.ui.label_7.setText(uc))
+        self._init_xml.done_ver.connect(lambda current_version: self.ui.label_3.setText(current_version))
+        self._init_xml.done_date.connect(lambda last_update: self.ui.label_2.
+                                         setText(last_update.replace('T', ' ').split('.')[0]))
+        self._init_xml.done_all_uc.connect(lambda uc_count: self.ui.label.setText(str(uc_count)))
+        self._init_xml.done_all_cert.connect(lambda cert_count: self.ui.label_4.setText(str(cert_count)))
+        self._init_xml.done_all_crl.connect(lambda crl_count: self.ui.label_5.setText(str(crl_count)))
+        self._init_xml.done_ver.connect(lambda: self.ui.pushButton.setEnabled(True))
+        self._init_xml.done_ver.connect(lambda: self.ui.pushButton_2.setEnabled(True))
+        self._init_xml.done_ver.connect(lambda: self.ui.progressBar_2.setMaximum(-1))
+        self._init_xml.done_err.connect(lambda: self.ui.pushButton.setEnabled(True))
+        self._init_xml.done_err.connect(lambda: self.ui.pushButton_2.setEnabled(True))
+        self._init_xml.done_err.connect(lambda: self.ui.progressBar_2.setMaximum(-1))
+
+        self._download = MainDownloader('MainDownloader_single_1',
+                                        'single',
+                                        'https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0',
+                                        'tsl.xml')
+        self._download.stage_progress_total.connect(lambda x: self.ui.progressBar.setMaximum(x))
+        self._download.stage_progress_current.connect(lambda y: self.ui.progressBar.setValue(y))
+        self._download.current_message.connect(lambda z: self.ui.label_7.setText(z))
+        self._download.done.connect(lambda: self.xml_check(get_info_xlm('current_version')))
+        self._download.done.connect(lambda: self.ui.pushButton.setEnabled(True))
+        self._download.done.connect(lambda: self.ui.pushButton_2.setEnabled(True))
+        self._download.done_err.connect(lambda msg: self.ui.label_7.setText(msg))
+        self._download.done_err.connect(lambda: self.ui.pushButton.setEnabled(True))
+        self._download.done_err.connect(lambda: self.ui.pushButton_2.setEnabled(True))
 
     def tab_info(self):
         ucs = UC.select()
@@ -235,11 +364,7 @@ class MainWindow(QMainWindow):
 
             button_info = QPushButton()
             button_info.setFixedSize(30, 30)
-            icon3 = QIcon()
-            pixmap_1 = QPixmap()
-            pixmap_1.loadFromData(base64.b64decode(base64_info))
-            icon3.addPixmap(pixmap_1)
-            button_info.setIcon(icon3)
+            button_info.setIcon(self.icon_info)
             button_info.setFlat(True)
             reg_num = row.Registration_Number
             button_info.pressed.connect(lambda rg=reg_num: self.open_sub_window_info_uc(rg))
@@ -255,12 +380,7 @@ class MainWindow(QMainWindow):
     def tab_cert(self, text='', order_by='Name'):
         order = cert_sorting(order_by)
         self.ui.tableWidget_2.clearContents()
-
-        icon0 = QIcon()
-        pixmap_2 = QPixmap()
-        pixmap_2.loadFromData(base64.b64decode(base64_file))
-        icon0.addPixmap(pixmap_2)
-        self.ui.pushButton_22.setIcon(icon0)
+        self.ui.pushButton_22.setIcon(self.icon_file)
         self.ui.pushButton_22.setFlat(True)
         self.ui.pushButton_22.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['certs'])))
         self.ui.pushButton_22.setToolTip('Открыть папку с сертами')
@@ -285,11 +405,8 @@ class MainWindow(QMainWindow):
 
             button_cert = QPushButton()
             button_cert.setFixedSize(30, 30)
-            icon2 = QIcon()
-            pixmap_3 = QPixmap()
-            pixmap_3.loadFromData(base64.b64decode(base64_diskette))
-            icon2.addPixmap(pixmap_3)
-            button_cert.setIcon(icon2)
+
+            button_cert.setIcon(self.icon_diskette)
             button_cert.setFlat(True)
             ki = row.KeyId
             # button_cert.pressed.connect(lambda key_id=ki: open_file(key_id, "cer"))
@@ -299,11 +416,7 @@ class MainWindow(QMainWindow):
 
             button_cert_save = QPushButton()
             button_cert_save.setFixedSize(30, 30)
-            icon1 = QIcon()
-            pixmap_4 = QPixmap()
-            pixmap_4.loadFromData(base64.b64decode(base64_inbox))
-            icon1.addPixmap(pixmap_4)
-            button_cert_save.setIcon(icon1)
+            button_cert_save.setIcon(self.icon_inbox)
             button_cert_save.setFlat(True)
             ki = row.KeyId
             button_cert_save.pressed.connect(lambda key_id=ki: save_cert(key_id, config['Folders']['to_uc']))
@@ -320,12 +433,7 @@ class MainWindow(QMainWindow):
     def tab_crl(self, text='', order_by='Full_Name'):
         order = crl_sorting(order_by)
         self.ui.tableWidget_3.clearContents()
-
-        icon9 = QIcon()
-        pixmap_5 = QPixmap()
-        pixmap_5.loadFromData(base64.b64decode(base64_file))
-        icon9.addPixmap(pixmap_5)
-        self.ui.pushButton_26.setIcon(icon9)
+        self.ui.pushButton_26.setIcon(self.icon_file)
         self.ui.pushButton_26.setFlat(True)
         self.ui.pushButton_26.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
         self.ui.pushButton_26.setToolTip('Открыть папку с CRL')
@@ -352,11 +460,7 @@ class MainWindow(QMainWindow):
             self.ui.tableWidget_3.setItem(count, 4, QTableWidgetItem(str(row.UrlCRL)))
             button_crl_save = QPushButton()
             button_crl_save.setFixedSize(30, 30)
-            icon4 = QIcon()
-            pixmap_6 = QPixmap()
-            pixmap_6.loadFromData(base64.b64decode(base64_diskette))
-            icon4.addPixmap(pixmap_6)
-            button_crl_save.setIcon(icon4)
+            button_crl_save.setIcon(self.icon_diskette)
             button_crl_save.setFlat(True)
             button_crl_save.pressed.connect(
                 lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['crls']))
@@ -365,11 +469,7 @@ class MainWindow(QMainWindow):
 
             button_crl_save_to_uc = QPushButton()
             button_crl_save_to_uc.setFixedSize(30, 30)
-            icon5 = QIcon()
-            pixmap_7 = QPixmap()
-            pixmap_7.loadFromData(base64.b64decode(base64_inbox))
-            icon5.addPixmap(pixmap_7)
-            button_crl_save_to_uc.setIcon(icon5)
+            button_crl_save_to_uc.setIcon(self.icon_inbox)
             button_crl_save_to_uc.setFlat(True)
             button_crl_save_to_uc.pressed.connect(
                 lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['to_uc']))
@@ -378,11 +478,7 @@ class MainWindow(QMainWindow):
 
             button_add_to_watch = QPushButton()
             button_add_to_watch.setFixedSize(30, 30)
-            icon6 = QIcon()
-            pixmap_8 = QPixmap()
-            pixmap_8.loadFromData(base64.b64decode(base64_import))
-            icon6.addPixmap(pixmap_8)
-            button_add_to_watch.setIcon(icon6)
+            button_add_to_watch.setIcon(self.icon_import)
             button_add_to_watch.setFlat(True)
             rb = row.Registration_Number
             ki = row.KeyId
@@ -411,17 +507,13 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_3.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
     def tab_watching_crl(self):
-        self.ui.pushButton_4.pressed.connect(lambda: self.downloader('all_mon'))
+        self.ui.pushButton_4.pressed.connect(lambda: self.downloader())
         self.ui.pushButton_4.setToolTip('Скачать все CRL (Занимает значительное время при использовании прокси)')
-        self.ui.pushButton_5.clicked.connect(lambda: self.checker('check_all'))
+        self.ui.pushButton_5.clicked.connect(lambda: self.checker())
         self.ui.pushButton_5.setToolTip('Запустить проверку всех CRL ')
-        self.ui.pushButton_3.clicked.connect(lambda: self.downloader('mon'))
+        self.ui.pushButton_3.clicked.connect(lambda: self.downloader())
         self.ui.pushButton_3.setToolTip('Проверить наличие ноых CRL для скачивания и копирования в УЦ')
-        icon11 = QIcon()
-        pixmap_18 = QPixmap()
-        pixmap_18.loadFromData(base64.b64decode(base64_file))
-        icon11.addPixmap(pixmap_18)
-        self.ui.pushButton_27.setIcon(icon11)
+        self.ui.pushButton_27.setIcon(self.icon_file)
         self.ui.pushButton_27.setFlat(True)
         self.ui.pushButton_27.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
         self.ui.pushButton_27.setToolTip('Открыть папку с CRL')
@@ -460,30 +552,18 @@ class MainWindow(QMainWindow):
 
             if row.status == 'Info: Filetype good':
                 status_item = QTableWidgetItem()
-                status_icon = QIcon()
-                pixmap_9 = QPixmap()
-                pixmap_9.loadFromData(base64.b64decode(base64_white_list))
-                status_icon.addPixmap(pixmap_9)
-                status_item.setIcon(status_icon)
+                status_item.setIcon(self.icon_white_lis)
                 status_item.setToolTip('Файл прошел проверку')
                 self.ui.tableWidget_4.setItem(count, 6, status_item)
             else:
                 status_item_2 = QTableWidgetItem()
-                status_icon_2 = QIcon()
-                pixmap_10 = QPixmap()
-                pixmap_10.loadFromData(base64.b64decode(base64_black_list))
-                status_icon_2.addPixmap(pixmap_10)
-                status_item_2.setIcon(status_icon_2)
+                status_item_2.setIcon(self.icon_black_list)
                 status_item_2.setToolTip('Ошибка в файле или не скачан')
                 self.ui.tableWidget_4.setItem(count, 6, status_item_2)
 
             button_crl_to_uc = QPushButton()
             button_crl_to_uc.setFixedSize(30, 30)
-            icon6 = QIcon()
-            pixmap_11 = QPixmap()
-            pixmap_11.loadFromData(base64.b64decode(base64_inbox))
-            icon6.addPixmap(pixmap_11)
-            button_crl_to_uc.setIcon(icon6)
+            button_crl_to_uc.setIcon(self.icon_inbox)
             button_crl_to_uc.setFlat(True)
             row_key_id = row.KeyId
             button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
@@ -492,11 +572,7 @@ class MainWindow(QMainWindow):
 
             button_delete_watch = QPushButton()
             button_delete_watch.setFixedSize(30, 30)
-            icon7 = QIcon()
-            pixmap_12 = QPixmap()
-            pixmap_12.loadFromData(base64.b64decode(base64_export))
-            icon7.addPixmap(pixmap_12)
-            button_delete_watch.setIcon(icon7)
+            button_delete_watch.setIcon(self.icon_export)
             button_delete_watch.setFlat(True)
             id_row = row.ID
             button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
@@ -547,30 +623,18 @@ class MainWindow(QMainWindow):
 
             if row.status == 'Info: Filetype good':
                 status_item = QTableWidgetItem()
-                status_icon = QIcon()
-                pixmap_13 = QPixmap()
-                pixmap_13.loadFromData(base64.b64decode(base64_white_list))
-                status_icon.addPixmap(pixmap_13)
-                status_item.setIcon(status_icon)
+                status_item.setIcon(self.icon_white_lis)
                 status_item.setToolTip('Файл прошел проверку')
                 self.ui.tableWidget_5.setItem(count, 6, status_item)
             else:
                 status_item_2 = QTableWidgetItem()
-                status_icon_2 = QIcon()
-                pixmap_14 = QPixmap()
-                pixmap_14.loadFromData(base64.b64decode(base64_black_list))
-                status_icon_2.addPixmap(pixmap_14)
-                status_item_2.setIcon(status_icon_2)
+                status_item_2.setIcon(self.icon_black_list)
                 status_item_2.setToolTip('Ошибка в файле или не скачан')
                 self.ui.tableWidget_5.setItem(count, 6, status_item_2)
 
             button_crl_to_uc = QPushButton()
             button_crl_to_uc.setFixedSize(30, 30)
-            icon6 = QIcon()
-            pixmap_15 = QPixmap()
-            pixmap_15.loadFromData(base64.b64decode(base64_inbox))
-            icon6.addPixmap(pixmap_15)
-            button_crl_to_uc.setIcon(icon6)
+            button_crl_to_uc.setIcon(self.icon_inbox)
             button_crl_to_uc.setFlat(True)
             row_key_id = row.KeyId
             button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
@@ -583,11 +647,7 @@ class MainWindow(QMainWindow):
 
             button_delete_watch = QPushButton()
             button_delete_watch.setFixedSize(30, 30)
-            icon8 = QIcon()
-            pixmap_16 = QPixmap()
-            pixmap_16.loadFromData(base64.b64decode(base64_export))
-            icon8.addPixmap(pixmap_16)
-            button_delete_watch.setIcon(icon8)
+            button_delete_watch.setIcon(self.icon_export)
             button_delete_watch.setFlat(True)
             id_row = row.ID
             button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'custom'))
@@ -638,11 +698,7 @@ class MainWindow(QMainWindow):
 
             button_return_watch = QPushButton()
             button_return_watch.setFixedSize(30, 30)
-            icon10 = QIcon()
-            pixmap_17 = QPixmap()
-            pixmap_17.loadFromData(base64.b64decode(base64_import))
-            icon10.addPixmap(pixmap_17)
-            button_return_watch.setIcon(icon10)
+            button_return_watch.setIcon(self.icon_import)
             button_return_watch.setFlat(True)
             id_row = row.ID
             button_return_watch.pressed.connect(lambda o=id_row: self.move_passed_to_watching(o))
@@ -890,7 +946,6 @@ class MainWindow(QMainWindow):
             config.set('Sec', 'allowCheckButtonCRL', 'Yes')
             self.ui.pushButton_5.setEnabled(True)
         self.ui.label_27.setText('Настройки сохранены')
-        print('Info: save_settings_main::Saved')
         logs('Info: save_settings_main::Saved', 'info', '6')
 
     def save_settings_sub(self):
@@ -963,7 +1018,6 @@ class MainWindow(QMainWindow):
             set_value_in_property_file('settings.ini', 'Logs', 'dividelogsbyday', 'Yes', config)
             config.set('Logs', 'dividelogsbyday', 'Yes')
         self.ui.label_28.setText('Настройки сохранены')
-        print('Info: save_settings_sub::Saved')
         logs('Info: save_settings_sub::Saved', 'info', '6')
 
     def open_sub_window_info_uc(self, reg_number):
@@ -1010,7 +1064,7 @@ class MainWindow(QMainWindow):
                                                    | WatchingCRL.SerialNumber.contains(serial_number)).count()
             except peewee.OperationalError:
                 print('OperationalError')
-                time.sleep(1)
+                time.sleep(3)
             else:
                 break
 
@@ -1020,7 +1074,7 @@ class MainWindow(QMainWindow):
                     select_uc = UC.select().where(UC.Registration_Number == registration_number)
                 except peewee.OperationalError:
                     print('OperationalError')
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
 
@@ -1044,7 +1098,7 @@ class MainWindow(QMainWindow):
                         add_to_watching_crl.save()
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
 
@@ -1062,7 +1116,6 @@ class MainWindow(QMainWindow):
                     lambda: self.ui.label_24.setText('CRL добавлен в список скачивания но не смог скачаться'))
                 _download_crl.start()
         else:
-            print('Info: add_watch_current_crl::crl_exist:' + keyid)
             logs('Info: add_watch_current_crl::crl_exist:' + keyid, 'info', '7')
             self.ui.label_24.setText('CRL ' + keyid + ' уже находится в списке отслеживания')
 
@@ -1072,7 +1125,7 @@ class MainWindow(QMainWindow):
                 count = WatchingCustomCRL.select().where(WatchingCustomCRL.UrlCRL.contains(url_crl)).count()
             except peewee.OperationalError:
                 print('OperationalError')
-                time.sleep(1)
+                time.sleep(3)
             else:
                 break
 
@@ -1080,22 +1133,20 @@ class MainWindow(QMainWindow):
             while True:
                 try:
                     WatchingCustomCRL(Name='Unknown',
-                                      NN='0',
-                                      GRN='0',
-                                      eyId='Unknown',
-                                      tamp='Unknown',
-                                      erialNumber='Unknown',
-                                      rlCRL=url_crl).save()
+                                      INN='0',
+                                      OGRN='0',
+                                      KeyId='Unknown',
+                                      Stamp='Unknown',
+                                      SerialNumber='Unknown',
+                                      UrlCRL=url_crl).save()
                 except peewee.OperationalError:
                     print('OperationalError')
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
             self.counter_added_custom = self.counter_added_custom + 1
-            print('Info: add_watch_custom_crl::crl_added:' + url_crl)
             logs('Info: add_watch_custom_crl::crl_added:' + url_crl, 'info', '7')
         else:
-            print('Info: add_watch_custom_crl::crl_exist:' + url_crl)
             logs('Info: add_watch_custom_crl::crl_exist:' + url_crl, 'info', '7')
             self.counter_added_exist = self.counter_added_exist + 1
         self.on_changed_find_watching_crl('')
@@ -1106,11 +1157,7 @@ class MainWindow(QMainWindow):
             if not msg == 'NaN':
                 button_info_log = QPushButton()
                 button_info_log.setFixedSize(23, 23)
-                icon12 = QIcon()
-                pixmap_19 = QPixmap()
-                pixmap_19.loadFromData(base64.b64decode(base64_info))
-                icon12.addPixmap(pixmap_19)
-                button_info_log.setIcon(icon12)
+                button_info_log.setIcon(self.icon_info)
                 button_info_log.setFlat(True)
                 key_id = msg.split(' : ')[0]
                 button_info_log.pressed.connect(lambda id_key=key_id: self.open_sub_window_info_crl(id_key))
@@ -1128,7 +1175,7 @@ class MainWindow(QMainWindow):
                     from_bd = WatchingCRL.select().where(WatchingCRL.ID == id_var)
                 except peewee.OperationalError:
                     print('OperationalError')
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
 
@@ -1151,7 +1198,7 @@ class MainWindow(QMainWindow):
                                            moved_from='current').save()
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
             while True:
@@ -1159,13 +1206,12 @@ class MainWindow(QMainWindow):
                     WatchingCRL.delete_by_id(id_var)
                 except peewee.OperationalError:
                     print('OperationalError')
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
 
             self.sub_tab_watching_crl()
             self.sub_tab_watching_disabled_crl()
-            print('Info: move_watching_to_passed()::moving_success_current:')
             logs('Info: move_watching_to_passed()::moving_success_current:', 'info', '7')
         elif from_var == 'custom':
             while True:
@@ -1173,7 +1219,7 @@ class MainWindow(QMainWindow):
                     from_bd = WatchingCustomCRL.select().where(WatchingCustomCRL.ID == id_var)
                 except peewee.OperationalError:
                     print('OperationalError')
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
 
@@ -1196,7 +1242,7 @@ class MainWindow(QMainWindow):
                                            moved_from='custom').save()
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
             while True:
@@ -1204,16 +1250,14 @@ class MainWindow(QMainWindow):
                     WatchingCustomCRL.delete_by_id(id_var)
                 except peewee.OperationalError:
                     print('OperationalError')
-                    time.sleep(1)
+                    time.sleep(3)
                 else:
                     break
 
             self.sub_tab_watching_custom_crl()
             self.sub_tab_watching_disabled_crl()
-            print('Info: move_watching_to_passed::moving_success_custom:')
             logs('Info: move_watching_to_passed::moving_success_custom:', 'info', '7')
         else:
-            print('Error: move_watching_to_passed::Error_Moving')
             logs('Error: move_watching_to_passed::Error_Moving', 'errors', '2')
 
     def move_passed_to_watching(self, id_var):
@@ -1222,7 +1266,7 @@ class MainWindow(QMainWindow):
                 from_bd = WatchingDeletedCRL.select().where(WatchingDeletedCRL.ID == id_var)
             except peewee.OperationalError:
                 print('OperationalError')
-                time.sleep(1)
+                time.sleep(3)
             else:
                 break
 
@@ -1245,7 +1289,7 @@ class MainWindow(QMainWindow):
                                     next_update=row.next_update).save()
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
                 while True:
@@ -1253,13 +1297,12 @@ class MainWindow(QMainWindow):
                         WatchingDeletedCRL.delete_by_id(id_var)
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
 
                 self.sub_tab_watching_disabled_crl()
                 self.sub_tab_watching_crl()
-                print('Info: move_passed_to_watching()::moving_success_current:')
                 logs('Info: move_passed_to_watching()::moving_success_current:', 'info', '7')
             elif row.moved_from == 'custom':
                 while True:
@@ -1279,7 +1322,7 @@ class MainWindow(QMainWindow):
                                           next_update=row.next_update).save()
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
                 while True:
@@ -1287,58 +1330,15 @@ class MainWindow(QMainWindow):
                         WatchingDeletedCRL.delete_by_id(id_var)
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
 
                 self.sub_tab_watching_disabled_crl()
                 self.sub_tab_watching_custom_crl()
-                print('Info: move_passed_to_watching::moving_success_custom:')
                 logs('Info: move_passed_to_watching::moving_success_custom:', 'info', '7')
             else:
-                print('Error: move_passed_to_watching::error_moving')
                 logs('Error: move_passed_to_watching::error_moving', 'errors', '2')
-
-    def xml_init(self):
-        self.ui.progressBar_2.setMaximum(100)
-        self.ui.pushButton_2.setEnabled(False)
-        self.ui.pushButton.setEnabled(False)
-        self._init_xml = InitXML('tsl.xml')
-        self._init_xml.progressbar.connect(lambda y: self.ui.progressBar_2.setValue(y))
-        self._init_xml.current_uc.connect(lambda uc: self.ui.label_7.setText(uc))
-        self._init_xml.done_ver.connect(lambda current_version: self.ui.label_3.setText(current_version))
-        self._init_xml.done_date.connect(lambda last_update: self.ui.label_2.
-                                         setText(last_update.replace('T', ' ').split('.')[0]))
-        self._init_xml.done_all_uc.connect(lambda uc_count: self.ui.label.setText(str(uc_count)))
-        self._init_xml.done_all_cert.connect(lambda cert_count: self.ui.label_4.setText(str(cert_count)))
-        self._init_xml.done_all_crl.connect(lambda crl_count: self.ui.label_5.setText(str(crl_count)))
-        self._init_xml.done_ver.connect(lambda: self.ui.pushButton.setEnabled(True))
-        self._init_xml.done_ver.connect(lambda: self.ui.pushButton_2.setEnabled(True))
-        self._init_xml.done_ver.connect(lambda: self.ui.progressBar_2.setMaximum(-1))
-        self._init_xml.done_err.connect(lambda: self.ui.pushButton.setEnabled(True))
-        self._init_xml.done_err.connect(lambda: self.ui.pushButton_2.setEnabled(True))
-        self._init_xml.done_err.connect(lambda: self.ui.progressBar_2.setMaximum(-1))
-        self._init_xml.start()
-
-    def xml_download(self):
-        self.ui.label_7.setText('Скачиваем список.')
-        self.ui.label_7.adjustSize()
-        self.ui.pushButton.setEnabled(False)
-        self.ui.pushButton_2.setEnabled(False)
-        self._download = MainDownloader('MainDownloader_single_1',
-                                        'single',
-                                        'https://e-trust.gosuslugi.ru/CA/DownloadTSL?schemaVersion=0',
-                                        'tsl.xml')
-        self._download.stage_progress_total.connect(lambda x: self.ui.progressBar.setMaximum(x))
-        self._download.stage_progress_current.connect(lambda y: self.ui.progressBar.setValue(y))
-        self._download.current_message.connect(lambda z: self.ui.label_7.setText(z))
-        self._download.done.connect(lambda: self.xml_check(get_info_xlm('current_version')))
-        self._download.done.connect(lambda: self.ui.pushButton.setEnabled(True))
-        self._download.done.connect(lambda: self.ui.pushButton_2.setEnabled(True))
-        self._download.done_err.connect(lambda msg: self.ui.label_7.setText(msg))
-        self._download.done_err.connect(lambda: self.ui.pushButton.setEnabled(True))
-        self._download.done_err.connect(lambda: self.ui.pushButton_2.setEnabled(True))
-        self._download.start()
 
     def xml_check(self, ver_from_tsl):
         while True:
@@ -1346,7 +1346,7 @@ class MainWindow(QMainWindow):
                 query_get_settings = Settings.select()
             except peewee.OperationalError:
                 print('OperationalError')
-                time.sleep(1)
+                time.sleep(3)
             else:
                 break
         ver = 0
@@ -1354,11 +1354,9 @@ class MainWindow(QMainWindow):
             ver = settings.value
             break
         if int(ver) == int(ver_from_tsl):
-            print('Info: Update not need')
             logs('Info: Update not need', 'info', '6')
             self.ui.label_7.setText('Загрузка завершена, обновление не требуется')
         else:
-            print('Info: Need update')
             logs('Info: Need update, new version ' + ver_from_tsl + ', old ' + ver, 'info', '6')
             self.ui.label_7.setText('Загрузка завершена, требуются обновления Базы УЦ и сертификатов. Новая версия '
                                     + ver_from_tsl + ' текущая версия ' + ver)
@@ -1379,7 +1377,7 @@ class MainWindow(QMainWindow):
                         count = CRL.select().where(CRL.UrlCRL.contains(crl_url)).count()
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
                 while True:
@@ -1387,7 +1385,7 @@ class MainWindow(QMainWindow):
                         data = CRL.select().where(CRL.UrlCRL.contains(crl_url))
                     except peewee.OperationalError:
                         print('OperationalError')
-                        time.sleep(1)
+                        time.sleep(3)
                     else:
                         break
 
@@ -1402,7 +1400,6 @@ class MainWindow(QMainWindow):
                 # self.on_changed_find_watching_crl('')
             print(self.counter_added, self.counter_added_custom, self.counter_added_exist)
         else:
-            print('Not found crl_list.txt')
             logs('Info: Not found crl_list.txt', 'info', '5')
 
     def export_crl(self):
@@ -1410,73 +1407,39 @@ class MainWindow(QMainWindow):
         export_all_watching_crl()
         self.ui.label_7.setText('Файл сгенерирован')
 
-    def downloader(self, mode):
-        self._down = MainDownloader('MainDownloader_main', mode)
-        self._down.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
-        self.ui.pushButton_3.setDisabled(True)
-        self.ui.pushButton_4.setDisabled(True)
-        self.ui.pushButton_5.setDisabled(True)
-        self._down.done.connect(lambda: self.ui.pushButton_3.setEnabled(True))
-        self._down.done.connect(lambda: self.ui.pushButton_4.setEnabled(True))
-        self._down.done.connect(lambda: self.ui.pushButton_5.setEnabled(True))
-        self._down.download_message.connect(lambda msg: self.add_log_to_main_tab(msg))
-        self._down.start()
+    def xml_init(self):
+        if not self._init_xml.isRunning():
+            self.ui.progressBar_2.setMaximum(100)
+            self.ui.pushButton_2.setEnabled(False)
+            self.ui.pushButton.setEnabled(False)
+            self._init_xml.start()
 
-    def checker(self, mode):
-        self._checker = MainChecker(mode)
-        self._checker.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
-        self.ui.pushButton_3.setDisabled(True)
-        self.ui.pushButton_4.setDisabled(True)
-        self.ui.pushButton_5.setDisabled(True)
-        self._checker.done.connect(lambda: self.ui.pushButton_3.setEnabled(True))
-        self._checker.done.connect(lambda: self.ui.pushButton_4.setEnabled(True))
-        self._checker.done.connect(lambda: self.ui.pushButton_5.setEnabled(True))
-        self._checker.start()
+    def xml_download(self):
+        if not self._download.isRunning():
+            self.ui.label_7.setText('Скачиваем список.')
+            self.ui.label_7.adjustSize()
+            self.ui.pushButton.setEnabled(False)
+            self.ui.pushButton_2.setEnabled(False)
+            self._download.start()
+
+    def downloader(self):
+        if not self._down.isRunning():
+            self._down.start()
+
+    def checker(self):
+        if not self._checker.isRunning():
+            self._checker.start()
 
     def watchdog(self):
-        if config['Logs']['dividelogsbyday'] == 'Yes':
-            date_time_day = '_' + datetime.datetime.now().strftime('%Y%m%d')
-        else:
-            date_time_day = ''
-        self._woof = Watchdog()
-        self._woof.push.connect(lambda: open(config['Folders']['logs'] +
-                                             '/log' + date_time_day + '.log', 'r').read())
-        self._woof.push.connect(lambda: open(config['Folders']['logs'] +
-                                             '/error' + date_time_day + '.log', 'r').read())
-        self._woof.push.connect(lambda: open(config['Folders']['logs'] +
-                                             '/download' + date_time_day + '.log', 'r').read())
-        self._woof.push.connect(lambda: self.ui.textBrowser.moveCursor(QTextCursor.End))
-        self._woof.push.connect(lambda: self.ui.textBrowser_2.moveCursor(QTextCursor.End))
-        self._woof.push.connect(lambda: self.ui.textBrowser_3.moveCursor(QTextCursor.End))
-        self._woof.start()
+        if not self._woof.isRunning():
+            self._woof.start()
 
     def main_worker_stop(self):
         self._squirrel.stop()
 
     def main_worker(self):
-        self._squirrel = MainWorker('MainWorker')
-        self._squirrel.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
-        self._squirrel.threadBefore.connect(
-            lambda msg: self.ui.label_37.setText('Предыдущее обновление: ' + str(msg)))
-        self._squirrel.threadAfter.connect(lambda msg: self.ui.label_38.setText('Следующее обновление: ' + str(msg)))
-        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_19.setDisabled(True))
-        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_20.setDisabled(True))
-        self._squirrel.threadButtonStartE.connect(lambda: self.ui.pushButton_19.setEnabled(True))
-        self._squirrel.threadButtonStopE.connect(lambda: self.ui.pushButton_20.setEnabled(True))
-        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton.setDisabled(True))
-        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_2.setDisabled(True))
-        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_3.setDisabled(True))
-        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_4.setDisabled(True))
-        self._squirrel.threadButtonStartD.connect(lambda: self.ui.pushButton_5.setDisabled(True))
-        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton.setEnabled(True))
-        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_2.setEnabled(True))
-        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_3.setEnabled(True))
-        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_4.setEnabled(True))
-        self._squirrel.threadButtonStopD.connect(lambda: self.ui.pushButton_5.setEnabled(True))
-
-        self._squirrel.threadInfoMessage.connect(lambda msg: self.ui.label_7.setText(msg))
-        self._squirrel.threadMessageSender.connect(lambda msg: print(msg))
-        self._squirrel.start()
+        if not self._squirrel.isRunning():
+            self._squirrel.start()
 
     # def db_query(self, table, query, operator, where, group_by, order):
     #     _db_query = DBQuerying()
