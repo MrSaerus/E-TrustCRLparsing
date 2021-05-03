@@ -1,14 +1,13 @@
 from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, db
+from main_settings import config
 import main_settings
-from main_log_system import logs
 from lxml import etree
-import configparser
 import datetime
-import shutil
 import base64
 import os
 import peewee
 import time
+import re
 
 
 def get_info_xlm(type_data, xml_file='tsl.xml'):
@@ -41,14 +40,6 @@ def save_cert(key_id, folder):
         elif folder == main_settings.config['Folders']['to_uc']:
             os.startfile(os.path.realpath(main_settings.config['Folders']['to_uc']))
             print(os.path.realpath(main_settings.config['Folders']['to_uc']))
-
-
-def copy_crl_to_uc(rki):
-    if os.path.exists(main_settings.config['Folders']['crls'] + '/' + rki + '.crl'):
-        shutil.copy2(main_settings.config['Folders']['crls'] + '/' + rki + '.crl', main_settings.config['Folders']['to_uc'] + '/' + rki + '.crl')
-        logs('Info: found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
-    else:
-        logs('Info: Not found ' + main_settings.config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
 
 
 def open_file(file_name, file_type, url='None'):
@@ -195,28 +186,6 @@ def download_update(set_dd, type_download, w_id, dc=0):
                     time.sleep(20)
                 else:
                     break
-
-
-def download_loop_guard(download_count, last_download, next_update):
-    current_datetimes = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    current_datetime = datetime.datetime.strptime(current_datetimes, '%Y-%m-%d %H:%M:%S')
-    minuts = int(main_settings.config['Update']['timebeforeupdate'])
-    days = int(main_settings.config['Update']['deltaupdateinday'])
-    current_datetime = current_datetime + datetime.timedelta(minutes=minuts)
-
-    delta_day = next_update + datetime.timedelta(days=1)
-    delta_week = next_update + datetime.timedelta(days=7)
-    delta_month = next_update + datetime.timedelta(days=30)
-
-    if last_download > next_update:
-        download_count += 1
-    if current_datetime > next_update and download_count == 10:
-        download_count = 0
-    if download_count > 3:
-        # print(current_datetime, next_update, delta_day, delta_week)
-        if current_datetime > delta_day < delta_week:
-            download_count = 10
-    return download_count
 
 
 def export_all_watching_crl():
@@ -488,3 +457,84 @@ def watching_disabled_crl_sorting(order_by):
         order = WatchingDeletedCRL.Name.asc()
 
     return order
+
+
+def delta_checker(name, key_id, last_download, last_update, next_update, download_count):
+    # диапазон_жизни_црл:проверать_до_истечения_црл:проверять_каждые_х_минут:попыток_скачать_за_проверку
+    # delta_live:before_end_life:check_every_minute:attempts
+    checking_schema = config['Schedule']['periodupdate']
+    current_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_datetime = datetime.datetime.strptime(current_datetime, '%Y-%m-%d %H:%M:%S')
+    delta_working_range = next_update - last_update
+    delta_download = next_update - current_datetime
+    scheme = checking_schema.split(';')
+    for pattern in scheme:
+        var = pattern.split(':')
+        pat_a = str(var[0])
+        pat_ab = int(re.findall(r'(\d+)', pat_a)[0])
+        pat_aa = un(re.findall(r'(\D+)', pat_a)[0])
+        pat_b = str(var[1])
+        pat_bb = int(re.findall(r'(\d+)', pat_b)[0])
+        pat_ba = un(re.findall(r'(\D+)', pat_b)[0])
+        if delta_working_range < (current_datetime - (current_datetime - datetime.timedelta(**{pat_aa: pat_ab}))):
+            print('--------------------------------------------------',
+                  '--------------------------------------------------')
+            print('Delta_working_range', delta_working_range,
+                  '\nLast_update', last_update,
+                  '\nNext_update', next_update,
+                  '\nLast_download', last_download,
+                  '\nDownload_count', download_count)
+            print('delta_download < current_datetime',
+                  delta_download, current_datetime - (current_datetime - datetime.timedelta(**{pat_ba: pat_bb})))
+            if delta_download < current_datetime - (current_datetime - datetime.timedelta(**{pat_ba: pat_bb})):
+                print('The rule', pat_aa, pat_ab)
+                if delta_download < current_datetime - current_datetime - datetime.timedelta(seconds=0):
+                    delta_download = 'Просрочено'
+                return (str(name) + ';' +
+                        str(key_id) + ';' +
+                        str(delta_working_range) + ';' +
+                        str(delta_download) + ';' +
+                        str(current_datetime - (current_datetime - datetime.timedelta(**{pat_aa: pat_ab}))))
+
+
+def download_loop_guard(download_count, last_download, last_update, next_update):
+    download_count = int(download_count)
+    # диапазон_жизни_црл:проверать_до_истечения_црл:проверять_каждые_х_минут:попыток_скачать_за_проверку
+    # delta_live:before_end_life:check_every_minute:attempts
+    # checking_schema = '8h:20m:5m:5;24h:60m:10m:5;7d:6h:1h:10'
+    check_every_minute = 5
+    attempts = 5
+    current_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_datetime = datetime.datetime.strptime(current_datetime, '%Y-%m-%d %H:%M:%S')
+    check_every_minute_time = datetime.timedelta(**{'minutes': check_every_minute})
+    print('current_datetime,  next_download_datetime',
+          current_datetime,  next_update - (check_every_minute_time * attempts))
+    if current_datetime > next_update - (check_every_minute_time * attempts):
+        print('download_count attempts', download_count, attempts)
+        if download_count < attempts:
+            download_count += 1
+            return download_count
+        else:
+            if current_datetime < next_update + datetime.timedelta(**{'days': 1}):
+                if last_download + datetime.timedelta(**{'minutes': 60}) < current_datetime:
+                    return 0
+                else:
+                    print('Timeout 60 min')
+                    return 'Timeout'
+            else:
+                print('Time out of range')
+                return 'Timeout'
+    else:
+        print('Тhe time hasn\'t come yet')
+        return 'Timeout'
+
+
+def un(char):
+    if char == 's':
+        return 'seconds'
+    if char == 'm':
+        return 'minutes'
+    if char == 'h':
+        return 'hours'
+    if char == 'd':
+        return 'days'

@@ -9,7 +9,7 @@ class UcWindow(QWidget):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        self.setWindowIcon(QIcon('assists/favicon.ico'))
+        self.setWindowIcon(QIcon('assets/favicon.ico'))
         self.init(reg_number)
 
     def init(self, reg_number):
@@ -44,7 +44,7 @@ class UcWindow(QWidget):
             address_town = 'Город : ' + str(row.AddresTown)
 
         self.setWindowTitle(name)
-        self.setWindowIcon(QIcon('assists/favicon.ico'))
+        self.setWindowIcon(QIcon('assets/favicon.ico'))
 
         self.ui.label_7.setText(registration_number)
         self.ui.label_6.setText(inn)

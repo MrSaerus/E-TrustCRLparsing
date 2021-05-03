@@ -1,7 +1,9 @@
 from PyQt5.QtCore import pyqtSignal, QThread
+from prettytable import PrettyTable
 from main_models import WatchingCRL, WatchingCustomCRL, UC, db
 from main_log_system import logs
 from main_settings import config
+from main_moduls import delta_checker
 import datetime
 import time
 import OpenSSL
@@ -55,15 +57,25 @@ class MainChecker(QThread):
         query_1 = WatchingCRL.select()
         query_2 = WatchingCustomCRL.select()
         self.current_message.emit('Проверяем основной список CRL')
+        table = PrettyTable()
+        table.field_names = ["Название УЦ", "Идентификатор ключа", "Время жизни CRl", "Время до истечения CRL", "Проверять за"]
         for wc in query_1:
-            # check_current_crl(wc.ID, wc.Name, wc.KeyId)
             self.current_message.emit(check_current_crl(wc.ID, wc.Name, wc.KeyId))
+            dc = delta_checker(wc.Name, wc.KeyId, wc.last_download, wc.last_update, wc.next_update, wc.download_count)
+            if not dc == None:
+                dc = dc.split(';')
+                table.add_row([dc[0], dc[1], dc[2], dc[3], dc[4]])
         self.current_message.emit('Проверяем свой список CRL')
         for wcc in query_2:
-            # check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId)
             self.current_message.emit(check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId))
+            dc = delta_checker(wcc.Name, wcc.KeyId, wcc.last_download, wcc.last_update, wcc.next_update, wcc.download_count)
+            if not dc == None:
+                dc = dc.split(';')
+                table.add_row([dc[0], dc[1], dc[2], dc[3], dc[4]])
+            # table.add_row([])
         self.current_message.emit('Готово')
         self.done.emit('Проверка завершена')
+        print(table)
 
 
 def check_custom_crl(id_custom_crl, name, id_key):

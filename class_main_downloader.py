@@ -1,8 +1,9 @@
 from PyQt5.QtCore import pyqtSignal, QThread
 from main_models import WatchingCRL, WatchingCustomCRL
 from main_settings import config
-from main_moduls import download_loop_guard, download_update, logs
+from main_moduls import download_loop_guard, download_update, delta_checker
 from class_main_cheker import check_custom_crl, check_current_crl
+from main_log_system import logs
 from urllib import request
 import datetime
 import shutil
@@ -96,39 +97,48 @@ class MainDownloader(QThread):
         self.current_message.emit('Загрузка началась')
         print('down start')
         for wc in query_1:
-            download_counter = download_loop_guard(int(wc.download_count), wc.last_download, wc.next_update)
-            if current_datetime > wc.next_update > before_current_date:
-                file_path = config['Folders']['crls'] + '/' + wc.KeyId + '.crl'
-                file_path_2 = config['Folders']['to_uc'] + '/' + 'current_' + wc.KeyId + '.crl'
-                self.current_message.emit('Скачиваем и проверяем ' + wc.Name + ' ' + wc.KeyId)
-                print('current_datetime', current_datetime,
-                      'next_update', wc.next_update,
-                      'before_current_date', before_current_date,
-                      'last_download', wc.last_download)
-                if self.download(wc.UrlCRL, file_path, 'current', wc.ID, download_counter) == 'down_success':
-                    logs('Info: Downloaded: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '5')
-                    shutil.copy2(file_path, file_path_2)
-                    return_list_msg = return_list_msg + ';' + wc.KeyId + ' : ' + wc.Name
-                    count = count + 1
-                else:
-                    logs('Warn: Download error: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '4')
+            # if current_datetime > wc.next_update > before_current_date:
+            if delta_checker(wc.Name, wc.KeyId, wc.last_download, wc.last_update, wc.next_update, wc.download_count):
+                download_counter = download_loop_guard(int(wc.download_count), wc.last_download, wc.last_update,
+                                                       wc.next_update)
+                if not download_counter == 'Timeout':
+                    file_path = config['Folders']['crls'] + '/' + wc.KeyId + '.crl'
+                    file_path_2 = config['Folders']['to_uc'] + '/' + 'current_' + wc.KeyId + '.crl'
+                    self.current_message.emit('Скачиваем и проверяем ' + wc.Name + ' ' + wc.KeyId)
+                    if self.download(wc.UrlCRL, file_path, 'current', wc.ID, download_counter) == 'down_success':
+                        print('current_datetime', current_datetime,
+                              '\nlast_update', wc.last_update,
+                              '\nnext_update', wc.next_update,
+                              '\nbefore_current_date', before_current_date,
+                              '\nlast_download', wc.last_download)
+                        logs('Info: Downloaded: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '5')
+                        shutil.copy2(file_path, file_path_2)
+                        return_list_msg = return_list_msg + ';' + wc.KeyId + ' : ' + wc.Name
+                        count = count + 1
+                    else:
+                        logs('Warn: Download error: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '4')
         for wcc in query_2:
-            download_counter = download_loop_guard(int(wcc.download_count), wcc.last_download, wcc.next_update)
-            if current_datetime > wcc.next_update > before_current_date:
-                file_path = config['Folders']['crls'] + '/' + wcc.KeyId + '.crl'
-                file_path_2 = config['Folders']['to_uc'] + '/' + 'custom_' + wcc.KeyId + '.crl'
-                self.current_message.emit('Скачиваем и проверяем ' + wcc.Name + ' ' + wcc.KeyId)
-                print('current_datetime', current_datetime,
-                      'next_update', wcc.next_update,
-                      'before_current_date', before_current_date,
-                      'last_download', wcc.last_download)
-                if self.download(wcc.UrlCRL, file_path, 'custom', wcc.ID, download_counter) == 'down_success':
+            # if current_datetime > wcc.next_update > before_current_date:
+            if delta_checker(wcc.Name, wcc.KeyId, wcc.last_download, wcc.last_update, wcc.next_update, wcc.download_count):
+                download_counter = download_loop_guard(int(wcc.download_count), wcc.last_download, wcc.last_update,
+                                                       wcc.next_update)
+                if not download_counter == 'Timeout':
+                    file_path = config['Folders']['crls'] + '/' + wcc.KeyId + '.crl'
+                    file_path_2 = config['Folders']['to_uc'] + '/' + 'custom_' + wcc.KeyId + '.crl'
+                    self.current_message.emit('Скачиваем и проверяем ' + wcc.Name + ' ' + wcc.KeyId)
 
-                    shutil.copy2(file_path, file_path_2)
-                    return_list_msg = return_list_msg + ';' + wcc.KeyId + ' : ' + wcc.Name
-                    count = count + 1
-                else:
-                    logs('Warn: Download error: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '4')
+                    if self.download(wcc.UrlCRL, file_path, 'custom', wcc.ID, download_counter) == 'down_success':
+                        print('current_datetime', current_datetime,
+                              '\nlast_update', wcc.last_update,
+                              '\nnext_update', wcc.next_update,
+                              '\nbefore_current_date', before_current_date,
+                              '\nlast_download', wcc.last_download)
+                        logs('Info: Downloaded: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '5')
+                        shutil.copy2(file_path, file_path_2)
+                        return_list_msg = return_list_msg + ';' + wcc.KeyId + ' : ' + wcc.Name
+                        count = count + 1
+                    else:
+                        logs('Warn: Download error: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '4')
         self.current_message.emit('Готово')
         self.done.emit('Загрузка завершена')
         print('down stop')
@@ -185,3 +195,12 @@ def download_file(file_url, file_name, folder, file_type='', file_id='', set_dd=
     file_path = folder + '/' + file_name
     _downloader = MainDownloader('MainDownloader_single_3', 'single', file_url, file_path, file_type, file_id)
     _downloader.start()
+
+
+def copy_crl_to_uc(rki, url):
+    if os.path.exists(config['Folders']['crls'] + '/' + rki + '.crl'):
+        shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl', config['Folders']['to_uc'] + '/' + rki + '.crl')
+        logs('Info: found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
+    else:
+        logs('Info: Not found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
+        download_file(url, rki + '.crl', config['Folders']['to_uc'])

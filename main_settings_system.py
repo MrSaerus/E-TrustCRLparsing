@@ -108,7 +108,8 @@ def check_settings_file(config):
     if not config.has_option('Schedule', 'timeupdate'):
         set_value_in_property_file('settings.ini', 'Schedule', 'timeupdate', '1M', config)
     if not config.has_option('Schedule', 'periodUpdate'):
-        set_value_in_property_file('settings.ini', 'Schedule', 'periodUpdate', '9:00; 12:00; 16:00', config)
+        set_value_in_property_file('settings.ini', 'Schedule', 'periodupdate',
+                                   '8h:20m:5m:5;24h:60m:10m:5;7d:6h:1h:10', config)
     if not config.has_option('Schedule', 'allowUpdateTSLbyStart'):
         set_value_in_property_file('settings.ini', 'Schedule', 'allowUpdateTSLbyStart', 'No', config)
     if not config.has_option('Schedule', 'allowUpdateCRLbyStart'):

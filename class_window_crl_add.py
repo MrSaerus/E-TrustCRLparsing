@@ -11,7 +11,7 @@ class AddCRLWindow(QWidget):
         super().__init__()
         self.ui_add = Ui_Form_add()
         self.ui_add.setupUi(self)
-        self.setWindowIcon(QIcon('assists/favicon.ico'))
+        self.setWindowIcon(QIcon('assets/favicon.ico'))
         self.ui_add.lineEdit.textChanged[str].connect(self.init)
         self.ui_add.pushButton.pressed.connect(self.set_fields)
         self.ui_add.pushButton_2.pressed.connect(self.query_fields)

@@ -5,12 +5,12 @@ from ui_main import Ui_MainWindow
 from main_images import base64_import, base64_icon, base64_info, base64_inbox, base64_file, base64_export, \
      base64_diskette, base64_black_list, base64_white_list
 from main_settings_system import set_value_in_property_file
-from main_moduls import save_cert, copy_crl_to_uc, get_info_xlm, export_all_watching_crl, \
+from main_moduls import save_cert, get_info_xlm, export_all_watching_crl, \
      uc_sorting, cert_sorting, crl_sorting, watching_crl_sorting, watching_custom_crl_sorting, \
      watching_disabled_crl_sorting
 from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, Settings
 from class_main_worker import MainWorker
-from class_main_downloader import MainDownloader, download_file
+from class_main_downloader import MainDownloader, download_file, copy_crl_to_uc
 from class_main_cheker import MainChecker
 from class_window_uc import UcWindow
 from class_window_crl import CRLWindow
@@ -217,22 +217,23 @@ class MainWindow(QMainWindow):
 
         self._checker = MainChecker('check_all')
         self._checker.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
-        self.ui.pushButton_3.setDisabled(True)
-        self.ui.pushButton_4.setDisabled(True)
-        self.ui.pushButton_5.setDisabled(True)
         self._checker.done.connect(lambda: self.ui.pushButton_3.setEnabled(True))
         self._checker.done.connect(lambda: self.ui.pushButton_4.setEnabled(True))
         self._checker.done.connect(lambda: self.ui.pushButton_5.setEnabled(True))
 
         self._down = MainDownloader('MainDownloader_main', 'all_mon')
         self._down.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
-        self.ui.pushButton_3.setDisabled(True)
-        self.ui.pushButton_4.setDisabled(True)
-        self.ui.pushButton_5.setDisabled(True)
         self._down.done.connect(lambda: self.ui.pushButton_3.setEnabled(True))
         self._down.done.connect(lambda: self.ui.pushButton_4.setEnabled(True))
         self._down.done.connect(lambda: self.ui.pushButton_5.setEnabled(True))
         self._down.download_message.connect(lambda msg: self.add_log_to_main_tab(msg))
+
+        self._down_mon = MainDownloader('MainDownloader_main', 'mon')
+        self._down_mon.current_message.connect(lambda msg: self.ui.label_8.setText(msg))
+        self._down_mon.done.connect(lambda: self.ui.pushButton_3.setEnabled(True))
+        self._down_mon.done.connect(lambda: self.ui.pushButton_4.setEnabled(True))
+        self._down_mon.done.connect(lambda: self.ui.pushButton_5.setEnabled(True))
+        self._down_mon.download_message.connect(lambda msg: self.add_log_to_main_tab(msg))
 
         self._init_xml = InitXML('tsl.xml')
         self._init_xml.progressbar.connect(lambda y: self.ui.progressBar_2.setValue(y))
@@ -511,7 +512,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.setToolTip('Скачать все CRL (Занимает значительное время при использовании прокси)')
         self.ui.pushButton_5.clicked.connect(lambda: self.checker())
         self.ui.pushButton_5.setToolTip('Запустить проверку всех CRL ')
-        self.ui.pushButton_3.clicked.connect(lambda: self.downloader())
+        self.ui.pushButton_3.clicked.connect(lambda: self.down_mon())
         self.ui.pushButton_3.setToolTip('Проверить наличие ноых CRL для скачивания и копирования в УЦ')
         self.ui.pushButton_27.setIcon(self.icon_file)
         self.ui.pushButton_27.setFlat(True)
@@ -566,7 +567,8 @@ class MainWindow(QMainWindow):
             button_crl_to_uc.setIcon(self.icon_inbox)
             button_crl_to_uc.setFlat(True)
             row_key_id = row.KeyId
-            button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
+            row_url_crl = row.UrlCRL
+            button_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl: copy_crl_to_uc(rki, url))
             button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
             self.ui.tableWidget_4.setCellWidget(count, 7, button_crl_to_uc)
 
@@ -637,7 +639,8 @@ class MainWindow(QMainWindow):
             button_crl_to_uc.setIcon(self.icon_inbox)
             button_crl_to_uc.setFlat(True)
             row_key_id = row.KeyId
-            button_crl_to_uc.pressed.connect(lambda rki=row_key_id: copy_crl_to_uc(rki))
+            row_url_crl = row.UrlCRL
+            button_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl: copy_crl_to_uc(rki, url))
             button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
 
             # button_crl_to_uc = QPushButton()
@@ -887,6 +890,34 @@ class MainWindow(QMainWindow):
             set_value_in_property_file('settings.ini', 'XMPP', 'sendinfonewtsl', 'Yes', config)
             config.set('XMPP', 'sendinfonewtsl', 'Yes')
 
+        set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text(), config)
+        config['Proxy']['ip'] = self.ui.lineEdit_7.text()
+        config.set('Proxy', 'ip', self.ui.lineEdit_7.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text(), config)
+        config['Proxy']['port'] = self.ui.lineEdit_8.text()
+        config.set('Proxy', 'port', self.ui.lineEdit_8.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text(), config)
+        config['Proxy']['login'] = self.ui.lineEdit_9.text()
+        config.set('Proxy', 'login', self.ui.lineEdit_9.text())
+        set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text(), config)
+        config['Proxy']['password'] = self.ui.lineEdit_10.text()
+        config.set('Proxy', 'password', self.ui.lineEdit_10.text())
+
+        if self.ui.checkBox.checkState() == 0:
+            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No', config)
+            config.set('Proxy', 'proxyon', 'No')
+            self.ui.lineEdit_7.setDisabled(True)
+            self.ui.lineEdit_8.setDisabled(True)
+            self.ui.lineEdit_9.setDisabled(True)
+            self.ui.lineEdit_10.setDisabled(True)
+        elif self.ui.checkBox.checkState() == 2:
+            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes', config)
+            config.set('Proxy', 'proxyon', 'Yes')
+            self.ui.lineEdit_7.setEnabled(True)
+            self.ui.lineEdit_8.setEnabled(True)
+            self.ui.lineEdit_9.setEnabled(True)
+            self.ui.lineEdit_10.setEnabled(True)
+
         if self.ui.checkBox_3.checkState() == 0:
             set_value_in_property_file('settings.ini', 'MainWindow', 'allowresize', 'No', config)
             config.set('MainWindow', 'allowresize', 'Yes')
@@ -960,19 +991,6 @@ class MainWindow(QMainWindow):
         set_value_in_property_file('settings.ini', 'Folders', 'to_uc', self.ui.label_9.text(), config)
         config.set('Folders', 'to_uc', self.ui.label_9.text())
 
-        set_value_in_property_file('settings.ini', 'Proxy', 'ip', self.ui.lineEdit_7.text(), config)
-        config['Proxy']['ip'] = self.ui.lineEdit_7.text()
-        config.set('Proxy', 'ip', self.ui.lineEdit_7.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'port', self.ui.lineEdit_8.text(), config)
-        config['Proxy']['port'] = self.ui.lineEdit_8.text()
-        config.set('Proxy', 'port', self.ui.lineEdit_8.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'login', self.ui.lineEdit_9.text(), config)
-        config['Proxy']['login'] = self.ui.lineEdit_9.text()
-        config.set('Proxy', 'login', self.ui.lineEdit_9.text())
-        set_value_in_property_file('settings.ini', 'Proxy', 'password', self.ui.lineEdit_10.text(), config)
-        config['Proxy']['password'] = self.ui.lineEdit_10.text()
-        config.set('Proxy', 'password', self.ui.lineEdit_10.text())
-
         if self.ui.checkBox_12.checkState() == 0:
             set_value_in_property_file('settings.ini', 'Schedule', 'allowupdatecrlbystart', 'No', config)
             config.set('Schedule', 'allowupdatecrlbystart', 'No')
@@ -991,21 +1009,6 @@ class MainWindow(QMainWindow):
         elif self.ui.checkBox_15.checkState() == 2:
             set_value_in_property_file('settings.ini', 'Schedule', 'allowmonitoringcrlbystart', 'Yes', config)
             config.set('Schedule', 'allowmonitoringcrlbystart', 'Yes')
-
-        if self.ui.checkBox.checkState() == 0:
-            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'No', config)
-            config.set('Proxy', 'proxyon', 'No')
-            self.ui.lineEdit_7.setDisabled(True)
-            self.ui.lineEdit_8.setDisabled(True)
-            self.ui.lineEdit_9.setDisabled(True)
-            self.ui.lineEdit_10.setDisabled(True)
-        elif self.ui.checkBox.checkState() == 2:
-            set_value_in_property_file('settings.ini', 'Proxy', 'proxyon', 'Yes', config)
-            config.set('Proxy', 'proxyon', 'Yes')
-            self.ui.lineEdit_7.setEnabled(True)
-            self.ui.lineEdit_8.setEnabled(True)
-            self.ui.lineEdit_9.setEnabled(True)
-            self.ui.lineEdit_10.setEnabled(True)
 
         set_value_in_property_file('settings.ini', 'Logs', 'loglevel', self.ui.comboBox.currentText(), config)
         config.set('Logs', 'loglevel', self.ui.comboBox.currentText())
@@ -1424,10 +1427,23 @@ class MainWindow(QMainWindow):
 
     def downloader(self):
         if not self._down.isRunning():
+            self.ui.pushButton_3.setDisabled(True)
+            self.ui.pushButton_4.setDisabled(True)
+            self.ui.pushButton_5.setDisabled(True)
             self._down.start()
+
+    def down_mon(self):
+        if not self._down_mon.isRunning():
+            self.ui.pushButton_3.setDisabled(True)
+            self.ui.pushButton_4.setDisabled(True)
+            self.ui.pushButton_5.setDisabled(True)
+            self._down_mon.start()
 
     def checker(self):
         if not self._checker.isRunning():
+            self.ui.pushButton_3.setDisabled(True)
+            self.ui.pushButton_4.setDisabled(True)
+            self.ui.pushButton_5.setDisabled(True)
             self._checker.start()
 
     def watchdog(self):

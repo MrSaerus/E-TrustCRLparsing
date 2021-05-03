@@ -1419,7 +1419,7 @@ border-color: rgb(0, 0, 0);</string>
           </property>
           <widget class="QWidget" name="tab_7">
            <attribute name="title">
-            <string>Основные CRL</string>
+            <string>Ссылки с E-Trust</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_21">
             <item>
@@ -1664,7 +1664,7 @@ border-color: rgb(0, 0, 0);</string>
           </widget>
           <widget class="QWidget" name="tab_8">
            <attribute name="title">
-            <string>Свои CRL</string>
+            <string>Ссылки длинных CRL</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_20">
             <item>
@@ -2428,13 +2428,13 @@ border-color: rgb(0, 0, 0);</string>
                  </layout>
                 </item>
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_76">
+                 <layout class="QHBoxLayout" name="horizontalLayout_91">
                   <item>
                    <widget class="QGroupBox" name="groupBox_16">
                     <property name="title">
                      <string>Разрешения</string>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_86">
+                    <layout class="QVBoxLayout" name="verticalLayout_58">
                      <item alignment="Qt::AlignLeft|Qt::AlignTop">
                       <widget class="QFrame" name="frame_21">
                        <property name="frameShape">
@@ -2465,7 +2465,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>20</height>
+                                <height>26</height>
                                </size>
                               </property>
                               <property name="text">
@@ -2482,7 +2482,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>20</height>
+                                <height>26</height>
                                </size>
                               </property>
                               <property name="text">
@@ -2499,7 +2499,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>20</height>
+                                <height>26</height>
                                </size>
                               </property>
                               <property name="text">
@@ -2516,7 +2516,7 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>20</height>
+                                <height>26</height>
                                </size>
                               </property>
                               <property name="text">
@@ -2533,11 +2533,227 @@ border-color: rgb(0, 0, 0);</string>
                               <property name="minimumSize">
                                <size>
                                 <width>0</width>
-                                <height>20</height>
+                                <height>26</height>
                                </size>
                               </property>
                               <property name="text">
                                <string>Включить кнопку &quot;Проверить все CRL&quot;</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_7">
+                    <property name="title">
+                     <string>Настройка прокси</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_52">
+                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+                      <widget class="QFrame" name="frame_26">
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_99">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_51">
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_27">
+                            <item>
+                             <widget class="QCheckBox" name="checkBox">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>26</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Использовать прокси?</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_26">
+                            <item>
+                             <widget class="QLabel" name="label_16">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>26</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Адрес:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_7">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_25">
+                            <item>
+                             <widget class="QLabel" name="label_17">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>26</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Порт:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_8">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_24">
+                            <item>
+                             <widget class="QLabel" name="label_18">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>26</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Логин:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_9">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_23">
+                            <item>
+                             <widget class="QLabel" name="label_19">
+                              <property name="minimumSize">
+                               <size>
+                                <width>0</width>
+                                <height>26</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>50</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Пароль:</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="lineEdit_10">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>200</width>
+                                <height>20</height>
+                               </size>
                               </property>
                              </widget>
                             </item>
@@ -3625,196 +3841,6 @@ border-color: rgb(0, 0, 0);</string>
                   </item>
                  </layout>
                 </item>
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_41">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_7">
-                    <property name="title">
-                     <string>Настройка прокси</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_52">
-                     <item alignment="Qt::AlignLeft|Qt::AlignTop">
-                      <widget class="QFrame" name="frame_26">
-                       <property name="frameShape">
-                        <enum>QFrame::NoFrame</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
-                       </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_99">
-                        <property name="leftMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="rightMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="bottomMargin">
-                         <number>0</number>
-                        </property>
-                        <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_51">
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_27">
-                            <item>
-                             <widget class="QCheckBox" name="checkBox">
-                              <property name="maximumSize">
-                               <size>
-                                <width>200</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Использовать прокси?</string>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_26">
-                            <item>
-                             <widget class="QLabel" name="label_16">
-                              <property name="maximumSize">
-                               <size>
-                                <width>50</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Адрес:</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="lineEdit_7">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>200</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_25">
-                            <item>
-                             <widget class="QLabel" name="label_17">
-                              <property name="maximumSize">
-                               <size>
-                                <width>50</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Порт:</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="lineEdit_8">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>200</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_24">
-                            <item>
-                             <widget class="QLabel" name="label_18">
-                              <property name="maximumSize">
-                               <size>
-                                <width>50</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Логин:</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="lineEdit_9">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>200</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_23">
-                            <item>
-                             <widget class="QLabel" name="label_19">
-                              <property name="maximumSize">
-                               <size>
-                                <width>50</width>
-                                <height>16777215</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string>Пароль:</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="lineEdit_10">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>200</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
                </layout>
               </item>
               <item>
@@ -4167,6 +4193,120 @@ border-color: rgb(0, 0, 0);</string>
                 <property name="text">
                  <string>Сохранить</string>
                 </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_13">
+           <attribute name="title">
+            <string>Диапазоны проверок</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_28">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_56">
+              <item>
+               <widget class="QGroupBox" name="groupBox_9">
+                <property name="title">
+                 <string>Настройка проверки CRL в зависимости от жизни CRL</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_60">
+                 <item alignment="Qt::AlignHCenter|Qt::AlignTop">
+                  <widget class="QFrame" name="frame_37">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_61">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_41">
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_92">
+                        <item>
+                         <widget class="QLabel" name="label_49">
+                          <property name="text">
+                           <string>Время жизни CRL</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_48">
+                          <property name="text">
+                           <string>Проверять до истечения</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_47">
+                          <property name="text">
+                           <string>Частота проверки</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_15">
+                          <property name="text">
+                           <string>Попыток проверки</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_29">
+                        <item>
+                         <widget class="QLineEdit" name="lineEdit_30"/>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="lineEdit_29"/>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="lineEdit_28"/>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="lineEdit_27"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item alignment="Qt::AlignRight|Qt::AlignBottom">
+                  <widget class="QFrame" name="frame_38">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_94">
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_93">
+                      <item>
+                       <widget class="QPushButton" name="pushButton_64">
+                        <property name="text">
+                         <string>Добавить</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="pushButton_63">
+                        <property name="text">
+                         <string>Сохранить</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>

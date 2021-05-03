@@ -9,7 +9,7 @@ class CRLWindow(QWidget):
         super().__init__()
         self.ui_crl = Ui_Form_crl()
         self.ui_crl.setupUi(self)
-        self.setWindowIcon(QIcon('assists/favicon.ico'))
+        self.setWindowIcon(QIcon('assets/favicon.ico'))
         self.init(crl_key_id)
 
     def init(self, crl_key_id):
