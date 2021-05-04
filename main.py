@@ -181,6 +181,14 @@ class MainWindow(QMainWindow):
         self.sub_tab_watching_custom_crl()
         self.sub_tab_watching_disabled_crl()
 
+        self.tab_uc_sorting = ''
+        self.tab_cert_sorting = ''
+        self.tab_crl_sorting = ''
+
+        self.sub_tab_watching_crl_sorting = ''
+        self.sub_tab_watching_custom_crl_sorting = ''
+        self.sub_tab_watching_disabled_crl_sorting = ''
+
         self._squirrel = MainWorker('MainWorker')
         self._squirrel.threadTimerSender.connect(lambda y: self.ui.label_36.setText('Время в работе: ' + str(y)))
         self._squirrel.threadBefore.connect(
@@ -343,6 +351,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_19.setToolTip('Запустить мониторинг CRL')
 
     def tab_uc(self, text='', order_by='Full_Name'):
+        self.tab_uc_sorting = order_by
+
         order = uc_sorting(order_by)
         self.ui.tableWidget.clearContents()
         query = UC.select().order_by(order).where(UC.Registration_Number.contains(text)
@@ -379,6 +389,8 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
     def tab_cert(self, text='', order_by='Name'):
+        self.tab_cert_sorting = order_by
+
         order = cert_sorting(order_by)
         self.ui.tableWidget_2.clearContents()
         self.ui.pushButton_22.setIcon(self.icon_file)
@@ -432,6 +444,8 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_2.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
     def tab_crl(self, text='', order_by='Full_Name'):
+        self.tab_crl_sorting = order_by
+
         order = crl_sorting(order_by)
         self.ui.tableWidget_3.clearContents()
         self.ui.pushButton_26.setIcon(self.icon_file)
@@ -519,8 +533,10 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_27.pressed.connect(lambda: os.startfile(os.path.realpath(config['Folders']['crls'])))
         self.ui.pushButton_27.setToolTip('Открыть папку с CRL')
 
-    def sub_tab_watching_crl(self, text='', order_by='Full_Name'):
-        order = watching_crl_sorting(order_by)
+    def sub_tab_watching_crl(self, text='', order_by='Full_Name', orders='Yes'):
+        self.sub_tab_watching_crl_sorting = order_by
+
+        order = watching_crl_sorting(order_by, orders)
         self.ui.tableWidget_4.clearContents()
 
         query = WatchingCRL.select().order_by(order).where(WatchingCRL.Name.contains(text)
@@ -577,7 +593,8 @@ class MainWindow(QMainWindow):
             button_delete_watch.setIcon(self.icon_export)
             button_delete_watch.setFlat(True)
             id_row = row.ID
-            button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'current'))
+            id_table_row = count
+            button_delete_watch.pressed.connect(lambda o=id_row, idt=id_table_row: self.move_watching_to_passed(o, 'current', idt))
             button_delete_watch.setToolTip('Убрать CRL из мониторинга')
             self.ui.tableWidget_4.setCellWidget(count, 8, button_delete_watch)
             count = count + 1
@@ -591,8 +608,10 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_4.setColumnWidth(8, 31)
         self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
-    def sub_tab_watching_custom_crl(self, text='', order_by='Full_Name'):
-        order = watching_custom_crl_sorting(order_by)
+    def sub_tab_watching_custom_crl(self, text='', order_by='Full_Name', orders='Yes'):
+        self.sub_tab_watching_custom_crl_sorting = order_by
+
+        order = watching_custom_crl_sorting(order_by, orders)
         self.ui.tableWidget_5.clearContents()
         self.ui.pushButton_25.pressed.connect(lambda: self.open_sub_window_add())
         query = WatchingCustomCRL.select().order_by(order) \
@@ -653,7 +672,8 @@ class MainWindow(QMainWindow):
             button_delete_watch.setIcon(self.icon_export)
             button_delete_watch.setFlat(True)
             id_row = row.ID
-            button_delete_watch.pressed.connect(lambda o=id_row: self.move_watching_to_passed(o, 'custom'))
+            id_table_row = count
+            button_delete_watch.pressed.connect(lambda o=id_row, idt=id_table_row: self.move_watching_to_passed(o, 'custom', idt))
             button_delete_watch.setToolTip('Убрать CRL из мониторинга')
             self.ui.tableWidget_5.setCellWidget(count, 8, button_delete_watch)
 
@@ -669,8 +689,10 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_5.setColumnWidth(8, 31)
         self.ui.tableWidget_5.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
-    def sub_tab_watching_disabled_crl(self, text='', order_by='Full_Name'):
-        order = watching_disabled_crl_sorting(order_by)
+    def sub_tab_watching_disabled_crl(self, text='', order_by='Full_Name', orders='Yes'):
+        self.sub_tab_watching_disabled_crl_sorting = order_by
+
+        order = watching_disabled_crl_sorting(order_by, orders)
         self.ui.tableWidget_6.clearContents()
         query = WatchingDeletedCRL.select().order_by(order). \
             where(WatchingDeletedCRL.Name.contains(text)
@@ -1171,7 +1193,7 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidget_9.setItem(current_row_count, 1, QTableWidgetItem(msg.split(' : ')[1]))
                 self.ui.tableWidget_9.scrollToBottom()
 
-    def move_watching_to_passed(self, id_var, from_var):
+    def move_watching_to_passed(self, id_var, from_var, idt):
         if from_var == 'current':
             while True:
                 try:
@@ -1212,9 +1234,9 @@ class MainWindow(QMainWindow):
                     time.sleep(3)
                 else:
                     break
-
-            self.sub_tab_watching_crl()
-            self.sub_tab_watching_disabled_crl()
+            # self.ui.tableWidget_4.removeRow(idt)
+            self.sub_tab_watching_crl('', self.sub_tab_watching_crl_sorting, 'No')
+            self.sub_tab_watching_disabled_crl('', self.sub_tab_watching_disabled_crl_sorting, 'No')
             logs('Info: move_watching_to_passed()::moving_success_current:', 'info', '7')
         elif from_var == 'custom':
             while True:
@@ -1256,9 +1278,9 @@ class MainWindow(QMainWindow):
                     time.sleep(3)
                 else:
                     break
-
-            self.sub_tab_watching_custom_crl()
-            self.sub_tab_watching_disabled_crl()
+            # self.ui.tableWidget_5.removeRow(idt)
+            self.sub_tab_watching_custom_crl('', self.sub_tab_watching_custom_crl_sorting, 'No')
+            self.sub_tab_watching_disabled_crl('', self.sub_tab_watching_disabled_crl_sorting, 'No')
             logs('Info: move_watching_to_passed::moving_success_custom:', 'info', '7')
         else:
             logs('Error: move_watching_to_passed::Error_Moving', 'errors', '2')
@@ -1304,8 +1326,8 @@ class MainWindow(QMainWindow):
                     else:
                         break
 
-                self.sub_tab_watching_disabled_crl()
-                self.sub_tab_watching_crl()
+                self.sub_tab_watching_crl('', self.sub_tab_watching_crl_sorting, 'No')
+                self.sub_tab_watching_disabled_crl('', self.sub_tab_watching_disabled_crl_sorting, 'No')
                 logs('Info: move_passed_to_watching()::moving_success_current:', 'info', '7')
             elif row.moved_from == 'custom':
                 while True:
@@ -1337,8 +1359,8 @@ class MainWindow(QMainWindow):
                     else:
                         break
 
-                self.sub_tab_watching_disabled_crl()
-                self.sub_tab_watching_custom_crl()
+                self.sub_tab_watching_custom_crl('', self.sub_tab_watching_custom_crl_sorting, 'No')
+                self.sub_tab_watching_disabled_crl('', self.sub_tab_watching_disabled_crl_sorting, 'No')
                 logs('Info: move_passed_to_watching::moving_success_custom:', 'info', '7')
             else:
                 logs('Error: move_passed_to_watching::error_moving', 'errors', '2')

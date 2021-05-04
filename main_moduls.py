@@ -312,147 +312,147 @@ def crl_sorting(order_by):
     return order
 
 
-def watching_crl_sorting(order_by):
+def watching_crl_sorting(order_by, orders):
     if order_by == 'Name':
         if main_settings.sub_tab_watching_crl_sorting == 'asc':
             order = WatchingCRL.Name.asc()
-            main_settings.sub_tab_watching_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'desc'
         else:
             order = WatchingCRL.Name.desc()
-            main_settings.sub_tab_watching_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'asc'
     elif order_by == 'OGRN':
         if main_settings.sub_tab_watching_crl_sorting == 'asc':
             order = WatchingCRL.OGRN.asc()
-            main_settings.sub_tab_watching_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'desc'
         else:
             order = WatchingCRL.OGRN.desc()
-            main_settings.sub_tab_watching_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'asc'
     elif order_by == 'KeyId':
         if main_settings.sub_tab_watching_crl_sorting == 'asc':
             order = WatchingCRL.KeyId.asc()
-            main_settings.sub_tab_watching_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'desc'
         else:
             order = WatchingCRL.KeyId.desc()
-            main_settings.sub_tab_watching_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'asc'
     elif order_by == 'UrlCRL':
         if main_settings.sub_tab_watching_crl_sorting == 'asc':
             order = WatchingCRL.UrlCRL.asc()
-            main_settings.sub_tab_watching_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'desc'
         else:
             order = WatchingCRL.UrlCRL.desc()
-            main_settings.sub_tab_watching_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'asc'
     elif order_by == 'last_download':
         if main_settings.sub_tab_watching_crl_sorting == 'asc':
             order = WatchingCRL.last_download.asc()
-            main_settings.sub_tab_watching_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'desc'
         else:
             order = WatchingCRL.last_download.desc()
-            main_settings.sub_tab_watching_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'asc'
     elif order_by == 'next_update':
         if main_settings.sub_tab_watching_crl_sorting == 'asc':
             order = WatchingCRL.next_update.asc()
-            main_settings.sub_tab_watching_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'desc'
         else:
             order = WatchingCRL.next_update.desc()
-            main_settings.sub_tab_watching_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_crl_sorting = 'asc'
     else:
         order = WatchingCRL.Name.asc()
 
     return order
 
 
-def watching_custom_crl_sorting(order_by):
+def watching_custom_crl_sorting(order_by, orders):
     if order_by == 'Name':
         if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
             order = WatchingCustomCRL.Name.asc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
         else:
             order = WatchingCustomCRL.Name.desc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
     elif order_by == 'OGRN':
         if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
             order = WatchingCustomCRL.OGRN.asc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
         else:
             order = WatchingCustomCRL.OGRN.desc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
     elif order_by == 'KeyId':
         if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
             order = WatchingCustomCRL.KeyId.asc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
         else:
             order = WatchingCustomCRL.KeyId.desc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
     elif order_by == 'UrlCRL':
         if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
             order = WatchingCustomCRL.UrlCRL.asc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
         else:
             order = WatchingCustomCRL.UrlCRL.desc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
     elif order_by == 'last_download':
         if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
             order = WatchingCustomCRL.last_download.asc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
         else:
             order = WatchingCustomCRL.last_download.desc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
     elif order_by == 'next_update':
         if main_settings.sub_tab_watching_custom_crl_sorting == 'asc':
             order = WatchingCustomCRL.next_update.asc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'desc'
         else:
             order = WatchingCustomCRL.next_update.desc()
-            main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_custom_crl_sorting = 'asc'
     else:
         order = WatchingCustomCRL.Name.asc()
 
     return order
 
 
-def watching_disabled_crl_sorting(order_by):
+def watching_disabled_crl_sorting(order_by, orders):
     if order_by == 'Name':
         if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
             order = WatchingDeletedCRL.Name.asc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
         else:
             order = WatchingDeletedCRL.Name.desc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
     elif order_by == 'OGRN':
         if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
             order = WatchingDeletedCRL.OGRN.asc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
         else:
             order = WatchingDeletedCRL.OGRN.desc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
     elif order_by == 'KeyId':
         if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
             order = WatchingDeletedCRL.KeyId.asc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
         else:
             order = WatchingDeletedCRL.KeyId.desc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
     elif order_by == 'Stamp':
         if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
             order = WatchingDeletedCRL.Stamp.asc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
         else:
             order = WatchingDeletedCRL.Stamp.desc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
     elif order_by == 'SerialNumber':
         if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
             order = WatchingDeletedCRL.SerialNumber.asc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
         else:
             order = WatchingDeletedCRL.SerialNumber.desc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
     elif order_by == 'UrlCRL':
         if main_settings.sub_tab_watching_disabled_crl_sorting == 'asc':
             order = WatchingDeletedCRL.UrlCRL.asc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'desc'
         else:
             order = WatchingDeletedCRL.UrlCRL.desc()
-            main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
+            if orders == 'Yes': main_settings.sub_tab_watching_disabled_crl_sorting = 'asc'
     else:
         order = WatchingDeletedCRL.Name.asc()
 
@@ -508,7 +508,7 @@ def download_loop_guard(download_count, last_download, last_update, next_update)
     current_datetime = datetime.datetime.strptime(current_datetime, '%Y-%m-%d %H:%M:%S')
     check_every_minute_time = datetime.timedelta(**{'minutes': check_every_minute})
     print('current_datetime,  next_download_datetime',
-          current_datetime,  next_update - (check_every_minute_time * attempts))
+          current_datetime, next_update - (check_every_minute_time * attempts))
     if current_datetime > next_update - (check_every_minute_time * attempts):
         print('download_count attempts', download_count, attempts)
         if download_count < attempts:
