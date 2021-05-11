@@ -562,9 +562,9 @@ class MainWindow(QMainWindow):
         brush.setStyle(Qt.SolidPattern)
         for row in query:
             self.ui.tableWidget_4.setItem(count, 0, QTableWidgetItem(str(row.Name)))
-            self.ui.tableWidget_4.setItem(count, 1, QTableWidgetItem(str(row.OGRN)))
-            self.ui.tableWidget_4.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
-            self.ui.tableWidget_4.setItem(count, 3, QTableWidgetItem(str(row.UrlCRL)))
+            self.ui.tableWidget_4.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
+            self.ui.tableWidget_4.setItem(count, 2, QTableWidgetItem(str(row.UrlCRL)))
+            self.ui.tableWidget_4.setItem(count, 3, QTableWidgetItem(str(row.last_update)))
             self.ui.tableWidget_4.setItem(count, 4, QTableWidgetItem(str(row.last_download)))
             self.ui.tableWidget_4.setItem(count, 5, QTableWidgetItem(str(row.next_update)))
 
@@ -589,6 +589,22 @@ class MainWindow(QMainWindow):
             button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
             self.ui.tableWidget_4.setCellWidget(count, 7, button_crl_to_uc)
 
+            button_down_crl_to_uc = QPushButton()
+            button_down_crl_to_uc.setFixedSize(30, 30)
+            button_down_crl_to_uc.setIcon(self.icon_inbox)
+            button_down_crl_to_uc.setFlat(True)
+            row_key_id = row.KeyId
+            row_url_crl = row.UrlCRL
+            row_id_w = row.ID
+            button_down_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl, id_w=row_id_w:
+                                                  self.download_file(row_url_crl,
+                                                                     row_key_id + '.crl',
+                                                                     config['Folders']['crls'],
+                                                                     'current',
+                                                                     id_w))
+            button_down_crl_to_uc.setToolTip('Скачать CRL в УЦ')
+            self.ui.tableWidget_4.setCellWidget(count, 8, button_down_crl_to_uc)
+
             button_delete_watch = QPushButton()
             button_delete_watch.setFixedSize(30, 30)
             button_delete_watch.setIcon(self.icon_export)
@@ -597,9 +613,9 @@ class MainWindow(QMainWindow):
             id_table_row = count
             button_delete_watch.pressed.connect(lambda o=id_row, idt=id_table_row: self.move_watching_to_passed(o, 'current', idt))
             button_delete_watch.setToolTip('Убрать CRL из мониторинга')
-            self.ui.tableWidget_4.setCellWidget(count, 8, button_delete_watch)
+            self.ui.tableWidget_4.setCellWidget(count, 9, button_delete_watch)
             count = count + 1
-        self.ui.tableWidget_4.setColumnWidth(1, 100)
+        self.ui.tableWidget_4.setColumnWidth(1, 150)
         self.ui.tableWidget_4.setColumnWidth(2, 150)
         self.ui.tableWidget_4.setColumnWidth(3, 150)
         self.ui.tableWidget_4.setColumnWidth(4, 150)
@@ -607,6 +623,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_4.setColumnWidth(6, 25)
         self.ui.tableWidget_4.setColumnWidth(7, 31)
         self.ui.tableWidget_4.setColumnWidth(8, 31)
+        self.ui.tableWidget_4.setColumnWidth(9, 31)
         self.ui.tableWidget_4.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
     def sub_tab_watching_custom_crl(self, text='', order_by='Full_Name', orders='Yes'):
@@ -637,9 +654,9 @@ class MainWindow(QMainWindow):
         count = 0
         for row in query:
             self.ui.tableWidget_5.setItem(count, 0, QTableWidgetItem(str(row.Name)))
-            self.ui.tableWidget_5.setItem(count, 1, QTableWidgetItem(str(row.OGRN)))
-            self.ui.tableWidget_5.setItem(count, 2, QTableWidgetItem(str(row.KeyId)))
-            self.ui.tableWidget_5.setItem(count, 3, QTableWidgetItem(str(row.UrlCRL)))
+            self.ui.tableWidget_5.setItem(count, 1, QTableWidgetItem(str(row.KeyId)))
+            self.ui.tableWidget_5.setItem(count, 2, QTableWidgetItem(str(row.UrlCRL)))
+            self.ui.tableWidget_5.setItem(count, 3, QTableWidgetItem(str(row.last_update)))
             self.ui.tableWidget_5.setItem(count, 4, QTableWidgetItem(str(row.last_download)))
             self.ui.tableWidget_5.setItem(count, 5, QTableWidgetItem(str(row.next_update)))
 
@@ -662,11 +679,23 @@ class MainWindow(QMainWindow):
             row_url_crl = row.UrlCRL
             button_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl: self.copy_crl_to_uc(rki, url))
             button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
-
-            # button_crl_to_uc = QPushButton()
-            # button_crl_to_uc.setFixedSize(30, 30)
-            # button_crl_to_uc.setText("Схр")
             self.ui.tableWidget_5.setCellWidget(count, 7, button_crl_to_uc)
+
+            button_down_crl_to_uc = QPushButton()
+            button_down_crl_to_uc.setFixedSize(30, 30)
+            button_down_crl_to_uc.setIcon(self.icon_inbox)
+            button_down_crl_to_uc.setFlat(True)
+            row_key_id = row.KeyId
+            row_url_crl = row.UrlCRL
+            row_id_wc = row.ID
+            button_down_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl, id_wc=row_id_wc:
+                                                  self.download_file(row_url_crl,
+                                                                     row_key_id + '.crl',
+                                                                     config['Folders']['crls'],
+                                                                     'custom',
+                                                                     id_wc))
+            button_down_crl_to_uc.setToolTip('Скачать CRL в УЦ')
+            self.ui.tableWidget_5.setCellWidget(count, 8, button_down_crl_to_uc)
 
             button_delete_watch = QPushButton()
             button_delete_watch.setFixedSize(30, 30)
@@ -676,10 +705,10 @@ class MainWindow(QMainWindow):
             id_table_row = count
             button_delete_watch.pressed.connect(lambda o=id_row, idt=id_table_row: self.move_watching_to_passed(o, 'custom', idt))
             button_delete_watch.setToolTip('Убрать CRL из мониторинга')
-            self.ui.tableWidget_5.setCellWidget(count, 8, button_delete_watch)
+            self.ui.tableWidget_5.setCellWidget(count, 9, button_delete_watch)
 
             count = count + 1
-        self.ui.tableWidget_5.setColumnWidth(1, 100)
+        self.ui.tableWidget_5.setColumnWidth(1, 150)
         self.ui.tableWidget_5.setColumnWidth(2, 150)
         self.ui.tableWidget_5.setColumnWidth(3, 150)
         self.ui.tableWidget_5.setColumnWidth(4, 150)
@@ -688,6 +717,7 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget_5.setColumnWidth(6, 25)
         self.ui.tableWidget_5.setColumnWidth(7, 31)
         self.ui.tableWidget_5.setColumnWidth(8, 31)
+        self.ui.tableWidget_5.setColumnWidth(9, 31)
         self.ui.tableWidget_5.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
 
     def sub_tab_watching_disabled_crl(self, text='', order_by='Full_Name', orders='Yes'):

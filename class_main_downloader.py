@@ -161,14 +161,14 @@ class MainDownloader(QThread):
                 request.install_opener(opener)
             request.urlretrieve(file_url, file_name, self._progress)
         except Exception:
-            if not file_type == '' and not file_type == '' and not file_id == '':
+            if not file_type == '' and not file_id == '':
                 download_update('No', file_type, file_id, dc)
             self.done_err.emit('Ошибка загрузки')
             self.stage_progress_total.emit(-1)
             print('Info: Download filed: ' + file_url + ' to ' + file_name)
             return 'down_error'
         else:
-            if not file_type == '' and not file_type == '' and not file_id == '':
+            if not file_type == '' and not file_id == '':
                 download_update('Yes', file_type, file_id, dc)
             if file_type == 'custom':
                 # print(file_id, file_url, file_name.split('/')[-1].split('.')[0])

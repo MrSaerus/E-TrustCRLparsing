@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainBcKttV.ui'
+## Form generated from reading UI file 'mainkUsDLp.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.14.1
 ##
@@ -839,13 +839,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_35.addWidget(self.pushButton_29)
 
-        self.pushButton_28 = QPushButton(self.tab_7)
-        self.pushButton_28.setObjectName(u"pushButton_28")
-        self.pushButton_28.setMinimumSize(QSize(100, 0))
-        self.pushButton_28.setMaximumSize(QSize(100, 16777215))
-
-        self.horizontalLayout_35.addWidget(self.pushButton_28)
-
         self.pushButton_24 = QPushButton(self.tab_7)
         self.pushButton_24.setObjectName(u"pushButton_24")
         self.pushButton_24.setMinimumSize(QSize(150, 0))
@@ -859,6 +852,13 @@ class Ui_MainWindow(object):
         self.pushButton_32.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_35.addWidget(self.pushButton_32)
+
+        self.pushButton_28 = QPushButton(self.tab_7)
+        self.pushButton_28.setObjectName(u"pushButton_28")
+        self.pushButton_28.setMinimumSize(QSize(150, 0))
+        self.pushButton_28.setMaximumSize(QSize(150, 16777215))
+
+        self.horizontalLayout_35.addWidget(self.pushButton_28)
 
         self.pushButton_31 = QPushButton(self.tab_7)
         self.pushButton_31.setObjectName(u"pushButton_31")
@@ -876,8 +876,8 @@ class Ui_MainWindow(object):
 
         self.pushButton_33 = QPushButton(self.tab_7)
         self.pushButton_33.setObjectName(u"pushButton_33")
-        self.pushButton_33.setMinimumSize(QSize(102, 0))
-        self.pushButton_33.setMaximumSize(QSize(102, 16777215))
+        self.pushButton_33.setMinimumSize(QSize(133, 0))
+        self.pushButton_33.setMaximumSize(QSize(133, 16777215))
         self.pushButton_33.setFlat(True)
 
         self.horizontalLayout_35.addWidget(self.pushButton_33)
@@ -886,8 +886,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_21.addLayout(self.horizontalLayout_35)
 
         self.tableWidget_4 = QTableWidget(self.tab_7)
-        if (self.tableWidget_4.columnCount() < 9):
-            self.tableWidget_4.setColumnCount(9)
+        if (self.tableWidget_4.columnCount() < 10):
+            self.tableWidget_4.setColumnCount(10)
         __qtablewidgetitem28 = QTableWidgetItem()
         self.tableWidget_4.setHorizontalHeaderItem(0, __qtablewidgetitem28)
         __qtablewidgetitem29 = QTableWidgetItem()
@@ -906,6 +906,8 @@ class Ui_MainWindow(object):
         self.tableWidget_4.setHorizontalHeaderItem(7, __qtablewidgetitem35)
         __qtablewidgetitem36 = QTableWidgetItem()
         self.tableWidget_4.setHorizontalHeaderItem(8, __qtablewidgetitem36)
+        __qtablewidgetitem37 = QTableWidgetItem()
+        self.tableWidget_4.setHorizontalHeaderItem(9, __qtablewidgetitem37)
         self.tableWidget_4.setObjectName(u"tableWidget_4")
         self.tableWidget_4.horizontalHeader().setVisible(False)
         self.tableWidget_4.horizontalHeader().setMinimumSectionSize(16)
@@ -977,13 +979,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_36.addWidget(self.pushButton_37)
 
-        self.pushButton_36 = QPushButton(self.tab_8)
-        self.pushButton_36.setObjectName(u"pushButton_36")
-        self.pushButton_36.setMinimumSize(QSize(100, 0))
-        self.pushButton_36.setMaximumSize(QSize(100, 16777215))
-
-        self.horizontalLayout_36.addWidget(self.pushButton_36)
-
         self.pushButton_35 = QPushButton(self.tab_8)
         self.pushButton_35.setObjectName(u"pushButton_35")
         self.pushButton_35.setMinimumSize(QSize(150, 0))
@@ -997,6 +992,13 @@ class Ui_MainWindow(object):
         self.pushButton_34.setMaximumSize(QSize(150, 16777215))
 
         self.horizontalLayout_36.addWidget(self.pushButton_34)
+
+        self.pushButton_36 = QPushButton(self.tab_8)
+        self.pushButton_36.setObjectName(u"pushButton_36")
+        self.pushButton_36.setMinimumSize(QSize(150, 0))
+        self.pushButton_36.setMaximumSize(QSize(150, 16777215))
+
+        self.horizontalLayout_36.addWidget(self.pushButton_36)
 
         self.pushButton_40 = QPushButton(self.tab_8)
         self.pushButton_40.setObjectName(u"pushButton_40")
@@ -1014,8 +1016,8 @@ class Ui_MainWindow(object):
 
         self.pushButton_38 = QPushButton(self.tab_8)
         self.pushButton_38.setObjectName(u"pushButton_38")
-        self.pushButton_38.setMinimumSize(QSize(102, 0))
-        self.pushButton_38.setMaximumSize(QSize(102, 16777215))
+        self.pushButton_38.setMinimumSize(QSize(133, 0))
+        self.pushButton_38.setMaximumSize(QSize(133, 16777215))
         self.pushButton_38.setFlat(True)
 
         self.horizontalLayout_36.addWidget(self.pushButton_38)
@@ -1024,26 +1026,28 @@ class Ui_MainWindow(object):
         self.verticalLayout_20.addLayout(self.horizontalLayout_36)
 
         self.tableWidget_5 = QTableWidget(self.tab_8)
-        if (self.tableWidget_5.columnCount() < 9):
-            self.tableWidget_5.setColumnCount(9)
-        __qtablewidgetitem37 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(0, __qtablewidgetitem37)
+        if (self.tableWidget_5.columnCount() < 10):
+            self.tableWidget_5.setColumnCount(10)
         __qtablewidgetitem38 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(1, __qtablewidgetitem38)
+        self.tableWidget_5.setHorizontalHeaderItem(0, __qtablewidgetitem38)
         __qtablewidgetitem39 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(2, __qtablewidgetitem39)
+        self.tableWidget_5.setHorizontalHeaderItem(1, __qtablewidgetitem39)
         __qtablewidgetitem40 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(3, __qtablewidgetitem40)
+        self.tableWidget_5.setHorizontalHeaderItem(2, __qtablewidgetitem40)
         __qtablewidgetitem41 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(4, __qtablewidgetitem41)
+        self.tableWidget_5.setHorizontalHeaderItem(3, __qtablewidgetitem41)
         __qtablewidgetitem42 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(5, __qtablewidgetitem42)
+        self.tableWidget_5.setHorizontalHeaderItem(4, __qtablewidgetitem42)
         __qtablewidgetitem43 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(6, __qtablewidgetitem43)
+        self.tableWidget_5.setHorizontalHeaderItem(5, __qtablewidgetitem43)
         __qtablewidgetitem44 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(7, __qtablewidgetitem44)
+        self.tableWidget_5.setHorizontalHeaderItem(6, __qtablewidgetitem44)
         __qtablewidgetitem45 = QTableWidgetItem()
-        self.tableWidget_5.setHorizontalHeaderItem(8, __qtablewidgetitem45)
+        self.tableWidget_5.setHorizontalHeaderItem(7, __qtablewidgetitem45)
+        __qtablewidgetitem46 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(8, __qtablewidgetitem46)
+        __qtablewidgetitem47 = QTableWidgetItem()
+        self.tableWidget_5.setHorizontalHeaderItem(9, __qtablewidgetitem47)
         self.tableWidget_5.setObjectName(u"tableWidget_5")
         self.tableWidget_5.horizontalHeader().setVisible(False)
         self.tableWidget_5.horizontalHeader().setMinimumSectionSize(16)
@@ -1144,20 +1148,20 @@ class Ui_MainWindow(object):
         self.tableWidget_6 = QTableWidget(self.tab_9)
         if (self.tableWidget_6.columnCount() < 7):
             self.tableWidget_6.setColumnCount(7)
-        __qtablewidgetitem46 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(0, __qtablewidgetitem46)
-        __qtablewidgetitem47 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(1, __qtablewidgetitem47)
         __qtablewidgetitem48 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(2, __qtablewidgetitem48)
+        self.tableWidget_6.setHorizontalHeaderItem(0, __qtablewidgetitem48)
         __qtablewidgetitem49 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(3, __qtablewidgetitem49)
+        self.tableWidget_6.setHorizontalHeaderItem(1, __qtablewidgetitem49)
         __qtablewidgetitem50 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(4, __qtablewidgetitem50)
+        self.tableWidget_6.setHorizontalHeaderItem(2, __qtablewidgetitem50)
         __qtablewidgetitem51 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(5, __qtablewidgetitem51)
+        self.tableWidget_6.setHorizontalHeaderItem(3, __qtablewidgetitem51)
         __qtablewidgetitem52 = QTableWidgetItem()
-        self.tableWidget_6.setHorizontalHeaderItem(6, __qtablewidgetitem52)
+        self.tableWidget_6.setHorizontalHeaderItem(4, __qtablewidgetitem52)
+        __qtablewidgetitem53 = QTableWidgetItem()
+        self.tableWidget_6.setHorizontalHeaderItem(5, __qtablewidgetitem53)
+        __qtablewidgetitem54 = QTableWidgetItem()
+        self.tableWidget_6.setHorizontalHeaderItem(6, __qtablewidgetitem54)
         self.tableWidget_6.setObjectName(u"tableWidget_6")
         self.tableWidget_6.horizontalHeader().setVisible(False)
         self.tableWidget_6.horizontalHeader().setMinimumSectionSize(16)
@@ -2626,9 +2630,9 @@ class Ui_MainWindow(object):
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u043d\u0430\u043b\u0438\u0447\u0438\u0435 \u043d\u043e\u0432\u044b\u0445 CRL \u0434\u043b\u044f \u0423\u0426", None))
         self.pushButton_10.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
         self.pushButton_29.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None))
-        self.pushButton_28.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0413\u0420\u041d", None))
         self.pushButton_24.setText(QCoreApplication.translate("MainWindow", u"\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u043a\u043b\u044e\u0447\u0430", None))
         self.pushButton_32.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441 CRL", None))
+        self.pushButton_28.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
         self.pushButton_31.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u0435", None))
         self.pushButton_30.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
         self.pushButton_33.setText("")
@@ -2648,9 +2652,9 @@ class Ui_MainWindow(object):
         self.pushButton_11.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c", None))
         self.pushButton_25.setText(QCoreApplication.translate("MainWindow", u"\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c", None))
         self.pushButton_37.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435", None))
-        self.pushButton_36.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0413\u0420\u041d", None))
         self.pushButton_35.setText(QCoreApplication.translate("MainWindow", u"\u0418\u0434\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0442\u043e\u0440 \u043a\u043b\u044e\u0447\u0430", None))
         self.pushButton_34.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0434\u0440\u0435\u0441 CRL", None))
+        self.pushButton_36.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
         self.pushButton_40.setText(QCoreApplication.translate("MainWindow", u"\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u0441\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u0435", None))
         self.pushButton_39.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0435 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435", None))
         self.pushButton_38.setText("")

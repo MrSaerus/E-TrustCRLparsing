@@ -58,20 +58,21 @@ class MainChecker(QThread):
         query_2 = WatchingCustomCRL.select()
         self.current_message.emit('Проверяем основной список CRL')
         table = PrettyTable()
-        table.field_names = ["Название УЦ", "Идентификатор ключа", "Время жизни CRl", "Время до истечения CRL", "Проверять за"]
+        table.field_names = ["Название УЦ", "Идентификатор ключа", "Время жизни CRl", "Время до истечения CRL",
+                             "Проверять за", "Последнее скачивание", " Следующее обновление"]
         for wc in query_1:
             self.current_message.emit(check_current_crl(wc.ID, wc.Name, wc.KeyId))
             dc = delta_checker(wc.Name, wc.KeyId, wc.last_download, wc.last_update, wc.next_update, wc.download_count)
             if not dc == None:
                 dc = dc.split(';')
-                table.add_row([dc[0], dc[1], dc[2], dc[3], dc[4]])
+                table.add_row([dc[0], dc[1], dc[2], dc[3], dc[4], dc[5], dc[6]])
         self.current_message.emit('Проверяем свой список CRL')
         for wcc in query_2:
             self.current_message.emit(check_custom_crl(wcc.ID, wcc.Name, wcc.KeyId))
             dc = delta_checker(wcc.Name, wcc.KeyId, wcc.last_download, wcc.last_update, wcc.next_update, wcc.download_count)
             if not dc == None:
                 dc = dc.split(';')
-                table.add_row([dc[0], dc[1], dc[2], dc[3], dc[4]])
+                table.add_row([dc[0], dc[1], dc[2], dc[3], dc[4], dc[5], dc[6]])
             # table.add_row([])
         self.current_message.emit('Готово')
         self.done.emit('Проверка завершена')

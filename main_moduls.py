@@ -494,7 +494,9 @@ def delta_checker(name, key_id, last_download, last_update, next_update, downloa
                         str(key_id) + ';' +
                         str(delta_working_range) + ';' +
                         str(delta_download) + ';' +
-                        str(current_datetime - (current_datetime - datetime.timedelta(**{pat_aa: pat_ab}))))
+                        str(current_datetime - (current_datetime - datetime.timedelta(**{pat_aa: pat_ab}))) + ';' +
+                        str(last_download) + ';' +
+                        str(next_update))
 
 
 def download_loop_guard(download_count, last_download, last_update, next_update):

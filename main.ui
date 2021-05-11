@@ -1487,25 +1487,6 @@ border-color: rgb(0, 0, 0);</string>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_28">
-                <property name="minimumSize">
-                 <size>
-                  <width>100</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>100</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>ОГРН</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QPushButton" name="pushButton_24">
                 <property name="minimumSize">
                  <size>
@@ -1540,6 +1521,25 @@ border-color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
                  <string>Адрес CRL</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_28">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Последнее обновление</string>
                 </property>
                </widget>
               </item>
@@ -1585,13 +1585,13 @@ border-color: rgb(0, 0, 0);</string>
                <widget class="QPushButton" name="pushButton_33">
                 <property name="minimumSize">
                  <size>
-                  <width>102</width>
+                  <width>133</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>102</width>
+                  <width>133</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -1641,6 +1641,11 @@ border-color: rgb(0, 0, 0);</string>
               <column>
                <property name="text">
                 <string>Cледующее обновление</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string/>
                </property>
               </column>
               <column>
@@ -1787,25 +1792,6 @@ border-color: rgb(0, 0, 0);</string>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_36">
-                <property name="minimumSize">
-                 <size>
-                  <width>100</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>100</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>ОГРН</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QPushButton" name="pushButton_35">
                 <property name="minimumSize">
                  <size>
@@ -1840,6 +1826,25 @@ border-color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="text">
                  <string>Адрес CRL</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_36">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Последнее обновление</string>
                 </property>
                </widget>
               </item>
@@ -1885,13 +1890,13 @@ border-color: rgb(0, 0, 0);</string>
                <widget class="QPushButton" name="pushButton_38">
                 <property name="minimumSize">
                  <size>
-                  <width>102</width>
+                  <width>133</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>102</width>
+                  <width>133</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -1941,6 +1946,11 @@ border-color: rgb(0, 0, 0);</string>
               <column>
                <property name="text">
                 <string>Cледующее обновление</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string/>
                </property>
               </column>
               <column>
