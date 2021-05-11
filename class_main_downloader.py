@@ -106,13 +106,14 @@ class MainDownloader(QThread):
                     file_path_2 = config['Folders']['to_uc'] + '/' + 'current_' + wc.KeyId + '.crl'
                     self.current_message.emit('Скачиваем и проверяем ' + wc.Name + ' ' + wc.KeyId)
                     if self.download(wc.UrlCRL, file_path, 'current', wc.ID, download_counter) == 'down_success':
-                        print('current_datetime', current_datetime,
-                              '\nlast_update', wc.last_update,
-                              '\nnext_update', wc.next_update,
-                              '\nbefore_current_date', before_current_date,
-                              '\nlast_download', wc.last_download)
+                        # print('current_datetime', current_datetime,
+                        #       '\nlast_update', wc.last_update,
+                        #       '\nnext_update', wc.next_update,
+                        #       '\nbefore_current_date', before_current_date,
+                        #       '\nlast_download', wc.last_download)
                         logs('Info: Downloaded: ' + wc.Name + ' ' + wc.UrlCRL, 'download', '5')
                         shutil.copy2(file_path, file_path_2)
+                        logs('Info: Coped: ' + file_path + ' to ' + file_path_2, 'download', '5')
                         return_list_msg = return_list_msg + ';' + wc.KeyId + ' : ' + wc.Name
                         count = count + 1
                     else:
@@ -128,13 +129,14 @@ class MainDownloader(QThread):
                     self.current_message.emit('Скачиваем и проверяем ' + wcc.Name + ' ' + wcc.KeyId)
 
                     if self.download(wcc.UrlCRL, file_path, 'custom', wcc.ID, download_counter) == 'down_success':
-                        print('current_datetime', current_datetime,
-                              '\nlast_update', wcc.last_update,
-                              '\nnext_update', wcc.next_update,
-                              '\nbefore_current_date', before_current_date,
-                              '\nlast_download', wcc.last_download)
+                        # print('current_datetime', current_datetime,
+                        #       '\nlast_update', wcc.last_update,
+                        #       '\nnext_update', wcc.next_update,
+                        #       '\nbefore_current_date', before_current_date,
+                        #       '\nlast_download', wcc.last_download)
                         logs('Info: Downloaded: ' + wcc.Name + ' ' + wcc.UrlCRL, 'download', '5')
                         shutil.copy2(file_path, file_path_2)
+                        logs('Info: Coped: ' + file_path + ' to ' + file_path_2, 'download', '5')
                         return_list_msg = return_list_msg + ';' + wcc.KeyId + ' : ' + wcc.Name
                         count = count + 1
                     else:
@@ -163,6 +165,7 @@ class MainDownloader(QThread):
                 download_update('No', file_type, file_id, dc)
             self.done_err.emit('Ошибка загрузки')
             self.stage_progress_total.emit(-1)
+            print('Info: Download filed: ' + file_url + ' to ' + file_name)
             return 'down_error'
         else:
             if not file_type == '' and not file_type == '' and not file_id == '':
@@ -177,6 +180,7 @@ class MainDownloader(QThread):
             self.stage_progress_total.emit(size_tls)
             self.stage_progress_current.emit(size_tls)
             self.stage_progress_total.emit(-1)
+            print('Info: Downloaded: ' + file_url + ' to ' + file_name)
             return 'down_success'
 
     def _progress(self, block_num, block_size, total_size):
@@ -189,18 +193,3 @@ class MainDownloader(QThread):
                 self.stage_progress_current.emit(downloaded)
             else:
                 self.stage_progress_current.emit(total_size)
-
-
-def download_file(file_url, file_name, folder, file_type='', file_id='', set_dd='No'):
-    file_path = folder + '/' + file_name
-    _downloader = MainDownloader('MainDownloader_single_3', 'single', file_url, file_path, file_type, file_id)
-    _downloader.start()
-
-
-def copy_crl_to_uc(rki, url):
-    if os.path.exists(config['Folders']['crls'] + '/' + rki + '.crl'):
-        shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl', config['Folders']['to_uc'] + '/' + rki + '.crl')
-        logs('Info: found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
-    else:
-        logs('Info: Not found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
-        download_file(url, rki + '.crl', config['Folders']['to_uc'])

@@ -10,7 +10,7 @@ from main_moduls import save_cert, get_info_xlm, export_all_watching_crl, \
      watching_disabled_crl_sorting
 from main_models import UC, CRL, CERT, WatchingCRL, WatchingCustomCRL, WatchingDeletedCRL, Settings
 from class_main_worker import MainWorker
-from class_main_downloader import MainDownloader, download_file, copy_crl_to_uc
+from class_main_downloader import MainDownloader
 from class_main_cheker import MainChecker
 from class_window_uc import UcWindow
 from class_window_crl import CRLWindow
@@ -20,6 +20,7 @@ from class_main_watchdog import Watchdog
 from main_log_system import logs
 from main_settings import config
 from asyncio import Queue
+import shutil
 import base64
 import datetime
 import os
@@ -478,7 +479,7 @@ class MainWindow(QMainWindow):
             button_crl_save.setIcon(self.icon_diskette)
             button_crl_save.setFlat(True)
             button_crl_save.pressed.connect(
-                lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['crls']))
+                lambda u=row.UrlCRL, s=row.KeyId: self.download_file(u, s + '.crl', config['Folders']['crls']))
             button_crl_save.setToolTip('Сохранить CRL')
             self.ui.tableWidget_3.setCellWidget(count, 5, button_crl_save)
 
@@ -487,7 +488,7 @@ class MainWindow(QMainWindow):
             button_crl_save_to_uc.setIcon(self.icon_inbox)
             button_crl_save_to_uc.setFlat(True)
             button_crl_save_to_uc.pressed.connect(
-                lambda u=row.UrlCRL, s=row.KeyId: download_file(u, s + '.crl', config['Folders']['to_uc']))
+                lambda u=row.UrlCRL, s=row.KeyId: self.download_file(u, s + '.crl', config['Folders']['to_uc']))
             button_crl_save_to_uc.setToolTip('Сохранить CRL в УЦ')
             self.ui.tableWidget_3.setCellWidget(count, 6, button_crl_save_to_uc)
 
@@ -584,7 +585,7 @@ class MainWindow(QMainWindow):
             button_crl_to_uc.setFlat(True)
             row_key_id = row.KeyId
             row_url_crl = row.UrlCRL
-            button_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl: copy_crl_to_uc(rki, url))
+            button_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl: self.copy_crl_to_uc(rki, url))
             button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
             self.ui.tableWidget_4.setCellWidget(count, 7, button_crl_to_uc)
 
@@ -659,7 +660,7 @@ class MainWindow(QMainWindow):
             button_crl_to_uc.setFlat(True)
             row_key_id = row.KeyId
             row_url_crl = row.UrlCRL
-            button_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl: copy_crl_to_uc(rki, url))
+            button_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl: self.copy_crl_to_uc(rki, url))
             button_crl_to_uc.setToolTip('Копировать CRL в УЦ')
 
             # button_crl_to_uc = QPushButton()
@@ -1479,6 +1480,18 @@ class MainWindow(QMainWindow):
         if not self._squirrel.isRunning():
             self._squirrel.start()
 
+    def download_file(self, file_url, file_name, folder, file_type='', file_id='', set_dd='No'):
+        file_path = folder + '/' + file_name
+        self._down_single = MainDownloader('MainDownloader_single_3', 'single', file_url, file_path, file_type, file_id)
+        self._down_single.start()
+
+    def copy_crl_to_uc(self, rki, url):
+        if os.path.exists(config['Folders']['crls'] + '/' + rki + '.crl'):
+            shutil.copy2(config['Folders']['crls'] + '/' + rki + '.crl', config['Folders']['to_uc'] + '/' + rki + '.crl')
+            logs('Info: found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
+        else:
+            logs('Info: Not found ' + config['Folders']['crls'] + '/' + rki + '.crl', 'info', '5')
+            self.download_file(url, rki + '.crl', config['Folders']['to_uc'])
     # def db_query(self, table, query, operator, where, group_by, order):
     #     _db_query = DBQuerying()
     #     _db_query.start()

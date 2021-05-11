@@ -477,17 +477,17 @@ def delta_checker(name, key_id, last_download, last_update, next_update, downloa
         pat_bb = int(re.findall(r'(\d+)', pat_b)[0])
         pat_ba = un(re.findall(r'(\D+)', pat_b)[0])
         if delta_working_range < (current_datetime - (current_datetime - datetime.timedelta(**{pat_aa: pat_ab}))):
-            print('--------------------------------------------------',
-                  '--------------------------------------------------')
-            print('Delta_working_range', delta_working_range,
-                  '\nLast_update', last_update,
-                  '\nNext_update', next_update,
-                  '\nLast_download', last_download,
-                  '\nDownload_count', download_count)
-            print('delta_download < current_datetime',
-                  delta_download, current_datetime - (current_datetime - datetime.timedelta(**{pat_ba: pat_bb})))
+            # print('--------------------------------------------------',
+            #       '--------------------------------------------------')
+            # print('Delta_working_range', delta_working_range,
+            #       '\nLast_update', last_update,
+            #       '\nNext_update', next_update,
+            #       '\nLast_download', last_download,
+            #       '\nDownload_count', download_count)
+            # print('delta_download < current_datetime',
+            #       delta_download, current_datetime - (current_datetime - datetime.timedelta(**{pat_ba: pat_bb})))
             if delta_download < current_datetime - (current_datetime - datetime.timedelta(**{pat_ba: pat_bb})):
-                print('The rule', pat_aa, pat_ab)
+                # print('The rule', pat_aa, pat_ab)
                 if delta_download < current_datetime - current_datetime - datetime.timedelta(seconds=0):
                     delta_download = 'Просрочено'
                 return (str(name) + ';' +
@@ -507,10 +507,10 @@ def download_loop_guard(download_count, last_download, last_update, next_update)
     current_datetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     current_datetime = datetime.datetime.strptime(current_datetime, '%Y-%m-%d %H:%M:%S')
     check_every_minute_time = datetime.timedelta(**{'minutes': check_every_minute})
-    print('current_datetime,  next_download_datetime',
-          current_datetime, next_update - (check_every_minute_time * attempts))
+    # print('current_datetime,  next_download_datetime',
+    #       current_datetime, next_update - (check_every_minute_time * attempts))
     if current_datetime > next_update - (check_every_minute_time * attempts):
-        print('download_count attempts', download_count, attempts)
+        # print('download_count attempts', download_count, attempts)
         if download_count < attempts:
             download_count += 1
             return download_count
