@@ -597,8 +597,8 @@ class MainWindow(QMainWindow):
             row_url_crl = row.UrlCRL
             row_id_w = row.ID
             button_down_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl, id_w=row_id_w:
-                                                  self.download_file(row_url_crl,
-                                                                     row_key_id + '.crl',
+                                                  self.download_file(url,
+                                                                     rki + '.crl',
                                                                      config['Folders']['crls'],
                                                                      'current',
                                                                      id_w))
@@ -689,8 +689,8 @@ class MainWindow(QMainWindow):
             row_url_crl = row.UrlCRL
             row_id_wc = row.ID
             button_down_crl_to_uc.pressed.connect(lambda rki=row_key_id, url=row_url_crl, id_wc=row_id_wc:
-                                                  self.download_file(row_url_crl,
-                                                                     row_key_id + '.crl',
+                                                  self.download_file(url,
+                                                                     rki + '.crl',
                                                                      config['Folders']['crls'],
                                                                      'custom',
                                                                      id_wc))
@@ -1161,16 +1161,16 @@ class MainWindow(QMainWindow):
                 added_id = add_to_watching_crl.ID
                 # self.ui.label_24.setText('Добавляем в список скачивания')
                 # download(self, file_url, file_name, file_type, file_id, dc=0):
-                _download_crl = MainDownloader('MainDownloader_single_2', 'single',
+                self._download_crl = MainDownloader('MainDownloader_single_2', 'single',
                                                url_crl,
                                                config['Folders']['crls'] + '/' + keyid + '.crl',
                                                'current',
                                                added_id)
-                _download_crl.done.connect(
+                self._download_crl.done.connect(
                     lambda: self.ui.label_24.setText('CRL Скачан и добавлен в список скачивания'))
-                _download_crl.done_err.connect(
+                self._download_crl.done_err.connect(
                     lambda: self.ui.label_24.setText('CRL добавлен в список скачивания но не смог скачаться'))
-                _download_crl.start()
+                self._download_crl.start()
         else:
             logs('Info: add_watch_current_crl::crl_exist:' + keyid, 'info', '7')
             self.ui.label_24.setText('CRL ' + keyid + ' уже находится в списке отслеживания')
